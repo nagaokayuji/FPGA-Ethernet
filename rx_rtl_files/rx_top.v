@@ -216,8 +216,6 @@ clocking clocking_i(
     );
 
 
-
-
 reg [7:0] data_out_reg;
 reg en_out_reg;
 
@@ -263,11 +261,8 @@ always @(posedge clk125MHz) begin
 hdmi_top hdmi_top_i (
     .clk(clk100MHz_buffered),
     .RST(rstb),
-   // .dclk(eth_rxck),
     .dclk(eth_rxck_buf),
     .clk125MHz(clk125MHz),
-//    .data_in(data_out),
-//    .data_en(en_out),
    .data_in(data_out_reg),
    .data_en(en_out_reg),
     .hdmi_tx_clk_n(hdmi_tx_clk_n),
