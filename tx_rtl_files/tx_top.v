@@ -1,6 +1,4 @@
-`timescale 1ns / 1ps
-
-module gigabit_test(
+module tx_top(
 	input wire clk100MHz,
 	input wire[7:0] switches,
 	input wire rstb, // active high
@@ -33,8 +31,11 @@ module gigabit_test(
 	
 	//output wire hdmi_rx_txen
     );
-    assign hdmi_rx_hpa = 1'b1;
+		parameter m = 3;
+	  assign hdmi_rx_hpa = 1'b1;
     assign hdmi_rx_txen = 1'b1;
+		
+
     /*
     assign hdmi_rx_hpa = 1'b1;
     //assign hdmi_rx_txen = 1'b1;
@@ -45,7 +46,7 @@ module gigabit_test(
 wire [2:0] redundancy = {switches[5],switches[4],1'b1}; //3bit, takes value of 1,3,5,7
 
 //parameter redundancy = 3'b101; // send same packets for x times
-reg [15:0] my_data = 16'h0;
+//reg [15:0] my_data = 16'h0;
 reg [17:0] counter_samepacket = 18'b0;
 
 reg [26:0] max_count = 27'b0;
@@ -201,12 +202,12 @@ BUFG bufg_100(
 .O(clk100MHz_buffered)
 );
 // clock
-clk_wiz_0 clocking(
+clocking clocking_i(
     .clk_in1(clk100MHz_buffered),
-    .CLKOUT0(clk125MHz),
-    .CLKOUT1(clk50MHz),
-    .CLKOUT2(clk25MHz),
-    .CLKOUT3(clk125MHz90)
+    .clk_out1(clk125MHz),
+    .clk_out2(clk50MHz),
+    .clk_out3(clk25MHz),
+    .clk_out4(clk125MHz90)
     );
     
     reg [16:0] max_counter_samepacket = 17'd30;
@@ -252,16 +253,15 @@ reg in_sending = 1'b0;
 //assign index_clone = send_times + 1'b1;
 (* mark_debug = "true" *) reg [7:0] txid = 8'b0;// 7/20 logic
 assign index_clone = txid;
+
+//===============
+// STATE CONTROL
+//=====================
+reg [3:0] state = 0;
+//localparam 
+
 always @(posedge clk125MHz) begin
-/*
-index_clone[2:0] <= send_times;
-index_clone[7:3] <= 5'b0;
-*/
-
-//------------
-if (my_data == 16'hffff || rstb == 1'b1) my_data <= 16'b0; // max
-
-// new logic 6/29
+//if (my_data == 16'hffff || rstb == 1'b1) my_data <= 16'b0; // max
 
 
 if (in_sending) begin // send frame for redundancy times
@@ -298,7 +298,7 @@ else if (!busy) begin
 		count <= 27'b0;
 		send_times <= 1'b0;
 		counter_samepacket <= 11'b0;
-		my_data <= my_data + 1'b1;
+		//my_data <= my_data + 1'b1;
 	
 		if (lastaddr >= 57600)// 
 			startaddr <= 0;
@@ -315,15 +315,15 @@ end
 //========================
 // HDMI
 //========================
-
+/*
 wire refclk,vgaclk,vgaclk3x;
 
 
 clk_for_hdmi clk_for_hdmi_i(
     .clk_in1(clk100MHz),
-    .clk_out1(refclk),
-    .clk_out2(vgaclk),
-    .clk_out3(vgaclk3x)
+    .clk_out1(refclk)//,
+   // .clk_out2(vgaclk),
+   // .clk_out3(vgaclk3x)
     );
 
       wire hdmi_in_ddc_scl_i;
@@ -415,42 +415,8 @@ rgb720to480 rgb720to480_i (
 .rgb_b(rgb_b)
 );  
 
-
-/*
-always @(posedge pclk) begin
-    if (pclkflash_t == 24'd80000000) begin
-        pclkflash <= !pclkflash;
-        pclkflash_t <= 0;
-    end else pclkflash_t <= pclkflash_t + 1;
-
-    if (vsync == 1'b0)   begin
-        vcnt <= 0; hcnt <= 0;
-    end
-    else begin // vsync == 1
-        if (hsync == 1'b0) begin
-            hcnt <= 0;vcnt <= vcnt + 1;
-        end
-        else begin // hsync == 1'b1
-            if (vde) begin
-                if (hcnt % 3 == 2)  begin
-                    pdata_vga <= pdata;
-                    pdata8bit <= pdata[2];
-                end
-                else if (hcnt % 3 == 1) begin
-                    pdata8bit <= pdata[1];
-                end
-                else begin
-                    pdata8bit <= pdata[0];
-                end
-
-            hcnt <= hcnt + 1'b1;
-            
-            end
-        end
-    end
-end
- */       
-
+  
+*/
 //------------------------
 // Video RAM
 //clk, wea, addra, addrb, dina,douta,doutb
@@ -458,29 +424,16 @@ end
 
 assign leds[5] = vde;
 wire wea = 0; // now
-/*
-blk_mem_gen_0 vram(
-    .clka(pclk),
-    .clkb(clk125MHz),
-    .wea(ena),
-    .addra(vga2bramaddr),
-    .addrb(addrb),
-    .dina(pdata8bit),
-    .douta(),
-    .dinb(),
-    .web(1'b0),
-    .doutb(doutb));
-*/
+
 wire [7:0] doutb,dina,doutb_first;
 wire [19:0] addrb,addra;
- //(* mark_debug = "true" *)  wire [4:0] doutb_r;
-//(* mark_debug = "true" *) wire [4:0] out_from_vram = index_clone == 1?  doutb  :   doutb_r;  //later
   
 //wire [7:0] out_from_vram =doutb;
 wire [12:0] count_for_bram;
 wire [12:0] count_for_bram_b;
 wire [1:0] vramaddr_c;
 wire count_for_bram_en;
+reg [15:0] m = 0;
 byte_data data(
 	.clk(clk125MHz),
 	.start(start_sending),
@@ -492,7 +445,8 @@ byte_data data(
 	.lastaddr(lastaddr),
 	.busy(busy),
 	.data(raw_data),
-	.mydata(my_data),
+	//.mydata(my_data),
+	.m(m),
 	.index_clone(index_clone),
 	.data_user(raw_data_user),
 	.data_enable(raw_data_enable),
@@ -513,12 +467,8 @@ wire ena_b;// = vga2bramaddr % 3 == 2;
 wire [7:0] doutb_r,doutb_g,doutb_b;
 
 
-//reg [1:0] vramaddr_c_s = 0;
-//always @(posedge clk125MHz) begin
-//    vramaddr_c_s <= {vramaddr_c_s[0],vramaddr_c};
-//end
-assign doutb_first = vramaddr_c == 0? doutb_r: vramaddr_c==2? doutb_g:vramaddr_c==1? doutb_b:0;
-vram_420x240 vram_r(
+assign doutb_first = vramaddr_c == 0? doutb_r: vramaddr_c==2? doutb_g:vramaddr_c==1? doutb_b:0; // ID == 1
+vram vram_r(
     .clka(pclk),
 .clkb(clk125MHz),
 .wea(ena),
@@ -531,7 +481,7 @@ vram_420x240 vram_r(
 .doutb(doutb_r)
 );
 
-vram_420x240 vram_g(
+vram vram_g(
     .clka(pclk),
 .clkb(clk125MHz),
 .wea(ena),
@@ -544,7 +494,7 @@ vram_420x240 vram_g(
 .doutb(doutb_g)//5bits
 );
 
-vram_420x240 vram_b(
+vram vram_b(
     .clka(pclk),
 .clkb(clk125MHz),
 .wea(ena),
@@ -571,8 +521,6 @@ bram_1080 bram_1080(
 .addrb(count_for_bram_b),
 .doutb(doutb_not_first)
 );
-
-
 
 assign leds[7] = ena;
 endmodule

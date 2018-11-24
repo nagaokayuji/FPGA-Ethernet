@@ -6,7 +6,6 @@ module bram2rgb(
 //input wire pclk,
 input wire clk,xrst,en,
 (* mark_debug = "true" *) input wire [23:0] in_from_ram,
-
 (* mark_debug = "true" *) output  reg [19:0] ram_addr=0,
 (* mark_debug = "true" *) output  reg vd_2s,hd_2s,
 (* mark_debug = "true" *) output  reg [23:0] rgb24bit=0,

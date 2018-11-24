@@ -2,12 +2,13 @@
 	input wire clk,
 	input wire start,
 	input wire advance,
-	input wire [15:0] mydata,
+//	input wire [15:0] mydata,
+	input wire [15:0] segment_num,
 	input wire [7:0] index_clone,
 	input wire [7:0] vramdata,
 	input wire [19:0] startaddr,
 	output reg [19:0] vramaddr = 0,
-	output reg [1:0] vramaddr_c = 0,
+	output reg [1:0] vramaddr_c = 0, // rgb selector. 
 	output reg [19:0] lastaddr = 0,
 	output reg busy = 1'b0,
 	output reg [7:0] data = 8'b0,
@@ -27,7 +28,7 @@ parameter ymax = 180;
 
 parameter ip_header_bytes = 20;
 parameter udp_header_bytes = 8;
-parameter data_bytes = 16 + 1024 + 40;
+parameter data_bytes = 4 + 1440; // 1444 Bytes. 
 parameter ip_total_bytes = ip_header_bytes + udp_header_bytes + data_bytes;
 parameter udp_total_bytes = udp_header_bytes + data_bytes;
 reg start_internal = 1'b0;
@@ -35,7 +36,7 @@ reg [11:0] counter = 12'b0;
 
 // added 7/8
 reg [7:0] index_clone_rised;
-reg [15:0] mydata_rised;
+//reg [15:0] mydata_rised;
 
 // ethernet frame header
 reg [47:0] eth_src_mac = 48'hdeadbeef0123;
@@ -82,22 +83,6 @@ assign ip_checksum1 = 32'd0 + {ip_version, ip_header_len, ip_dscp_ecn} + ip_iden
 assign ip_checksum2 = ip_checksum1[31:16] + ip_checksum1[15:0];
 	 //-- Step 3) ~BBD1 = 0100010000101110 = 442E (1's complement of 1's complement 16-bit sum)
 assign ip_checksum  = ~ip_checksum2;
-//end
-// generate_nibbles
-/* clock delay will be happen
-always @(posedge start) begin
-	//busy <= 1'b1;
-	mydata_rised <= mydata;
-	index_clone_rised <= index_clone;
-end
-*/
-// addr(counter) = startaddr + (counter - 43)
-/*
-reg [15:0] startxaddr;
-reg [15:0] startyaddr;
-startxaddr = startaddr / ymax;
-startyaddr = start
-*/
 reg flag_max = 0;
 // 43( == 0x2b),wrong data
 always @(posedge clk) begin
@@ -128,9 +113,6 @@ if (counter >= 41 && counter <= 1122) begin// 43?
 		else begin
 		vramaddr_c <= vramaddr_c + 1;
 		end
-		
-		//vramaddr <= startaddr + (counter - 41); // 4242
-		
 		end
 	
 	if (counter == 12'd40) count_for_bram <= 0;
@@ -177,7 +159,7 @@ always @(posedge clk) begin
 	case (counter)
 		// pause at 0count when idle
 		12'h0:  begin// must be NULL???????
-						mydata_rised <= mydata;
+						//mydata_rised <= mydata;
 						
 						//index_clone_rised <= index_clone;
 				end
@@ -208,7 +190,6 @@ always @(posedge clk) begin
 		// user data packet
 
 		// IPv4 Header
-
 		12'hf: data <= {ip_version, ip_header_len};
 		12'h10: data <= ip_dscp_ecn[7:0];
 		12'h11: data <= ip_length[15:8];
