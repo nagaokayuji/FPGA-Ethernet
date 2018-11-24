@@ -4,6 +4,10 @@ module hdmi_top(
 	input wire [2:0] hdmi_rx_p,
 	inout wire hdmi_rx_scl,
 	inout wire hdmi_rx_sda,
+
+	output wire ena,
+	output wire [23:0] bramaddr24b,
+	output wire [7:0] rgb_r,rgb_g,rgb_b
 )
 wire refclk;
 wire hdmi_in_ddc_scl_i;
@@ -42,8 +46,6 @@ wire pclklocked;
     .SCL_I(hdmi_in_ddc_scl_i),
     .SCL_O(hdmi_in_ddc_scl_o),
     .SCL_T(hdmi_in_ddc_scl_t),
-    
-    
     .RefClk(refclk),
     .aRst(1'b0),
     // output
@@ -58,18 +60,8 @@ wire pclklocked;
     );    
 //===================================================================
 
- //===========
-reg [23:0] pdata_vga = 0;
- (* mark_debug = "true" *)wire[7:0] pdata8bit;
-reg pclkflash = 0;
-reg [23:0] pclkflash_t = 0;
-(* mark_debug = "true" *)wire [21:0] vga2bramaddr;
-(* mark_debug = "true" *)wire ena;
 
-wire [23:0] bramaddr24b;
-wire [7:0] rgb_r,rgb_g,rgb_b;
-
-rgb720to480 rgb720to480_i (
+rgb720to480 rgb720to320 (
 	.i_Clk(), //25.2MHz
 	.i_Clk3x(pclk),
 	.i_Hsync(hsync),
@@ -79,7 +71,7 @@ rgb720to480 rgb720to480_i (
 	.o_HSync(),
 	.o_VSync(),
 	.enout(ena),
-	.bramaddr8b(vga2bramaddr),
+	.bramaddr8b(), // not used
 	.data8b(),
 	.o_Col_Count(), 
 	.o_Row_Count(),
@@ -90,3 +82,4 @@ rgb720to480 rgb720to480_i (
 );  
 
   
+endmodule

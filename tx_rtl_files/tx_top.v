@@ -315,108 +315,21 @@ end
 //========================
 // HDMI
 //========================
-/*
-wire refclk,vgaclk,vgaclk3x;
+hdmi_top (
+	.hdmi_rx_clk_n(hdmi_rx_clk_n),
+	.hdmi_rx_clk_p(hdmi_rx_clk_p),
+	.hdmi_rx_n(hdmi_rx_n),
+	.hdmi_rx_p(hdmi_rx_p),
+	.hdmi_rx_scl(hdmi_rx_scl),
+	.hdmi_rx_sda(hdmi_rx_sda),
+// output
+	.ena(ena),
+	.bramaddr24b(bramaddr24b),
+	.rgb_r(rgb_r),
+	.rgb_g(rgb_g),
+	.rgb_b(rgb_b)
+)
 
-
-clk_for_hdmi clk_for_hdmi_i(
-    .clk_in1(clk100MHz),
-    .clk_out1(refclk)//,
-   // .clk_out2(vgaclk),
-   // .clk_out3(vgaclk3x)
-    );
-
-      wire hdmi_in_ddc_scl_i;
-   // wire hdmi_in_ddc_scl_io;
-    wire hdmi_in_ddc_scl_o;
-    wire hdmi_in_ddc_scl_t;
-    wire hdmi_in_ddc_sda_i;
-    //wire hdmi_in_ddc_sda_io;
-    wire hdmi_in_ddc_sda_o;
-    wire hdmi_in_ddc_sda_t;
-    
-    
-      IOBUF hdmi_in_ddc_scl_iobuf
-         (.I(hdmi_in_ddc_scl_o),
-          .IO(hdmi_rx_scl),
-          .O(hdmi_in_ddc_scl_i),
-          .T(hdmi_in_ddc_scl_t));
-    IOBUF hdmi_in_ddc_sda_iobuf
-         (.I(hdmi_in_ddc_sda_o),
-          .IO(hdmi_rx_sda),
-          .O(hdmi_in_ddc_sda_i),
-          .T(hdmi_in_ddc_sda_t));
-    
- (* mark_debug = "true" *) wire [23:0] pdata;
- (* mark_debug = "true" *) wire vde,hsync,vsync,pclk,pclk5x;
-wire pclklocked;
-
-    dvi2rgb_0 dvi2rgb (
-    .TMDS_Clk_p(hdmi_rx_clk_p),
-    .TMDS_Clk_n(hdmi_rx_clk_n),
-    .TMDS_Data_p(hdmi_rx_p),
-    .TMDS_Data_n(hdmi_rx_n),
-    .SDA_I(hdmi_in_ddc_sda_i),
-    .SDA_O(hdmi_in_ddc_sda_o),
-    .SDA_T(hdmi_in_ddc_sda_t),
-    .SCL_I(hdmi_in_ddc_scl_i),
-    .SCL_O(hdmi_in_ddc_scl_o),
-    .SCL_T(hdmi_in_ddc_scl_t),
-    
-    
-    .RefClk(refclk),
-    .aRst(1'b0),
-    // output
-    .vid_pData(pdata),
-    .vid_pVDE(vde),
-    .vid_pHSync(hsync),
-    .vid_pVSync(vsync),
-    .PixelClk(pclk),
-  //  .SerialClk(pclk5x),
-    .aPixelClkLckd(pclklocked),
-    .pRst(rstb)
-    );    
-//===================================================================
-//assign leds[6] = pclklocked;
-reg [11:0] hcnt;
-reg [11:0] vcnt;
-
-wire [11:0] hcnt_vga = hcnt / 3;
-wire [11:0] vcnt_vga = vcnt / 3;
-
- //===========
-reg [23:0] pdata_vga = 0;
- (* mark_debug = "true" *)wire[7:0] pdata8bit;
-//reg [7:0] pdata8bit = 0;
-reg pclkflash = 0;
-reg [23:0] pclkflash_t = 0;
- (* mark_debug = "true" *)wire [21:0] vga2bramaddr;
-(* mark_debug = "true" *) wire ena;
-
-wire [20:0] bramaddr24b;
-wire [7:0] rgb_r,rgb_g,rgb_b;
-rgb720to480 rgb720to480_i (
-.i_Clk(), //25.2MHz
-.i_Clk3x(pclk),
-.i_Hsync(hsync),
-.i_Vsync(vsync),
-.data24b(pdata),
-.vde(vde),
-.o_HSync(),
-.o_VSync(),
-.enout(ena),
-.bramaddr8b(vga2bramaddr),
-.data8b(),
-.o_Col_Count(), 
-.o_Row_Count(),
-.bramaddr24b(bramaddr24b),
-.rgb_r(rgb_r),
-.rgb_g(rgb_g),
-.rgb_b(rgb_b)
-);  
-
-  
-*/
 //------------------------
 // Video RAM
 //clk, wea, addra, addrb, dina,douta,doutb
@@ -458,12 +371,24 @@ byte_data data(
 	);
 
 
-wire ena_r;// = vga2bramaddr % 3 == 0;
-wire ena_g;// = vga2bramaddr % 3 == 1;
-wire ena_b;// = vga2bramaddr % 3 == 2;
+tx_memory_control tx_memory_control_i (
+	.pclk(pclk),
+	.clk125MHz(clk125MHz),
+	.txid(txid),
+	.segment_num(), // segment_num, 
+	.ena(ena),
+	.rgb_r(rgb_r),
+	.rgb_g(rgb_g),
+	.rgb_b(rgb_b),
+	.bramaddr24b(bramaddr24b),
+	.vramaddr_c(bramaddr_c),
+	//
+	// output
 
-//wire ena_rgb = vga2bramaddr % 3 == 0? ena_r: vga2bramaddr % 3 == 1? ena_g: vga2bramaddr % 3 == 2? ena_b:0;
 
+);
+
+/*
 wire [7:0] doutb_r,doutb_g,doutb_b;
 
 
@@ -523,4 +448,5 @@ bram_1080 bram_1080(
 );
 
 assign leds[7] = ena;
+*/
 endmodule
