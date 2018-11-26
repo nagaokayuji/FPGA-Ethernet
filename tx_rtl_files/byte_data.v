@@ -3,6 +3,7 @@
 	input wire start,
 	input wire advance,
 //	input wire [15:0] mydata,
+	input wire [7:0] aux, // auxiliary number
 	input wire [15:0] segment_num,
 	input wire [7:0] index_clone,
 	input wire [7:0] vramdata,
@@ -12,6 +13,7 @@
 	output reg [19:0] lastaddr = 0,
 	output reg busy = 1'b0,
 	output reg [7:0] data = 8'b0,
+	
 	output reg data_user = 1'b0,
 	output reg data_valid = 1'b0,
 	output reg data_enable = 1'b0,
@@ -28,9 +30,9 @@ parameter ymax = 180;
 
 parameter ip_header_bytes = 20;
 parameter udp_header_bytes = 8;
-parameter data_bytes = 4 + 1440; // 1444 Bytes. 
-parameter ip_total_bytes = ip_header_bytes + udp_header_bytes + data_bytes;
-parameter udp_total_bytes = udp_header_bytes + data_bytes;
+parameter data_bytes = 1444; // 1444 Bytes. 4: my protocol, 1440: payload.  
+parameter ip_total_bytes = ip_header_bytes + udp_header_bytes + data_bytes;//20 + 8 + 1444 = 1472 = x5c0
+parameter udp_total_bytes = udp_header_bytes + data_bytes; // 8 + data_bytes = 1452 = x5ac
 reg start_internal = 1'b0;
 reg [11:0] counter = 12'b0;
 
@@ -57,7 +59,7 @@ reg [31:0] ip_src_addr = 32'hc0a80140; // 192.168.1.64
 reg [31:0] ip_dst_addr = 32'hc0a80102; // 192.168.1.2
 
 // for calculating the checksum
-wire  [31:0] ip_checksum1;// = 32'h0;
+wire [31:0] ip_checksum1;// = 32'h0;
 wire [15:0] ip_checksum2;// = 16'h0;
 
 // UDP header
@@ -250,6 +252,8 @@ always @(posedge clk) begin
 		// ethernet frame check sequence (CRC)
 		// will be addedhere, overwriting these nibbles
        // 12'h462:;
+       
+       // NOTES: THESE MUST BE CHANGED.
 		12'h463: begin // == 12'd1123
 		          if (flag_max) lastaddr <= 0;
 		          else

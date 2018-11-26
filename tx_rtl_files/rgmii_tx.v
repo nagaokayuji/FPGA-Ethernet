@@ -19,9 +19,9 @@ module rgmii_tx (
     reg [6:0] second_quarter = 7'b00000000;
     reg [6:0] third_quarter = 7'b0000000;
 
-   /* (* IOB = "FORCE" *) */reg [7:0] dout = 8'b00000000;
-    /*(* IOB = "FORCE" *) */reg [1:0] doutctl = 2'b00;
-    reg [1:0] doutclk = 2'b00;
+     reg [7:0] dout = 8'b00000000;
+     reg [1:0] doutctl = 2'b00;
+     reg [1:0] doutclk = 2'b00;
     reg [7:0] hold_data;
     reg hold_valid;
     reg hold_error;

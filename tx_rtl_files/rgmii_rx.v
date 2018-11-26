@@ -100,6 +100,7 @@ module rgmii_rx (
 		data <= raw_data;
 		// check for inter-frame with matching upper and lower nibble
 		if (raw_ctl == 2'b00 && raw_data[3:0] == raw_data[7:4]) begin
+		// 10101010.... -> preambles
 			link_10mb <= 1'b0;
 			link_100mb <= 1'b0;
 			link_1000mb <= 1'b0;

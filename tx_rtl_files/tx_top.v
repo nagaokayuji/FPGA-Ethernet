@@ -28,11 +28,11 @@ module tx_top(
 	output wire hdmi_rx_txen,
 	output wire hdmi_rx_hpa
     );
-		parameter m = 3;
+//		parameter m = 3;
 	  assign hdmi_rx_hpa = 1'b1;
     assign hdmi_rx_txen = 1'b1;
 		
-wire [2:0] redundancy = {switches[5],switches[4],1'b1}; //3bit, takes value of 1,3,5,7
+wire [2:0] redundancy = {switches[5],switches[4],1'b1}; //3bit, takes values of 1,3,5,7
 reg [17:0] counter_samepacket = 18'b0;
 
 reg [26:0] max_count = 27'b0;
@@ -75,8 +75,6 @@ always @(posedge clk125MHz) begin
 		default: de_count <= 7'b0;
 	endcase
 end
-
-
 
 wire [7:0] raw_data;
 wire raw_data_user;
@@ -193,113 +191,41 @@ clocking clocking_i(
     .clk_out3(clk25MHz),
     .clk_out4(clk125MHz90)
     );
+
     
-    reg [16:0] max_counter_samepacket = 17'd30;
-
-// define speed & how fast
-always @(posedge clk125MHz) begin
-	case (switches[3:0])
-		4'b0000:	max_count <= 27'd124999999; // 1 pps
-		4'b0001:	max_count <= 27'd62499999; // 2 pps
-		4'b0010:	max_count <= 27'd12499999; // 10 pps
-		4'b0011:	max_count <= 27'd6249999; //20 pps
-		4'b0100:	max_count <= 27'd2499999; // 50 pps
-		4'b0101:	max_count <= 27'd1249999; //100 pps
-		4'b0110:	max_count <= 27'd624999; // 200pps
-		4'b0111:	max_count <= 27'd249999; //500 pps
-		4'b1000:	max_count <= 27'd124999; // 1000 pps
-		4'b1001:	max_count <= 27'd62499; //2000 pps
-		4'b1010:	max_count <= 27'd24999; //5000 pps
-		4'b1011:	max_count <= 27'd12499; //10000 pps
-		4'b1100:	max_count <= 27'd6249; //20000 pps
-		4'b1101:	max_count <= 27'd2499; //50000 pps
-		4'b1110:	max_count <= 27'd1249; //100000pps
-		default:	max_count <= 27'd30; //ok? 
-	endcase
-	    case (switches[7:6])
-        2'b00: max_counter_samepacket = 17'd30;
-        2'b01: max_counter_samepacket = 17'd1249;   // 100000 pps
-        2'b10: max_counter_samepacket = 17'd12499;  // 10000pps
-        2'b11: max_counter_samepacket = 17'd124999; // 1000pps
-     endcase
-end
-
-// sending logic
-// -> how fast??
-// added counter_samepacket,mydata(?)
-// parameter: redundancy(now: 3)
-//reg [10:0] max_counter_samepacket = 11'd30;//prev:1000. if it is too small, does not work
-
-
 (* mark_debug = "true" *) reg [2:0] send_times = 3'b0;
 reg in_sending = 1'b0;
-//wire [7:0] index_clone;
-//assign index_clone = send_times + 1'b1;
 (* mark_debug = "true" *) reg [7:0] txid = 8'b0;// 7/20 logic
 assign index_clone = txid;
 
 //===============
 // STATE CONTROL
 //=====================
-reg [3:0] state = 0;
-//localparam 
-
-always @(posedge clk125MHz) begin
-//if (my_data == 16'hffff || rstb == 1'b1) my_data <= 16'b0; // max
-
-
-if (in_sending) begin // send frame for redundancy times
-	   txid <= send_times;
-	//   startaddr <= lastaddr;
-/*
-	if (send_times == 1'b0) begin
-		start_sending <= 1'b0;
-		counter_samepacket <= 11'b0;
-	end else 
-*/
-	if (send_times == redundancy) begin
-
-		in_sending <= 1'b0; // end
-		start_sending <= 1'b0;
-		send_times <= 3'b0;
-		counter_samepacket <= 17'b0;
-	end
-	else if (counter_samepacket >= max_counter_samepacket) begin
-	   if (!busy) begin
-			start_sending <= 1'b1; // STARTSENDING
-			send_times <= send_times + 1'b1; // sending process
-			counter_samepacket <= 17'b0;
-	   end
-	end
-	else begin
-        counter_samepacket <= counter_samepacket + 1'b1;
-        start_sending <= 1'b0;
-	end
-end // end of if (in_sending)
-
-else if (!busy) begin
-	if (count == max_count) begin
-		count <= 27'b0;
-		send_times <= 1'b0;
-		counter_samepacket <= 11'b0;
-		//my_data <= my_data + 1'b1;
+send_control send_control_i (
+	.clk125MHz(clk125MHz),
+	.switches(switches),
 	
-		if (lastaddr >= 57600)// 
-			startaddr <= 0;
-		else startaddr <= lastaddr;
-		in_sending <= 1'b1;
-	end else begin
-		count <= count + 1'b1; // kokonihaitteru
-		start_sending <= 1'b0; 
-		in_sending <= 1'b0;
-	end
-end
-end
+	// output
+	.aux(), // auxiliary number
+	.segment_num(), // segment number
+	.txid(), // id
+	.start_sending(start_sending)
+);
+
 
 //========================
 // HDMI
 //========================
+
+wire pclk;
+wire ena;
+wire [23:0] bramaddr24b;
+wire [7:0] rgb_r,rgb_g,rgb_b;
 hdmi_top (
+    // clk,rst
+    .clk100MHz(clk100MHz),
+    .rstb(rstb), // active HIGH
+    // hdmi
 	.hdmi_rx_clk_n(hdmi_rx_clk_n),
 	.hdmi_rx_clk_p(hdmi_rx_clk_p),
 	.hdmi_rx_n(hdmi_rx_n),
@@ -312,9 +238,9 @@ hdmi_top (
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
 	.rgb_b(rgb_b)
-)
+);
 
-assign leds[5] = vde;
+
 wire [7:0] doutb,dina,doutb_first;
 wire [19:0] addrb,addra;
   
@@ -336,7 +262,8 @@ byte_data data(
 	.busy(busy),
 	.data(raw_data),
 	//.mydata(my_data),
-	.m(m),
+	.aux(), // auxiliary number
+	.segment_num(),
 	.index_clone(index_clone),
 	.data_user(raw_data_user),
 	.data_enable(raw_data_enable),
@@ -357,15 +284,14 @@ tx_memory_control tx_memory_control_i (
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
 	.rgb_b(rgb_b),
-	.bramaddr24b(bramaddr24b),
-	.vramaddr_c(bramaddr_c),
+	.bramaddr24b(bramaddr24b), // input
+	.vramaddr_c(vramaddr_c),
 	.count_for_bram(count_for_bram), // input
 	.count_for_bram_b(count_for_bram), // input
 	.count_for_bram_en(count_for_bram_en), // 
 
 	// output
-	.doutb_first(dtoutb_first),
-	.doutb_not_first(doutb_not_first) // txid> 1
+    .doutb(doutb)
 );
 
 endmodule

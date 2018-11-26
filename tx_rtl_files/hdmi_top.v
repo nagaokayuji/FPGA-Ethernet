@@ -1,4 +1,7 @@
 module hdmi_top(
+    input wire clk100MHz,
+    input wire rstb,
+
 	input wire hdmi_rx_clk_n,hdmi_rx_clk_p,
 	input wire [2:0] hdmi_rx_n,
 	input wire [2:0] hdmi_rx_p,
@@ -30,7 +33,7 @@ IOBUF hdmi_in_ddc_sda_iobuf
 clk_for_hdmi clk_for_hdmi_i(
 	.clk_in1(clk100MHz),
 	.clk_out1(refclk)
-)
+);
 
  (* mark_debug = "true" *) wire [23:0] pdata;
  (* mark_debug = "true" *) wire vde,hsync,vsync,pclk,pclk5x;

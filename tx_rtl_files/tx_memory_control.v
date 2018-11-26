@@ -18,12 +18,15 @@ module tx_memory_control(
 	input wire count_for_bram_en,
 
 	// output
-	output wire [7:0] doutb_first,
-	output wire [7:0] doutb_not_first // txid > 1
+	//output wire [7:0] doutb_first,
+	//output wire [7:0] doutb_not_first // txid > 1
+	output wire [7:0] doutb
 );
 
 
 wire [7:0] doutb_r,doutb_g,doutb_b;
+
+// vramaddr_c : selector. r,g,b.
 assign doutb_first = vramaddr_c == 0? 
 			doutb_r: vramaddr_c==2? 
 				doutb_g:vramaddr_c==1?
