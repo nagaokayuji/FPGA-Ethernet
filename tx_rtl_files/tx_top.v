@@ -27,26 +27,12 @@ module tx_top(
 	inout wire hdmi_rx_sda,
 	output wire hdmi_rx_txen,
 	output wire hdmi_rx_hpa
-	//output wire hdmi_rx_hpa
-	
-	//output wire hdmi_rx_txen
     );
 		parameter m = 3;
 	  assign hdmi_rx_hpa = 1'b1;
     assign hdmi_rx_txen = 1'b1;
 		
-
-    /*
-    assign hdmi_rx_hpa = 1'b1;
-    //assign hdmi_rx_txen = 1'b1;
-    //assign hdmi_rx_scl = 1'b1;
-    assign hdmi_rx_sda = 1'b1;
-    */
-//reg [2:0] redundancy;
 wire [2:0] redundancy = {switches[5],switches[4],1'b1}; //3bit, takes value of 1,3,5,7
-
-//parameter redundancy = 3'b101; // send same packets for x times
-//reg [15:0] my_data = 16'h0;
 reg [17:0] counter_samepacket = 18'b0;
 
 reg [26:0] max_count = 27'b0;
@@ -69,8 +55,6 @@ wire clk25MHz;
 
 assign leds[4] = rstb;
 // wire clkfb;
-
-
 
 always @(posedge clk125MHz) begin
 	if (de_count == 7'b0)
@@ -330,14 +314,7 @@ hdmi_top (
 	.rgb_b(rgb_b)
 )
 
-//------------------------
-// Video RAM
-//clk, wea, addra, addrb, dina,douta,doutb
-//========================
-
 assign leds[5] = vde;
-wire wea = 0; // now
-
 wire [7:0] doutb,dina,doutb_first;
 wire [19:0] addrb,addra;
   
@@ -365,7 +342,7 @@ byte_data data(
 	.data_enable(raw_data_enable),
 	.data_valid(raw_data_valid),
 	.almost_sent(almost_sent),
-	.count_for_bram(count_for_bram),
+	.count_for_bram(count_for_bram), // output
 	.count_for_bram_b(count_for_bram_b),
 	.count_for_bram_en(count_for_bram_en)
 	);
@@ -375,78 +352,20 @@ tx_memory_control tx_memory_control_i (
 	.pclk(pclk),
 	.clk125MHz(clk125MHz),
 	.txid(txid),
-	.segment_num(), // segment_num, 
+	.segment_num(), // segment_num,  8bits
 	.ena(ena),
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
 	.rgb_b(rgb_b),
 	.bramaddr24b(bramaddr24b),
 	.vramaddr_c(bramaddr_c),
-	//
+	.count_for_bram(count_for_bram), // input
+	.count_for_bram_b(count_for_bram), // input
+	.count_for_bram_en(count_for_bram_en), // 
+
 	// output
-
-
+	.doutb_first(dtoutb_first),
+	.doutb_not_first(doutb_not_first) // txid> 1
 );
 
-/*
-wire [7:0] doutb_r,doutb_g,doutb_b;
-
-
-assign doutb_first = vramaddr_c == 0? doutb_r: vramaddr_c==2? doutb_g:vramaddr_c==1? doutb_b:0; // ID == 1
-vram vram_r(
-    .clka(pclk),
-.clkb(clk125MHz),
-.wea(ena),
-.addra(bramaddr24b),
-.addrb(addrb),
-.dina(rgb_r),//in:5bits
-.douta(),
-.dinb(1'b0),
-.web(1'b0),
-.doutb(doutb_r)
-);
-
-vram vram_g(
-    .clka(pclk),
-.clkb(clk125MHz),
-.wea(ena),
-.addra(bramaddr24b),
-.addrb(addrb),
-.dina(rgb_g),//in:5bits
-.douta(),
-.dinb(1'b0),
-.web(1'b0),
-.doutb(doutb_g)//5bits
-);
-
-vram vram_b(
-    .clka(pclk),
-.clkb(clk125MHz),
-.wea(ena),
-.addra(bramaddr24b),
-.addrb(addrb),
-.dina(rgb_b),//in:5bits
-.douta(),
-.dinb(1'b0),
-.web(1'b0),
-.doutb(doutb_b)//5bits
-);
-
-// txid >= 2 
-wire[7:0]  doutb_not_first;
-assign doutb = txid==1? doutb_first: doutb_not_first;
-wire wea_bram1080 = (txid == 1) && count_for_bram_en;
-
-bram_1080 bram_1080(
-.clka(clk125MHz),
-.wea(wea_bram1080),
-.addra(count_for_bram),
-.dina(doutb_first),
-.clkb(clk125MHz),
-.addrb(count_for_bram_b),
-.doutb(doutb_not_first)
-);
-
-assign leds[7] = ena;
-*/
 endmodule

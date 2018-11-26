@@ -8,7 +8,7 @@ module hdmi_top(
 	output wire ena,
 	output wire [23:0] bramaddr24b,
 	output wire [7:0] rgb_r,rgb_g,rgb_b
-)
+);
 wire refclk;
 wire hdmi_in_ddc_scl_i;
 wire hdmi_in_ddc_scl_o;

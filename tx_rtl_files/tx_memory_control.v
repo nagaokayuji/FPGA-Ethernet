@@ -6,18 +6,20 @@ module tx_memory_control(
 	input wire pclk, 	// pixel clock
 	input wire clk125MHz, // ethernet tx clock
 	input wire txid,  // ID
-	input wire segment_num, // segment_number. add next
+	input wire [7:0] segment_num, // segment_number. add next
 	input wire ena,   // en signal for VRAMs A port
 	input wire [7:0] rgb_r, // from hdmi_top
 	input wire [7:0] rgb_g, // from hdmi_top
 	input wire [7:0] rgb_b, // from hdmi_top
-	input wire bramaddr24b,
-	input wire vramaddr_c, // from byte_data
+	input wire [23:0] bramaddr24b,
+	input wire [2:0] vramaddr_c, // from byte_data
+	input wire [12:0] count_for_bram,
+	input wire [12:0] count_for_bram_b,
+	input wire count_for_bram_en,
 
 	// output
-
 	output wire [7:0] doutb_first,
-	output wire [7:0]  doutb_not_first // txid > 1
+	output wire [7:0] doutb_not_first // txid > 1
 );
 
 
