@@ -17,7 +17,6 @@
 	output reg data_user = 1'b0,
 	output reg data_valid = 1'b0,
 	output reg data_enable = 1'b0,
-	output reg almost_sent = 1'b0,
 	output reg [12:0] count_for_bram = 0,
 	output reg [12:0] count_for_bram_b=0,
 	output reg count_for_bram_en = 0
@@ -167,7 +166,6 @@ always @(posedge clk) begin
 				end
 		12'h1: begin
 				//busy <= 1'b1;
-				almost_sent <= 1'b0;
 						data <= eth_dst_mac[47:40];
 						data_valid <= 1'b1;
 						end
@@ -265,7 +263,6 @@ always @(posedge clk) begin
 				//lastaddr <= vramaddr - 1; 
 				data_valid <= 1'b0;
 				data_user <= 1'b0;
-				almost_sent <= 1'b1;
 				end
 
 /*
@@ -280,7 +277,6 @@ always @(posedge clk) begin
  */
  
 		12'h479: begin// == 12'd1145
-				almost_sent <= 1'b1;
 				counter <= 12'b0;// here.
 				busy <= 1'b0;
 				end

@@ -83,7 +83,6 @@ wire raw_data_enable;
 
 //reg [7:0] index_clone;
 wire [7:0] index_clone;
-wire almost_sent;
 wire busy;
 reg [19:0] startaddr = 0;
 wire [19:0] lastaddr;
@@ -204,6 +203,7 @@ assign index_clone = txid;
 send_control send_control_i (
 	.clk125MHz(clk125MHz),
 	.switches(switches),
+	.busy(busy),
 	
 	// output
 	.aux(), // auxiliary number
@@ -268,7 +268,6 @@ byte_data data(
 	.data_user(raw_data_user),
 	.data_enable(raw_data_enable),
 	.data_valid(raw_data_valid),
-	.almost_sent(almost_sent),
 	.count_for_bram(count_for_bram), // output
 	.count_for_bram_b(count_for_bram_b),
 	.count_for_bram_en(count_for_bram_en)

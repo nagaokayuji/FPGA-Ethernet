@@ -5,12 +5,13 @@ control output signals for byte_data
 module send_control(
 	input wire clk125MHz,
 	input wire [7:0] switches, // [7:6] : fragment, [5:4]: redundancy, [3:0]: speed
+	input wire busy,
 
 	// output
-	output wire [7:0] aux,
-	output wire [15:0] segment_num,
-	output wire [7:0] txid,
-	output wire start_sending
+	output reg [7:0] aux,
+	output reg [15:0] segment_num,
+	output reg [7:0] txid,
+	output reg start_sending
 );
 
 wire [15:0] segment_num_max; // switches[7:6]
@@ -24,7 +25,13 @@ max_count_gen max_count_gen_i (
 );
 
 reg [3:0] state = 0;
+parameter in_sendingnostate = 1;
+parameter not_busy = 2;
 
+reg [27:0] count=0, counter_samepacket = 0;
+
+reg [3:0] send_times = 0;
+reg in_sending = 0;
 
 always @(posedge clk125MHz) begin
 if (in_sending) begin // send frame for redundancy times
@@ -36,7 +43,7 @@ if (in_sending) begin // send frame for redundancy times
 		send_times <= 3'b0;
 		counter_samepacket <= 17'b0;
 	end
-	else if (counter_samepacket >= max_counter_samepacket) begin
+	else if (counter_samepacket >= max_count) begin
 	   if (!busy) begin
 			start_sending <= 1'b1; // STARTSENDING
 			send_times <= send_times + 1'b1; // sending process
@@ -56,9 +63,6 @@ else if (!busy) begin
 		counter_samepacket <= 11'b0;
 		//my_data <= my_data + 1'b1;
 	
-		if (lastaddr >= 57600)// 
-			startaddr <= 0;
-		else startaddr <= lastaddr;
 		in_sending <= 1'b1;
 	end else begin
 		count <= count + 1'b1; // kokonihaitteru
