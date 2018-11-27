@@ -29,7 +29,7 @@ parameter ymax = 180;
 
 parameter ip_header_bytes = 20;
 parameter udp_header_bytes = 8;
-parameter data_bytes = 1444; // 1444 Bytes. 4: my protocol, 1440: payload.  
+parameter data_bytes = 1440; // 1444 Bytes. 4: my protocol, 1440: payload.  
 parameter ip_total_bytes = ip_header_bytes + udp_header_bytes + data_bytes;//20 + 8 + 1444 = 1472 = x5c0
 parameter udp_total_bytes = udp_header_bytes + data_bytes; // 8 + data_bytes = 1452 = x5ac
 reg start_internal = 1'b0;
@@ -131,6 +131,7 @@ end
 always @(posedge clk) begin
 	// update the counter
 	if (start == 1'b1) begin
+		index_clone_rised <= index_clone;
 		start_internal <= 1'b1;
 		busy <= 1'b1;
 	end
@@ -224,10 +225,26 @@ always @(posedge clk) begin
 		// source port 4096
 		//12'h23: data <= udp_src_port[15:8];
 		// WRITING CLONE ID HERE
+		/*
 		12'h23: data <= index_clone;//udp_src_port[7:0] // <<prev - 1>>
 		12'h24: data <= startaddr[19:16];
 		12'h25: data <= startaddr[15:8];
 		12'h26: data <= startaddr[7:0];
+		*/
+
+		// ==============11/26 NEW 
+		12'h23: data <= segment_num[15:8];
+		12'h24: data <= segment_num[7:0];
+		12'h25: data <= index_clone_rised;
+		12'h26: data <= aux;
+		//============================
+		//=========
+		// NOTES:
+		// 	startaddr MUST be added data, and SHIFT signals
+		//============
+		//=============================
+
+
 		// UDP length (header + data) 24 octets
 		12'h27: data <= udp_length[15:8];//0x04
 		12'h28: data <= udp_length[7:0];//0x40
@@ -259,6 +276,7 @@ always @(posedge clk) begin
 		          lastaddr <= vramaddr - 1'b1;
 		         else
 		          lastaddr <= 0;
+
 							
 				//lastaddr <= vramaddr - 1; 
 				data_valid <= 1'b0;

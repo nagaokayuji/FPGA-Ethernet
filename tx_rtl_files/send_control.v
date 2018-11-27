@@ -8,30 +8,146 @@ module send_control(
 	input wire busy,
 
 	// output
-	output reg [7:0] aux,
-	output reg [15:0] segment_num,
-	output reg [7:0] txid,
-	output reg start_sending
+	output reg [15:0] segment_num = 0,
+	output reg [7:0] txid = 1,
+	output reg [7:0] aux = 0,
+	output reg start_sending = 0
 );
 
 wire [15:0] segment_num_max; // switches[7:6]
 wire [7:0] redundancy; // switches[5:4]
 wire [27:0] max_count; // calculated by switches[3:0]
 max_count_gen max_count_gen_i (
-	.switches(switches[3:0]), //input
+	.switches(switches[7:0]), //input
 	.max_count(max_count), // output
 	.segment_num_max(segment_num_max), // output
 	.redundancy(redundancy) // output
 );
-
-reg [3:0] state = 0;
-parameter in_sendingnostate = 1;
-parameter not_busy = 2;
+parameter segment_num_init = 0;
 
 reg [27:0] count=0, counter_samepacket = 0;
 
 reg [3:0] send_times = 0;
 reg in_sending = 0;
+
+// PSEUDOCODE
+/*
+while (true) {
+	for (id in 1..n) {
+		if (id == 1) {
+			for (segment_num in 0...m) {
+				data = DATA_FROM_VIDEO_RAM;
+				RAM[segment_num] = data;
+				send_frame(data);
+			}
+		}
+		else { 			//===== id != 2
+			for (segment_num in 0...m) {
+				data = RAM[segment_num];
+				send_frame(data);
+			}
+		}
+	}
+	aux++;
+}
+
+*/
+
+
+
+reg [3:0] state = 0;
+parameter state_wait = 0;
+parameter state_id_1 = 1;
+parameter state_id_not_1 = 2;
+parameter state_id_1_sent = 3;
+parameter state_id_not_1_sent = 4;
+
+wire timer_done = (count == max_count);
+
+always @(posedge clk125MHz) begin
+	if (timer_done) begin
+		count <= 0;
+	end
+	else
+	if (!busy) begin
+		count <= count + 1'b1;
+		counter_samepacket <= counter_samepacket + 1'b1;
+	end else begin
+		count <= 0;
+		counter_samepacket <= 0;
+	end
+
+	case (state)
+		state_wait: begin 
+			state <= state_id_1;
+			txid <= 1'b1;
+			segment_num <= segment_num_init;
+			aux <= 1'b0;
+		end
+
+		state_id_1: begin
+			if (timer_done) begin
+				txid <= 1'b1;
+				start_sending <= 1'b1;
+				state <= state_id_1_sent;
+			end 
+			else begin  //============= NOT timer_done
+				txid <= txid;
+				aux <= aux;
+				segment_num <= segment_num;
+				start_sending <= 1'b0;
+				end
+		end // end of state_id_1
+		
+		state_id_1_sent: begin
+			start_sending <= 1'b0;
+
+			if (segment_num == segment_num_max - 1) begin
+				state <= state_id_not_1;
+				segment_num <= segment_num_init;
+				txid <= txid + 1'b1;
+				aux <= aux;
+			end
+			else begin
+				state <= state_id_1;
+				segment_num <= segment_num + 1'b1;
+			end
+		end // end off state_id_1_sent
+
+		state_id_not_1: begin
+			if (timer_done) begin
+				start_sending <= 1'b1;
+				state <= state_id_not_1_sent;
+			end
+			else begin
+				start_sending <= 1'b0;
+			end
+		end
+
+		state_id_not_1_sent: begin
+			if (segment_num == segment_num_max - 1) begin
+				if (txid == redundancy) begin
+					state <= state_id_1;
+					aux <= aux + 1'b1;
+					segment_num <= segment_num_init;
+					txid <= 1'b1;
+				end
+				else begin
+					txid <= txid + 1'b1;
+					segment_num <= segment_num_init;
+					state <= state_id_not_1;
+				end
+			end
+			else begin
+				state <= state_id_not_1;
+				segment_num <= segment_num + 1'b1;
+			end
+		end
+		
+	endcase
+end
+
+/*
 
 always @(posedge clk125MHz) begin
 if (in_sending) begin // send frame for redundancy times
@@ -71,7 +187,7 @@ else if (!busy) begin
 	end
 end
 end
-
+*/
 
 
 

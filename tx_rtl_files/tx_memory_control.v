@@ -16,12 +16,25 @@ module tx_memory_control(
 	input wire [12:0] count_for_bram,
 	input wire [12:0] count_for_bram_b,
 	input wire count_for_bram_en,
+	input wire data_user, // use for make startaddr. negedge.
+	input wire [23:0] lastaddr,
 
 	// output
 	//output wire [7:0] doutb_first,
 	//output wire [7:0] doutb_not_first // txid > 1
+	output reg [23:0] startaddr = 0,
 	output wire [7:0] doutb
 );
+
+
+reg [1:0] data_user_reg = 2'b0;
+wire data_user_neg = (data_user_reg == 2'b10);
+always @(posedge clk125MHz) begin
+	data_user_reg <= {data_user_reg[0] ,data_user};
+	if (data_user_neg) begin
+		startaddr <= lastaddr;
+	end
+end
 
 
 wire [7:0] doutb_r,doutb_g,doutb_b;
