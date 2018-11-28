@@ -1,3 +1,9 @@
+/*
+//=================
+//  now only 1gbps to reduce timing error
+//==================
+*/
+
 module rgmii_tx (
     input wire clk,
     input wire clk90,
@@ -194,8 +200,8 @@ ODDR #(.DDR_CLK_EDGE("SAME_EDGE"),
     .CE(1'b1),
     .R(1'b0),
     .S(1'b0),
-    .D1(doutclk[0]),
-    .D2(doutclk[1])
+    .D1(1'b1),
+    .D2(1'b0)
     );
 
 always @(posedge clk) begin

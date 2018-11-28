@@ -269,7 +269,7 @@ always @(posedge clk) begin
        // 12'h462:;
        
        // NOTES: THESE MUST BE CHANGED.
-		12'h463: begin // == 12'd1123
+		12'h5cb: begin // == 12'd1123
 		          if (flag_max) lastaddr <= 0;
 		          else
 		         if (vramaddr > 0)
@@ -294,7 +294,7 @@ always @(posedge clk) begin
 							----------------------------------------------------------------------------------
  */
  
-		12'h479: begin// == 12'd1145
+		12'h5e1: begin// == 12'd1145
 				counter <= 12'b0;// here.
 				busy <= 1'b0;
 				end

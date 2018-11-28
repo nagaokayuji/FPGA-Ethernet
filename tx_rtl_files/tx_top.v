@@ -33,7 +33,6 @@ reg [1:0] speed = 2'b11;
 reg adv_data = 1'b0;
 wire CLK100MHz_buffered;
 reg [6:0] de_count = 7'b0;
-wire start_sending;
 reg [24:0] reset_counter = 25'b0;
 reg [5:0] debug = 6'b0;
 reg phy_ready = 1'b0;
@@ -153,24 +152,21 @@ clocking clocking_i(
 	.clk_out4(clk125MHz90)
 );
 
-
-(* mark_debug = "true" *) reg [2:0] send_times = 3'b0;
-reg in_sending = 1'b0;
-(* mark_debug = "true" *) reg [7:0] txid = 8'b0;// 7/20 logic
-assign index_clone = txid;
-
 //===============
 // STATE CONTROL
 //=====================
+wire [15:0] segment_num;
+wire [7:0] aux,txid;
+wire start_sending;
 send_control send_control_i (
 	.clk125MHz(clk125MHz),
 	.switches(switches),
 	.busy(busy),
 	
 	// output
-	.aux(), // auxiliary number
-	.segment_num(), // segment number
-	.txid(), // id
+	.segment_num_inter(segment_num), // segment number
+	.txid_inter(txid), // id
+	.aux(aux), // auxiliary number
 	.start_sending(start_sending)
 );
 
@@ -226,9 +222,9 @@ byte_data data(
 	.busy(busy),
 	.data(raw_data),
 	//.mydata(my_data),
-	.aux(), // auxiliary number
-	.segment_num(),
-	.index_clone(index_clone),
+	.aux(aux), // auxiliary number
+	.segment_num(segment_num),
+	.index_clone(txid),
 	.data_user(raw_data_user),
 	.data_enable(raw_data_enable),
 	.data_valid(raw_data_valid),
@@ -242,17 +238,18 @@ tx_memory_control tx_memory_control_i (
 	.pclk(pclk),
 	.clk125MHz(clk125MHz),
 	.txid(txid),
-	.segment_num(), // segment_num,  8bits
+	.segment_num(segment_num), // segment_num,  8bits
 	.ena(ena),
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
 	.rgb_b(rgb_b),
 	.bramaddr24b(bramaddr24b), // input
+	.vramaddr(addrb),
 	.vramaddr_c(vramaddr_c),
 	.count_for_bram(count_for_bram), // input
 	.count_for_bram_b(count_for_bram), // input
 	.count_for_bram_en(count_for_bram_en), // 
-	.data_user(data_user),
+	.data_user(raw_data_user),
 	.lastaddr(lastaddr),
 
 	// output

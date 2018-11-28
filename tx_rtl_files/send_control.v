@@ -1,5 +1,7 @@
 /*
 control output signals for byte_data
+
+
 */
 
 module send_control(
@@ -8,12 +10,13 @@ module send_control(
 	input wire busy,
 
 	// output
-	output reg [15:0] segment_num = 0,
-	output reg [7:0] txid = 1,
+	output reg [15:0] segment_num_inter = 0,
+	output reg [7:0] txid_inter = 1,
 	output reg [7:0] aux = 0,
 	output reg start_sending = 0
 );
-
+reg [15:0] segment_num = 0;
+reg [7:0] txid = 1;
 wire [15:0] segment_num_max; // switches[7:6]
 wire [7:0] redundancy; // switches[5:4]
 wire [27:0] max_count; // calculated by switches[3:0]
@@ -27,7 +30,6 @@ parameter segment_num_init = 0;
 
 reg [27:0] count=0, counter_samepacket = 0;
 
-reg [3:0] send_times = 0;
 reg in_sending = 0;
 
 // PSEUDOCODE
@@ -87,6 +89,8 @@ always @(posedge clk125MHz) begin
 
 		state_id_1: begin
 			if (timer_done) begin
+				segment_num_inter <= segment_num;
+				txid_inter <= 1'b1;
 				txid <= 1'b1;
 				start_sending <= 1'b1;
 				state <= state_id_1_sent;
@@ -116,6 +120,8 @@ always @(posedge clk125MHz) begin
 
 		state_id_not_1: begin
 			if (timer_done) begin
+				segment_num_inter <= segment_num;
+				txid_inter <= txid;
 				start_sending <= 1'b1;
 				state <= state_id_not_1_sent;
 			end
@@ -125,6 +131,7 @@ always @(posedge clk125MHz) begin
 		end
 
 		state_id_not_1_sent: begin
+			start_sending <= 1'b0;
 			if (segment_num == segment_num_max - 1) begin
 				if (txid == redundancy) begin
 					state <= state_id_1;
