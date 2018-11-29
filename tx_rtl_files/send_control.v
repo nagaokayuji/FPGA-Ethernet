@@ -6,15 +6,17 @@ control output signals for byte_data
 
 module send_control(
 	input wire clk125MHz,
+	input wire RST,
 	input wire [7:0] switches, // [7:6] : fragment, [5:4]: redundancy, [3:0]: speed
 	input wire busy,
 
 	// output
 	output reg [15:0] segment_num_inter = 0,
 	output reg [7:0] txid_inter = 1,
-	output reg [7:0] aux = 0,
+	output reg [7:0] aux_inter = 0,
 	output reg start_sending = 0
 );
+reg [7:0] aux = 0;
 reg [15:0] segment_num = 0;
 reg [7:0] txid = 1;
 wire [15:0] segment_num_max; // switches[7:6]
@@ -67,91 +69,104 @@ parameter state_id_not_1_sent = 4;
 wire timer_done = (count == max_count);
 
 always @(posedge clk125MHz) begin
-	if (timer_done) begin
-		count <= 0;
-	end
-	else
-	if (!busy) begin
-		count <= count + 1'b1;
-		counter_samepacket <= counter_samepacket + 1'b1;
+	if (RST) begin
+		state = 0;
+		segment_num = 0;
+		txid = 0;
+		count = 0;
+		in_sending = 0;
+		segment_num_inter = 0;
+		txid_inter = 0;
+		aux = 0;
 	end else begin
-		count <= 0;
-		counter_samepacket <= 0;
-	end
-
-	case (state)
-		state_wait: begin 
-			state <= state_id_1;
-			txid <= 1'b1;
-			segment_num <= segment_num_init;
-			aux <= 1'b0;
+		if (timer_done) begin
+			count <= 0;
+		end
+		else
+		if (!busy) begin
+			count <= count + 1'b1;
+			counter_samepacket <= counter_samepacket + 1'b1;
+		end else begin
+			count <= 0;
+			counter_samepacket <= 0;
 		end
 
-		state_id_1: begin
-			if (timer_done) begin
-				segment_num_inter <= segment_num;
-				txid_inter <= 1'b1;
-				txid <= 1'b1;
-				start_sending <= 1'b1;
-				state <= state_id_1_sent;
-			end 
-			else begin  //============= NOT timer_done
-				txid <= txid;
-				aux <= aux;
-				segment_num <= segment_num;
-				start_sending <= 1'b0;
-				end
-		end // end of state_id_1
-		
-		state_id_1_sent: begin
-			start_sending <= 1'b0;
-
-			if (segment_num == segment_num_max - 1) begin
-				state <= state_id_not_1;
-				segment_num <= segment_num_init;
-				txid <= txid + 1'b1;
-				aux <= aux;
-			end
-			else begin
+		case (state)
+			state_wait: begin 
 				state <= state_id_1;
-				segment_num <= segment_num + 1'b1;
+				txid <= 1'b1;
+				segment_num <= segment_num_init;
+				aux <= 1'b0;
 			end
-		end // end off state_id_1_sent
 
-		state_id_not_1: begin
-			if (timer_done) begin
-				segment_num_inter <= segment_num;
-				txid_inter <= txid;
-				start_sending <= 1'b1;
-				state <= state_id_not_1_sent;
-			end
-			else begin
-				start_sending <= 1'b0;
-			end
-		end
-
-		state_id_not_1_sent: begin
-			start_sending <= 1'b0;
-			if (segment_num == segment_num_max - 1) begin
-				if (txid == redundancy) begin
-					state <= state_id_1;
-					aux <= aux + 1'b1;
-					segment_num <= segment_num_init;
+			state_id_1: begin
+				if (timer_done) begin
+					segment_num_inter <= segment_num;
+					txid_inter <= 1'b1;
+					aux_inter <= aux;
 					txid <= 1'b1;
+					start_sending <= 1'b1;
+					state <= state_id_1_sent;
+				end 
+				else begin  //============= NOT timer_done
+					txid <= txid;
+					aux <= aux;
+					segment_num <= segment_num;
+					start_sending <= 1'b0;
+					end
+			end // end of state_id_1
+			
+			state_id_1_sent: begin
+				start_sending <= 1'b0;
+
+				if (segment_num == segment_num_max - 1) begin
+					state <= state_id_not_1;
+					segment_num <= segment_num_init;
+					txid <= txid + 1'b1;
+					aux <= aux;
 				end
 				else begin
-					txid <= txid + 1'b1;
-					segment_num <= segment_num_init;
-					state <= state_id_not_1;
+					state <= state_id_1;
+					segment_num <= segment_num + 1'b1;
+				end
+			end // end off state_id_1_sent
+
+			state_id_not_1: begin
+				if (timer_done) begin
+					segment_num_inter <= segment_num;
+					txid_inter <= txid;
+					start_sending <= 1'b1;
+					aux_inter <= aux;
+					state <= state_id_not_1_sent;
+				end
+				else begin
+					start_sending <= 1'b0;
 				end
 			end
-			else begin
-				state <= state_id_not_1;
-				segment_num <= segment_num + 1'b1;
+
+			state_id_not_1_sent: begin
+				start_sending <= 1'b0;
+				if (segment_num == segment_num_max - 1) begin
+					if (txid == redundancy) begin
+						state <= state_id_1;
+						aux <= aux + 1'b1;
+						segment_num <= segment_num_init;
+						txid <= 1'b1;
+					end
+					else begin
+						txid <= txid + 1'b1;
+						segment_num <= segment_num_init;
+						state <= state_id_not_1;
+					end
+				end
+				else begin
+					state <= state_id_not_1;
+					segment_num <= segment_num + 1'b1;
+				end
 			end
-		end
-		
-	endcase
+			
+		endcase
+	end
 end
 
 /*

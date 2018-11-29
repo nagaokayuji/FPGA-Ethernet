@@ -160,13 +160,14 @@ wire [7:0] aux,txid;
 wire start_sending;
 send_control send_control_i (
 	.clk125MHz(clk125MHz),
+	.RST(rstb),
 	.switches(switches),
 	.busy(busy),
 	
 	// output
 	.segment_num_inter(segment_num), // segment number
 	.txid_inter(txid), // id
-	.aux(aux), // auxiliary number
+	.aux_inter(aux), // auxiliary number
 	.start_sending(start_sending)
 );
 

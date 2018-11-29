@@ -5,13 +5,14 @@
 
 module tb_send_control;
 
-reg clk,busy;
+reg clk,busy,rst;
 wire [15:0] segment_num;
 wire [7:0] txid,txid_inter,aux;
 wire start_sending;
 
 send_control uut(
 	.clk125MHz(clk),
+	.RST(rst),
 	.switches(8'b01011111),
 	.busy(busy),
 
@@ -29,6 +30,7 @@ end
 initial begin
 	clk = 0;
 	busy = 0;
+	rst=0;
 	#30000;
 	$finish;
 end

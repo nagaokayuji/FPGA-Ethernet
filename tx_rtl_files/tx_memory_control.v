@@ -2,7 +2,7 @@
 ensure data correctly
 */
 
-module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 100)
+module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 500)
 (
 	input wire pclk, 	// pixel clock
 	input wire clk125MHz, // ethernet tx clock

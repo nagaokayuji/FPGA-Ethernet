@@ -233,10 +233,10 @@ always @(posedge clk) begin
 		*/
 
 		// ==============11/26 NEW 
-		12'h23: data <= segment_num[15:8];
-		12'h24: data <= segment_num[7:0];
-		12'h25: data <= index_clone_rised;
-		12'h26: data <= aux;
+		12'h23: data <= segment_num[15:8]; // UDP SOURCE [15:8]
+		12'h24: data <= segment_num[7:0]; // UDP SOURCE [7:0]
+		12'h25: data <= index_clone_rised; // UDP DST [15:8]
+		12'h26: data <= aux; // UDP DST[7:0]
 		//============================
 		//=========
 		// NOTES:
@@ -246,8 +246,8 @@ always @(posedge clk) begin
 
 
 		// UDP length (header + data) 24 octets
-		12'h27: data <= udp_length[15:8];//0x04
-		12'h28: data <= udp_length[7:0];//0x40
+		12'h27: data <= udp_length[15:8];//0
+		12'h28: data <= udp_length[7:0];//0
 		// udp checksum not suppled
 		12'h29: data <= udp_checksum[15:8];//00
 		12'h2a: data <= udp_checksum[7:0];//00
