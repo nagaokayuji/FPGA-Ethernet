@@ -1,8 +1,9 @@
 /*
 ensure data correctly
+outputs after 3 clocks
 */
 
-module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 500)
+module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 (
 	input wire pclk, 	// pixel clock
 	input wire clk125MHz, // ethernet tx clock
@@ -95,31 +96,15 @@ vram vram_b(
 
 // txid >= 2 
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
-
-/*
-//=====================
-//-- segment_number
-//=====================
-ID==1 -> ok.
-
-if (segment_num == i)
-	wea_bram_not_one[i] = 1'b1;
-else
-	wea_bram_not_one[i] = 1'b0;
-*/
-
-
-
 genvar i;
 wire [7:0] doutb_not_one[SEGMENT_NUMBER_MAX - 1 : 0];
 wire [0:0] wea_bram_not_one[SEGMENT_NUMBER_MAX - 1 : 0]; 
 wire [7:0]  doutb_muxed = doutb_not_one_reg[segment_num];
-assign doutb = txid==1? doutb_first_reg_reg: doutb_muxed;
+assign doutb = txid==1? doutb_first_reg: doutb_muxed;
 reg [7:0] doutb_not_one_reg[SEGMENT_NUMBER_MAX - 1 : 0];
 reg [0:0] wea_bram_not_one_reg[SEGMENT_NUMBER_MAX - 1: 0];
 reg [12:0] count_for_bram_reg;
 reg [7:0] doutb_first_reg;
-reg [7:0] doutb_first_reg_reg;
 
 integer m;
 always @(posedge clk125MHz) begin
@@ -132,7 +117,6 @@ always @(posedge clk125MHz) begin
 	end
 	count_for_bram_reg <= count_for_bram;
 	doutb_first_reg <= doutb_first;
-	doutb_first_reg_reg <= doutb_first_reg;
 	//doutb_reg <= doutb;
 	
 
@@ -144,7 +128,7 @@ for (i=0; i < SEGMENT_NUMBER_MAX; i = i + 1) begin
 		.clka(clk125MHz),
 		.wea(wea_bram_not_one_reg[i]),
 		.addra(count_for_bram_reg),
-		.dina(doutb_first_reg_reg),
+		.dina(doutb_first_reg),
 		.clkb(clk125MHz),
 		.addrb(count_for_bram_b),
 		.doutb(doutb_not_one[i])
@@ -162,8 +146,6 @@ input wea;
 		dmux = 1'b0;
 		end
 endfunction
-
-
 
 genvar k;
 generate
