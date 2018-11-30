@@ -14,13 +14,13 @@ module send_control(
 	output reg [15:0] segment_num_inter = 0,
 	output reg [7:0] txid_inter = 1,
 	output reg [7:0] aux_inter = 0,
-	output reg start_sending = 0
+	output reg start_sending = 0,
+	output wire [7:0] redundancy // switches[5:4]
 );
 reg [7:0] aux = 0;
 reg [15:0] segment_num = 0;
 reg [7:0] txid = 1;
 wire [15:0] segment_num_max; // switches[7:6]
-wire [7:0] redundancy; // switches[5:4]
 wire [27:0] max_count; // calculated by switches[3:0]
 max_count_gen max_count_gen_i (
 	.switches(switches[7:0]), //input

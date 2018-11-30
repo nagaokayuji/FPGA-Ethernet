@@ -26,9 +26,9 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 500)
 	//output wire [7:0] doutb_first,
 	//output wire [7:0] doutb_not_first // txid > 1
 	output reg [23:0] startaddr = 0,
+	//output reg [7:0] doutb_reg
 	output wire [7:0] doutb
 );
-
 
 reg [1:0] data_user_reg = 2'b0;
 wire data_user_neg = (data_user_reg == 2'b10);
@@ -96,16 +96,6 @@ vram vram_b(
 // txid >= 2 
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
 
-bram_1080 bram_1080(
-	.clka(clk125MHz),
-	.wea(wea_bram1080),
-	.addra(count_for_bram),
-	.dina(doutb_first),
-	.clkb(clk125MHz),
-	.addrb(count_for_bram_b),
-	.doutb(doutb_not_first)
-);
-
 /*
 //=====================
 //-- segment_number
@@ -123,17 +113,38 @@ else
 genvar i;
 wire [7:0] doutb_not_one[SEGMENT_NUMBER_MAX - 1 : 0];
 wire [0:0] wea_bram_not_one[SEGMENT_NUMBER_MAX - 1 : 0]; 
-wire [7:0]  doutb_muxed = doutb_not_one[segment_num];
-assign doutb = txid==1? doutb_first: doutb_muxed;
+wire [7:0]  doutb_muxed = doutb_not_one_reg[segment_num];
+assign doutb = txid==1? doutb_first_reg_reg: doutb_muxed;
+reg [7:0] doutb_not_one_reg[SEGMENT_NUMBER_MAX - 1 : 0];
+reg [0:0] wea_bram_not_one_reg[SEGMENT_NUMBER_MAX - 1: 0];
+reg [12:0] count_for_bram_reg;
+reg [7:0] doutb_first_reg;
+reg [7:0] doutb_first_reg_reg;
 
+integer m;
+always @(posedge clk125MHz) begin
+/*
+	wea,addra,dina: 1 clock delay
+*/
+	for (m = 0; m < SEGMENT_NUMBER_MAX; m = m + 1) begin
+		doutb_not_one_reg[m] <= doutb_not_one[m];
+		wea_bram_not_one_reg[m] <= wea_bram_not_one[m];
+	end
+	count_for_bram_reg <= count_for_bram;
+	doutb_first_reg <= doutb_first;
+	doutb_first_reg_reg <= doutb_first_reg;
+	//doutb_reg <= doutb;
+	
+
+end
 
 generate
 for (i=0; i < SEGMENT_NUMBER_MAX; i = i + 1) begin
 	bram_1080 bram_1080_inst(
 		.clka(clk125MHz),
-		.wea(wea_bram_not_one[i]),
-		.addra(count_for_bram),
-		.dina(doutb_first),
+		.wea(wea_bram_not_one_reg[i]),
+		.addra(count_for_bram_reg),
+		.dina(doutb_first_reg_reg),
 		.clkb(clk125MHz),
 		.addrb(count_for_bram_b),
 		.doutb(doutb_not_one[i])

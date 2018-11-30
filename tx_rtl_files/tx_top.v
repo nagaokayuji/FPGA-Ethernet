@@ -248,7 +248,7 @@ tx_memory_control tx_memory_control_i (
 	.vramaddr(addrb),
 	.vramaddr_c(vramaddr_c),
 	.count_for_bram(count_for_bram), // input
-	.count_for_bram_b(count_for_bram), // input
+	.count_for_bram_b(count_for_bram_b), // input
 	.count_for_bram_en(count_for_bram_en), // 
 	.data_user(raw_data_user),
 	.lastaddr(lastaddr),

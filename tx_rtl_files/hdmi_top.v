@@ -7,6 +7,7 @@ module hdmi_top(
 	inout wire hdmi_rx_scl,
 	inout wire hdmi_rx_sda,
 
+	output wire pclk,
 	output wire hdmi_rx_hpa,
 	output wire hdmi_rx_txen,
 	output wire ena,
@@ -41,7 +42,7 @@ clk_for_hdmi clk_for_hdmi_i(
 );
 
 (* mark_debug = "true" *) wire [23:0] pdata;
-(* mark_debug = "true" *) wire vde,hsync,vsync,pclk,pclk5x;
+(* mark_debug = "true" *) wire vde,hsync,vsync,pclk5x;
 wire pclklocked;
 dvi2rgb_0 dvi2rgb (
 	.TMDS_Clk_p(hdmi_rx_clk_p),
