@@ -97,14 +97,16 @@ vram vram_b(
 // txid >= 2 
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
 genvar i;
+reg [7:0] doutb_first_reg;
+reg [7:0] doutb_not_one_reg[SEGMENT_NUMBER_MAX - 1 : 0];
+reg [0:0] wea_bram_not_one_reg[SEGMENT_NUMBER_MAX - 1: 0];
+reg [12:0] count_for_bram_reg;
+
 wire [7:0] doutb_not_one[SEGMENT_NUMBER_MAX - 1 : 0];
 wire [0:0] wea_bram_not_one[SEGMENT_NUMBER_MAX - 1 : 0]; 
 wire [7:0]  doutb_muxed = doutb_not_one_reg[segment_num];
 assign doutb = txid==1? doutb_first_reg: doutb_muxed;
-reg [7:0] doutb_not_one_reg[SEGMENT_NUMBER_MAX - 1 : 0];
-reg [0:0] wea_bram_not_one_reg[SEGMENT_NUMBER_MAX - 1: 0];
-reg [12:0] count_for_bram_reg;
-reg [7:0] doutb_first_reg;
+
 
 integer m;
 always @(posedge clk125MHz) begin

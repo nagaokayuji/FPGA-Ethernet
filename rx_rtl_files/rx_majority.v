@@ -8,27 +8,18 @@ module rx_majority (
   input wire sfd_wait,
   input wire [7:0] rx_data,
   input wire rx_enable,
-  input wire rx_error,
+ // input wire rx_error,
   output wire tmp, // connected to led[5] // en_out
   (* mark_debug = "true" *) output wire loss_detected,
   input wire [5:0] switches,
  (* mark_debug = "true" *) output wire en_out,
  (* mark_debug = "true" *) output wire [7:0] data_out
   );
-wire [3:0] rx_id;
-wire [2:0] comp3bit;
+
 parameter id_location = 6'h22;
 
 (* mark_debug = "true" *) wire [2:0] redundancy = switches[5:4]==0? 1: switches[5:4]==1? 3 : switches[5:4]== 2 ? 5:0;
-wire [7:0] rawdata;
-wire raw_en;
-ext_crc ext_crc_inst(
-    .rx_clk(rx_clk),
-    .rx_data(rx_data),
-    .rx_enable(rx_enable),
-    .sfd_wait(sfd_wait),
-    .rawdata(rawdata),
-    .raw_en(raw_en));
+
 
 wire [7:0] data_out_1;
 wire en_out_1,loss_detected_1;
@@ -36,8 +27,8 @@ one2one one2one_inst(
     .clk(rx_clk),
     .clk125MHz(clk125MHz),
     .rst(reset),
-    .rx_en_w(raw_en),//rx_enable && ~sfd_wait
-    .rxdata_w(rawdata),
+    .rx_en_w(rx_enable),//rx_enable && ~sfd_wait
+    .rxdata_w(rx_data),
     .data_out(data_out_1),
     .en_out(en_out_1),
     .lost(loss_detected_1)
@@ -49,8 +40,8 @@ three2one three2one_inst(
 	.clk(rx_clk),
 	.clk125MHz(clk125MHz),
 	.rst(reset),
-	.rx_en_w(raw_en),//rx_enable && ~sfd_wait
-	.rxdata_w(rawdata),
+	.rx_en_w(rx_enable),//rx_enable && ~sfd_wait
+	.rxdata_w(rx_data),
 
 	.data_out(data_out_3),
 	.en_out(en_out_3),
@@ -64,8 +55,8 @@ five2one five2one_inst(
 	.clk(rx_clk),
 	.clk125MHz(clk125MHz),
 	.rst(reset),
-	.rx_en_w(raw_en),//rx_enable && ~sfd_wait
-	.rxdata_w(rawdata),
+	.rx_en_w(rx_enable),//rx_enable && ~sfd_wait
+	.rxdata_w(rx_data),
 	.data_out(data_out_5),
 	.en_out(en_out_5),
 	.lost(loss_detected_5)

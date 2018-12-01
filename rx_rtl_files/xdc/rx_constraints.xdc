@@ -26,7 +26,9 @@ set_property -dict {PACKAGE_PIN F21 IOSTANDARD LVCMOS12} [get_ports {switches[1]
 set_property -dict {PACKAGE_PIN G21 IOSTANDARD LVCMOS12} [get_ports {switches[2]}]
 set_property -dict {PACKAGE_PIN G22 IOSTANDARD LVCMOS12} [get_ports {switches[3]}]
 set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS12} [get_ports {switches[4]}]
-#set_property -dict { PACKAGE_PIN J16  IOSTANDARD LVCMOS12 } [get_ports { switches[5] }]; #IO_0_15 Sch=sw[5]
+set_property -dict {PACKAGE_PIN J16 IOSTANDARD LVCMOS12} [get_ports {switches[5]}]
+set_property -dict {PACKAGE_PIN K13 IOSTANDARD LVCMOS12} [get_ports {switches[6]}]
+set_property -dict {PACKAGE_PIN M17 IOSTANDARD LVCMOS12} [get_ports {switches[7]}]
 
 
 #Ethernet

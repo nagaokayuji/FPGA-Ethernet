@@ -120,6 +120,16 @@ ext_preamble i_ext_preamble (
 	.sfd_wait(sfd_wait)
 	);
 
+wire [7:0] rawdata;
+wire raw_en;
+ext_crc ext_crc_inst(
+    .rx_clk(eth_rxck_buf),
+    .rx_data(rx_data),
+    .rx_enable(rx_enable),
+    .sfd_wait(sfd_wait),
+    .rawdata(rawdata),
+    .raw_en(raw_en));
+
 
 wire loss_detected;
 wire tmp;
@@ -137,10 +147,10 @@ rx_majority i_rx_majority (
 	.reset(rstb),
 //	.uart_rxd(uart_rxd),
 //	.uart_txd(uart_txd),
-    .rx_data(rx_data),
-    .rx_enable(rx_enable),
-    .rx_error(rx_error),
-	.sfd_wait(sfd_wait),
+    .rx_data(rawdata),
+    .rx_enable(raw_en),
+    //.rx_error(rx_error),
+	//.sfd_wait(sfd_wait),
 	.loss_detected(loss_detected),
 	.tmp(tmp),
 	.switches(switches),
@@ -270,8 +280,5 @@ hdmi_top hdmi_top_i (
     .hdmi_tx_n(hdmi_tx_n),
     .hdmi_tx_p(hdmi_tx_p)
     );
-
-
-
 
 endmodule

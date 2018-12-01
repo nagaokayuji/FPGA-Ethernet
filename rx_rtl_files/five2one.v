@@ -3,12 +3,31 @@ module five2one(
    (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
    (* mark_debug = "true" *)  output wire [7:0] data_out, // output data
   (* mark_debug = "true" *)   output reg en_out,		// output enable
-  (* mark_debug = "true" *)   output wire lost		// loss detected. 
+  (* mark_debug = "true" *)   output wire lost/*,	 // loss detected.
+  output [7:0] shift1_rxdata_p,
+  output [11:0] addr_after_id_p,
+  output [11:0] addr_b_p,
+  output en_after_id1_p,
+  output en_after_id2_p,
+  output en_after_id3_p,
+  output en_after_id4_p,
+  output en_after_id5_p,
+  input [7:0] out1_p,
+  input [7:0] out2_p,
+  input [7:0] out3_p,  
+  input [7:0] out4_p,
+  input [7:0] out5_p,
+  input [7:0] q_b1_p,
+  input [7:0] q_b2_p,
+  input [7:0] q_b3_p,
+  input [7:0] q_b4_p,
+  input [7:0] q_b5_p*/
     );
 
-localparam whereisid = 6'h22; //default:6'h23(src port)
+localparam whereisid = 6'h22; //default:6'h22(src port)
 localparam r=5;
 reg[2:0] rx_id_inter = 5;
+
 
 reg [3:0] rx_id=0;
 reg [3:0] rx_id_prev=3;
@@ -127,6 +146,31 @@ always @(posedge clk) begin
 	end
 	else lastaddr5 <= lastaddr5;
 end
+
+/*
+//==============
+// bram were here
+//=============
+assign shift1_rxdata_p = shift1_rxdata;
+assign addr_after_id_p = addr_after_id;
+assign addr_b_p = addr_b;
+assign en_after_id1_p = en_after_id1;
+assign en_after_id2_p = en_after_id2;
+assign en_after_id3_p = en_after_id3;
+assign en_after_id4_p = en_after_id4;
+assign en_after_id5_p = en_after_id5;
+assign out1_p = out1;
+assign out2_p = out2;
+assign out3_p = out3;
+assign out4_p = out4;
+assign out5_p = out5;
+assign q_b1_p = q_b1;
+assign q_b2_p = q_b2;
+assign q_b3_p = q_b3;
+assign q_b4_p = q_b4;
+assign q_b5_p = q_b5;
+*/
+
 bram_compare dpram1(
 	.dina(shift1_rxdata),
 	.dinb(0),
@@ -189,6 +233,10 @@ bram_compare dpram5(
 	.clka(clk),
 	.clkb(clk)
 );
+
+
+
+
 
 
 wire comp_valid12,comp_valid13,comp_valid14,comp_valid15,comp_valid23,comp_valid24,comp_valid25,comp_valid34,comp_valid35,comp_valid45;
