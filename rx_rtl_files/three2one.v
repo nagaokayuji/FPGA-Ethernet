@@ -1,4 +1,4 @@
-module three2one
+module three2one #(parameter whereisid = 22)
 (
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
    (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
@@ -9,7 +9,7 @@ module three2one
   (* mark_debug = "true" *)   output wire lost		// loss detected. 
 // (* mark_debug = "true" *)   output wire[2:0] comp3bit // for debug. maybe deleted soon
 );
-localparam whereisid = 6'h22; //default:6'h23(src port)
+//localparam whereisid = 6'h22; //default:6'h23(src port)
 localparam r = 3;
 
 

@@ -5,7 +5,7 @@ module rx_majority (
   //input wire uart_rxd,
   //output wire uart_txd,
   input wire rx_clk,
-  input wire sfd_wait,
+ // input wire sfd_wait,
   input wire [7:0] rx_data,
   input wire rx_enable,
  // input wire rx_error,
@@ -16,9 +16,20 @@ module rx_majority (
  (* mark_debug = "true" *) output wire [7:0] data_out
   );
 
-parameter id_location = 6'h22;
 
-(* mark_debug = "true" *) wire [2:0] redundancy = switches[5:4]==0? 1: switches[5:4]==1? 3 : switches[5:4]== 2 ? 5:0;
+
+
+
+
+
+
+
+
+
+
+
+parameter id_location = 6'h22;
+wire [2:0] redundancy = switches[5:4]==0? 1: switches[5:4]==1? 3 : switches[5:4]== 2 ? 5:0;
 
 
 wire [7:0] data_out_1;
@@ -36,7 +47,7 @@ one2one one2one_inst(
 
 wire [7:0] data_out_3;
 wire en_out_3,loss_detected_3;
-three2one three2one_inst(
+three2one #(.whereisid(id_location)) three2one_inst(
 	.clk(rx_clk),
 	.clk125MHz(clk125MHz),
 	.rst(reset),
@@ -51,7 +62,7 @@ three2one three2one_inst(
 
 wire [7:0] data_out_5;
 wire en_out_5,loss_detected_5;
-five2one five2one_inst(
+five2one #(.whereisid(id_location)) five2one_inst(
 	.clk(rx_clk),
 	.clk125MHz(clk125MHz),
 	.rst(reset),

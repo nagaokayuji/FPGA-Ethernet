@@ -1,4 +1,4 @@
-module five2one(
+module five2one #(parameter whereisid = 22) (
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
    (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
    (* mark_debug = "true" *)  output wire [7:0] data_out, // output data
@@ -24,7 +24,7 @@ module five2one(
   input [7:0] q_b5_p*/
     );
 
-localparam whereisid = 6'h22; //default:6'h22(src port)
+//localparam whereisid = 6'h22; //default:6'h22(src port)
 localparam r=5;
 reg[2:0] rx_id_inter = 5;
 

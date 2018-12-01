@@ -140,7 +140,7 @@ wire [7:0] data_out;
 reg en_out;
 reg [7:0] data_out;
 */
-rx_majority i_rx_majority (
+rx_majority_wrapper i_rx_majority_wrapper (
     .clk(clk100MHz),
     .clk125MHz(clk125MHz),
     .rx_clk(eth_rxck_buf),
