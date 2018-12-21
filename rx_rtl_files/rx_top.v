@@ -29,13 +29,13 @@ module rx_top(
 	output wire hdmi_tx_clk_n,hdmi_tx_clk_p,
 	output wire [2:0] hdmi_tx_n,
 	output wire [2:0] hdmi_tx_p
-    );
-    
-    wire eth_rxck_buf;
-    BUFG ethclk(
-    .I(eth_rxck),
-    .O(eth_rxck_buf)
-    );
+	);
+	
+	wire eth_rxck_buf;
+	BUFG ethclk(
+	.I(eth_rxck),
+	.O(eth_rxck_buf)
+	);
 parameter whereisid = 16'd25;
 wire RST = !resetn;
 
@@ -123,12 +123,13 @@ ext_preamble i_ext_preamble (
 wire [7:0] rawdata;
 wire raw_en;
 ext_crc ext_crc_inst(
-    .rx_clk(eth_rxck_buf),
-    .rx_data(rx_data),
-    .rx_enable(rx_enable),
-    .sfd_wait(sfd_wait),
-    .rawdata(rawdata),
-    .raw_en(raw_en));
+	.rx_clk(eth_rxck_buf),
+	.rx_data(rx_data),
+	.rx_enable(rx_enable),
+	.sfd_wait(sfd_wait),
+	.rawdata(rawdata),
+	.raw_en(raw_en)
+);
 
 
 wire loss_detected;
@@ -141,23 +142,22 @@ reg en_out;
 reg [7:0] data_out;
 */
 rx_majority_wrapper i_rx_majority_wrapper (
-    .clk(clk100MHz),
-    .clk125MHz(clk125MHz),
-    .rx_clk(eth_rxck_buf),
+	.clk125MHz(clk125MHz),
+	.rx_clk(eth_rxck_buf),
 	.reset(rstb),
-//	.uart_rxd(uart_rxd),
-//	.uart_txd(uart_txd),
-    .rx_data(rawdata),
-    .rx_enable(raw_en),
-    //.rx_error(rx_error),
+	//	.uart_rxd(uart_rxd),
+	//	.uart_txd(uart_txd),
+	.rx_data(rawdata),
+	.rx_enable(raw_en),
+	//.rx_error(rx_error),
 	//.sfd_wait(sfd_wait),
 	.loss_detected(loss_detected),
 	.tmp(tmp),
 	.switches(switches),
 	.en_out(en_out),
 	.data_out(data_out)
-   // .gpio_o2(leds[7:4])
-    );
+	// .gpio_o2(leds[7:4])
+);
 //assign  = fourbit_from_mcs;
 
 
@@ -170,16 +170,16 @@ reg [26:0] count_led3 = 27'b0;
 reg led5 = 1'b0;
 always @(posedge clk125MHz) begin
 if (count_led3 >= max_for_led) begin
-    count_led3 <= 27'b0;
-    led5 <= 1'b0;
+	count_led3 <= 27'b0;
+	led5 <= 1'b0;
 end
 else if (tmp || count_led3 > 27'b0) begin
-        count_led3 <= count_led3 + 1'b1;
-        led5 <= 1'b1;
+	count_led3 <= count_led3 + 1'b1;
+	led5 <= 1'b1;
 end
 else begin
-    count_led3 <= 27'b0;
-    led5 <= 1'b0;
+	count_led3 <= 27'b0;
+	led5 <= 1'b0;
 end
 end
 
@@ -192,16 +192,16 @@ reg led6 = 1'b0;
 reg loss_detected_internal = 1'b0;
 always @(posedge clk125MHz) begin
 if (count_led2 >= max_for_led) begin
-    count_led2 <= 27'b0;
-    led6 <= 1'b0;
+	count_led2 <= 27'b0;
+	led6 <= 1'b0;
 end
 else if (loss_detected || count_led2 > 27'b0) begin
-        count_led2 <= count_led2 + 1'b1;
-        led6 <= 1'b1;
+	count_led2 <= count_led2 + 1'b1;
+	led6 <= 1'b1;
 end
 else begin
-    count_led2 <= 27'b0;
-    led6 <= 1'b0;
+	count_led2 <= 27'b0;
+	led6 <= 1'b0;
 end
 end
 
@@ -218,67 +218,68 @@ BUFG bufg_100(
 // clock
 wire clk10MHz;
 clocking clocking_i(
-    .clk_in1(clk100MHz_buffered),
-    .clk_out1(clk125MHz),
-    .clk_out2(clk10MHz),
-    .clk_out3(clk25MHz),
-    .clk_out4(clk125MHz90)
-    );
+	.clk_in1(clk100MHz_buffered),
+	.clk_out1(clk125MHz),
+	.clk_out2(clk10MHz),
+	.clk_out3(clk25MHz),
+	.clk_out4(clk125MHz90)
+	);
 
 
 reg [7:0] data_out_reg;
 reg en_out_reg;
 
 always @(posedge eth_rxck_buf) begin
-    data_out_reg <= data_out;
-    en_out_reg <= en_out;
+	data_out_reg <= data_out;
+	en_out_reg <= en_out;
 end
 
 wire [31:0] countp,okp;
 wire finished,started,valid;
 log log_1(
-    .rst(RST),
-    .rx_en(en_out_reg),
-    .rx_data(data_out_reg),
-    .clk125MHz(eth_rxck_buf),
-    .countp(countp),
-    .okp(okp),
-    .finished(finished),
-    .started(started),
-    .valid(valid));
+	.rst(RST),
+	.rx_en(en_out_reg),
+	.rx_data(data_out_reg),
+	.clk125MHz(eth_rxck_buf),
+	.countp(countp),
+	.okp(okp),
+	.finished(finished),
+	.started(started),
+	.valid(valid));
 
 reg [31:0] count_led0 = 0;
 reg led0 = 0;
 always @(posedge clk125MHz) begin
-    if (count_led0 >= max_for_led) begin
-        count_led0 <= 27'b0;
-        led0 <= 0;
-   end
-   else if (valid || count_led0 > 0) begin
-    count_led0 <= count_led0 + 1;
-    led0 <= 1'b1;
-    end
-    else begin
-        count_led0 <= 27'b0;
-        led0 <= 1'b0;
-    end
+	if (count_led0 >= max_for_led) begin
+		count_led0 <= 27'b0;
+		led0 <= 0;
+	end
+	else if (valid || count_led0 > 0) begin
+	count_led0 <= count_led0 + 1;
+	led0 <= 1'b1;
+	end
+	else begin
+		count_led0 <= 27'b0;
+		led0 <= 1'b0;
+	end
  end
+
  assign leds[0] = led0;
  assign leds[1] = started;
  assign leds[2] = finished;
 
 
 hdmi_top hdmi_top_i (
-    .clk(clk100MHz_buffered),
-    .RST(rstb),
-    .dclk(eth_rxck_buf),
-    .clk125MHz(clk125MHz),
-   .data_in(data_out_reg),
-   .data_en(en_out_reg),
-    .hdmi_tx_clk_n(hdmi_tx_clk_n),
-    .hdmi_tx_clk_p(hdmi_tx_clk_p),
-    .hdmi_tx_n(hdmi_tx_n),
-    .hdmi_tx_p(hdmi_tx_p)
-    );
+	.clk(clk100MHz_buffered),
+	.RST(rstb),
+	.dclk(eth_rxck_buf),
+	.clk125MHz(clk125MHz),
+	.data_in(data_out_reg),
+	.data_en(en_out_reg),
+	.hdmi_tx_clk_n(hdmi_tx_clk_n),
+	.hdmi_tx_clk_p(hdmi_tx_clk_p),
+	.hdmi_tx_n(hdmi_tx_n),
+	.hdmi_tx_p(hdmi_tx_p)
+);
 
 endmodule

@@ -46,7 +46,7 @@ always @(posedge clk) begin
   end
 
 // id process
-    if (addr == whereisid) begin
+    if (addr == whereisid && rx_en) begin
         rx_id <= rxdata[3:0];
 		addr_after_id <= 12'b0;
 		rx_id_prev <= rx_id_inter;
@@ -111,37 +111,37 @@ always @(posedge clk) begin
 end
 bram_compare dpram1(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out1),
 	.doutb(q_b1),
 	.wea(en_after_id1),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
 bram_compare dpram2(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out2),
 	.doutb(q_b2),
 	.wea(en_after_id2),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
 bram_compare dpram3(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out3),
 	.doutb(q_b3),
 	.wea(en_after_id3),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
@@ -153,7 +153,7 @@ comparator comp1(
 	.bramout(out2),
 	.valid(comp_valid1),
 	.result(comp_result1),
-	.shift4_result(0)
+	.shift4_result()
 );
 
 comparator comp2(

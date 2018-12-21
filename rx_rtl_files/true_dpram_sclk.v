@@ -1,27 +1,27 @@
-module true_dpram_sclk
+module bram_compare
 (
-	input [7:0] data_a, data_b,
-	input [11:0] addr_a, addr_b,
-	input we_a, we_b, clk,
-	output reg [7:0] q_a, q_b
+	input [7:0] dina, dinb,
+	input [11:0] addra, addrb,
+	input wea, web, clka,clkb,
+	output reg [7:0] douta, doutb
 );
 	// Declare the RAM variable
 	reg [7:0] ram[4095:0];
 	
 	// Port A
-	always @ (posedge clk)
+	always @ (posedge clka)
 	begin
-		if (we_a) 
-			ram[addr_a] <= data_a;
-			q_a <= ram[addr_a];
+		if (wea) 
+			ram[addra] <= dina;
+			douta <= ram[addra];
 	end
 	
 	// Port B
-	always @ (posedge clk)
+	always @ (posedge clkb)
 	begin
-		if (we_b)
-			ram[addr_b] <= data_b;
-			q_b <= ram[addr_b];
+		if (web)
+			ram[addrb] <= dinb;
+			doutb <= ram[addrb];
 	end
 
 	integer i;

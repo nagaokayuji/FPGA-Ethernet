@@ -94,13 +94,13 @@ reg started;
         valid <= 1'b0;
         if (!firstprocessed) begin
             firstprocessed <= 1'b1;
-            if (rxdata != bramout)
+            if (rxdata !== bramout)
                 result <= 1'b0;
             else
                 result <= 1'b1;
         end
         else begin // (from second data)
-            if (rxdata != bramout)
+            if (rxdata !== bramout)
                 result <= 1'b0;
             else result <= result;
         end

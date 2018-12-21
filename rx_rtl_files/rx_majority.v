@@ -1,5 +1,5 @@
 module rx_majority (
-  input wire clk,
+  //input wire clk,
   input wire clk125MHz,
   input wire reset,
   //input wire uart_rxd,
@@ -28,7 +28,7 @@ module rx_majority (
 
 
 
-parameter id_location = 6'h22;
+parameter id_location = 6'h0;
 wire [2:0] redundancy = switches[5:4]==0? 1: switches[5:4]==1? 3 : switches[5:4]== 2 ? 5:0;
 
 

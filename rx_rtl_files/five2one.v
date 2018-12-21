@@ -62,7 +62,7 @@ always @(posedge clk) begin
 
 
 // id process
-		if (addr == whereisid) begin
+		if (addr == whereisid && rx_en) begin
   		rx_id <= rxdata[3:0];
 			addr_after_id <= 12'b0;
 			rx_id_prev <= rx_id_inter;
@@ -173,63 +173,63 @@ assign q_b5_p = q_b5;
 
 bram_compare dpram1(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out1),
 	.doutb(q_b1),
 	.wea(en_after_id1),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
 bram_compare dpram2(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out2),
 	.doutb(q_b2),
 	.wea(en_after_id2),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
 bram_compare dpram3(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out3),
 	.doutb(q_b3),
 	.wea(en_after_id3),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
 
 bram_compare dpram4(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out4),
 	.doutb(q_b4),
 	.wea(en_after_id4),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
 
 bram_compare dpram5(
 	.dina(shift1_rxdata),
-	.dinb(0),
+	.dinb(8'b0),
 	.addra(addr_after_id),
 	.addrb(addr_b),
 	.douta(out5),
 	.doutb(q_b5),
 	.wea(en_after_id5),
-	.web(0),
+	.web(1'b0),
 	.clka(clk),
 	.clkb(clk)
 );
