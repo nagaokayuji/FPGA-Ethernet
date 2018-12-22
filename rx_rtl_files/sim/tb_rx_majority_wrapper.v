@@ -57,7 +57,7 @@ integer each_id,each_seg,aux;
 initial begin
 	$dumpfile("tb_rx_majority_wrapper.vcd");
 	$dumpvars(0,tb_rx_majority_wrapper);
-	clk125MHz=0;rst=0;rx_clk=0;rx_enable=0;rx_data=0;
+	clk125MHz=0;rst=0;rx_clk=0;rx_enable=0;rx_data=8'hxx;
 	#(CYCLE*2);
 	rst = 1;
 	#CYCLE;
