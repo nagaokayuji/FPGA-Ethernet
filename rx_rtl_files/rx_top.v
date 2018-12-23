@@ -145,20 +145,14 @@ rx_majority_wrapper i_rx_majority_wrapper (
 	.clk125MHz(clk125MHz),
 	.rx_clk(eth_rxck_buf),
 	.reset(rstb),
-	//	.uart_rxd(uart_rxd),
-	//	.uart_txd(uart_txd),
 	.rx_data(rawdata),
 	.rx_enable(raw_en),
-	//.rx_error(rx_error),
-	//.sfd_wait(sfd_wait),
 	.loss_detected(loss_detected),
 	.tmp(tmp),
 	.switches(switches),
 	.en_out(en_out),
 	.data_out(data_out)
-	// .gpio_o2(leds[7:4])
 );
-//assign  = fourbit_from_mcs;
 
 
 reg [26:0] count_led = 27'b0;

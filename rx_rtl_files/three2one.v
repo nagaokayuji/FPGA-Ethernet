@@ -46,8 +46,8 @@ always @(posedge clk) begin
   end
 
 // id process
-    if (addr == whereisid && rx_en) begin
-        rx_id <= rxdata[3:0];
+	if (addr == whereisid && rx_en) begin
+			rx_id <= rxdata[3:0];
 		addr_after_id <= 12'b0;
 		rx_id_prev <= rx_id_inter;
 	end

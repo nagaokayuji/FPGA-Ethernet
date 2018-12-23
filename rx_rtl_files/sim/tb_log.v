@@ -10,12 +10,14 @@ wire finished,started;
 
 log uut(
 	.rx_en(rx_en),
-	.clk125MHz(clk125MHz),
 	.rx_data(rx_data),
+	.rst(),
+	.clk125MHz(clk125MHz),
 	.countp(countp),
 	.okp(okp),
 	.finished(finished),
-	.started(started)
+	.started(started),
+	.valid()
 );
 
 integer i,j,k;
@@ -36,7 +38,7 @@ initial begin
 			if (j<40)
 				rx_data = j;
 			else
-				rx_data = 30;
+			rx_data = 30;
 			else rx_data = 8'hde;
 			#20;
 		end

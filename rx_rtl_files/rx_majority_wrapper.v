@@ -65,7 +65,6 @@ for (i=0; i<SEGMENT_NUM_MAX; i=i+1) begin
 	);
 	
 	assign rx_enable_seg[i] = (segment_num_en && (segment_num == i));
-
 	assign data_out_seg_wire[i] = (en_out_seg[i] == 1'b1) ? data_out_seg[i] : 0;
 	assign en_and_data[i] = {en_out_seg[i],data_out_seg_wire[i]};
 end

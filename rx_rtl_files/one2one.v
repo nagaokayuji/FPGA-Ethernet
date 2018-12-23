@@ -1,3 +1,6 @@
+// one 2 one module.
+// outputs 2 clocks later.
+
 module one2one(
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
    (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data

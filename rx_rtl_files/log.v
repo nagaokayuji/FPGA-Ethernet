@@ -1,26 +1,12 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2018/10/29 21:05:26
-// Design Name: 
-// Module Name: log
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+//----------------
+// log:
+// have to detect errors by 'aux' number.
+// aux number: 8 bits length.
+// --~~ -~ -> --~-~-~-~-~ : 1 clock 
+//-------------------
 
-
-module log(
+module log #(parameter whereisaux = 3)(
    (* mark_debug = "true" *) input wire rx_en,
    (* mark_debug = "true" *) input wire [7:0] rx_data,
    (* mark_debug = "true" *) input wire rst,
