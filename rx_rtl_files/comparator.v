@@ -34,57 +34,6 @@ module comparator(
     output reg result = 1'b0,
 		output wire shift4_result
     );
-// valid: 00: invalid 01: in progress  11: valid result
-/* 
-// inter_ssign: start_sign検知でhigh,endまで．
-*/
-/*
-reg inter_ssign;
-    always @(posedge clk) begin
-        if (!end_sign)
-            inter_ssign <= start_sign || inter_ssign;
-        else
-            inter_ssign <= 1'b0;
-    end 
-
-// ijou
-reg started;
-    always @(posedge clk) begin
-        if (start_sign) 
-            started <= 1'b1;
-        if (end_sign) 
-            started <= 1'b0;
-    end
-    // rising detection...
-    // it appeals the FIRST rizing start_sign
-
-
-    always @(posedge clk) begin
-        if (started) begin
-      //      inter_ssign <= 1'b1;
-            valid <= 1'b0;
-            if (rxdata != bramout)
-                result <= 1'b0;
-            else result <= 1'b1;
-        end else if (end_sign) begin
-            valid <= 1'b1;
-            result <= result;
-        end else begin
-            if (rxdata == bramout) begin
-                result <= result;
-            end else begin
-                result <= 1'b0;
-            end
-        end
-    end
-*/
-    //
-    //
-    /*
-
-   //
-   //
-   */
    reg firstprocessed = 1'b0;
 	 reg [4:0] shift_result = 5'b0;
 	 assign shift4_result = shift_result[3];

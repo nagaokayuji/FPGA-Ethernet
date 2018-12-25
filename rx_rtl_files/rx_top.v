@@ -230,16 +230,16 @@ end
 
 wire [31:0] countp,okp;
 wire finished,started,valid;
-log log_1(
+wire [2:0] state_d_e;
+detect_errors detect_errors_i (
 	.rst(RST),
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),
-	.clk125MHz(eth_rxck_buf),
-	.countp(countp),
-	.okp(okp),
-	.finished(finished),
-	.started(started),
-	.valid(valid));
+	.clk(eth_rxck_buf),
+	.count(countp),
+	.ok(okp),
+	.valid(valid),
+	.state(state_d_e));
 
 reg [31:0] count_led0 = 0;
 reg led0 = 0;

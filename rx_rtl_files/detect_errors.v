@@ -22,13 +22,13 @@ module detect_errors #(parameter whereis_aux = 0)(
 	(* mark_debug = "true" *) output reg [31:0] count,
 	(* mark_debug = "true" *) output reg [31:0] ok,
 	(* mark_debug = "true" *) output reg valid,
-	output reg [2:0] state
+	(* mark_debug = "true" *) output reg [2:0] state
 );
 
-parameter maxcount = 100000;
-parameter maxaux = 8'b11111111;
+localparam maxcount = 100000;
+localparam maxaux = 8'b11111111;
 
-parameter validation_max = 3;
+localparam validation_max = 3;
 reg [7:0] validation_rom [validation_max - 1: 0];
 reg [15:0] count_edge;
 reg [7:0] aux = maxaux;
@@ -39,12 +39,12 @@ wire aux_on_1 = (whereis_aux + 1'b1 == count_edge) && valid;
 wire [7:0] next_aux = (aux_prev == maxaux) ? 0 : (aux_prev + 1'b1);
 wire aux_ok = (aux == next_aux);
 
-parameter state_init = 0;
-parameter state_started = 1;
-parameter state_running = 2;
-parameter state_finished = 7;
+localparam state_init = 0;
+localparam state_started = 1;
+localparam state_running = 2;
+localparam state_finished = 7;
 
-always @(posedge clk or rst) begin
+always @(posedge clk) begin
 	if (rst) begin
 		count_edge <= 16'b0;
 		count <= 0;
