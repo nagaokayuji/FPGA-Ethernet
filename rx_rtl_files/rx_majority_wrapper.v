@@ -1,4 +1,4 @@
-module rx_majority_wrapper #(parameter whereis_segment_num = 22, SEGMENT_NUM_MAX = 50 // maybe ok
+module rx_majority_wrapper #(parameter whereis_segment_num = 35, SEGMENT_NUM_MAX = 50 // maybe ok
 )
 (
 	input wire clk125MHz,
@@ -13,11 +13,11 @@ module rx_majority_wrapper #(parameter whereis_segment_num = 22, SEGMENT_NUM_MAX
 	output wire [7:0] data_out
 );
 
-reg rx_en;
-reg [7:0] rxdata;
-reg [11:0] count_edge = 0;
-reg [15:0] segment_num = 0;
-reg segment_num_en = 0;
+(* mark_debug = "true" *) reg rx_en;
+(* mark_debug = "true" *) reg [7:0] rxdata;
+(* mark_debug = "true" *) reg [11:0] count_edge = 0;
+(* mark_debug = "true" *) reg [15:0] segment_num = 0;
+(* mark_debug = "true" *) reg segment_num_en = 0;
 always @(posedge rx_clk) begin
 	rx_en <= rx_enable;
 	rxdata <= rx_data;

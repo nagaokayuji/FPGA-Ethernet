@@ -3,12 +3,12 @@
 
 module one2one(
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
-   (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
+ input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
     //input wire [3:0] switches, // input switches 
 	// (* mark_debug = "true" *)	output reg [3:0] rx_id_inter=3, // for debug. maybe deleted soon
-   (* mark_debug = "true" *)  output wire [7:0] data_out, // output data
-  (* mark_debug = "true" *)   output wire en_out,		// output enable
-  (* mark_debug = "true" *)   output wire lost		// loss detected. 
+    output wire [7:0] data_out, // output data
+ output wire en_out,		// output enable
+   output wire lost		// loss detected. 
  //(* mark_debug = "true" *)   output wire[2:0] comp3bit // for debug. maybe deleted soon
     );
     localparam whereisid = 6'h22;

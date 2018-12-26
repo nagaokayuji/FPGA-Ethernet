@@ -1,9 +1,9 @@
 module five2one #(parameter whereisid = 22) (
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
-   (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
-   (* mark_debug = "true" *)  output wire [7:0] data_out, // output data
-  (* mark_debug = "true" *)   output reg en_out,		// output enable
-  (* mark_debug = "true" *)   output wire lost/*,	 // loss detected.
+  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
+  output wire [7:0] data_out, // output data
+  output reg en_out,		// output enable
+  output wire lost/*,	 // loss detected.
   output [7:0] shift1_rxdata_p,
   output [11:0] addr_after_id_p,
   output [11:0] addr_b_p,

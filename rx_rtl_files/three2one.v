@@ -1,12 +1,11 @@
 module three2one #(parameter whereisid = 22)
 (
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
-   (* mark_debug = "true" *)  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
-    //input wire [3:0] switches, // input switches 
-	// (* mark_debug = "true" *)	output reg [3:0] rx_id_inter=3, // for debug. maybe deleted soon
-   (* mark_debug = "true" *)  output wire [7:0] data_out, // output data
-  (* mark_debug = "true" *)   output reg en_out,		// output enable
-  (* mark_debug = "true" *)   output wire lost		// loss detected. 
+input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
+
+  output wire [7:0] data_out, // output data
+  output reg en_out,		// output enable
+ output wire lost		// loss detected. 
 // (* mark_debug = "true" *)   output wire[2:0] comp3bit // for debug. maybe deleted soon
 );
 //localparam whereisid = 6'h22; //default:6'h23(src port)
@@ -14,16 +13,16 @@ localparam r = 3;
 
 
 reg [3:0] rx_id=0;
-(* mark_debug = "true" *) reg [3:0] rx_id_inter = 3;
+ reg [3:0] rx_id_inter = 3;
 reg [3:0] rx_id_prev=3;
 reg datalost = 0;
 assign lost = datalost; // not important
 
-(* mark_debug = "true" *) reg [11:0] addr = 12'b0; // address for array
+reg [11:0] addr = 12'b0; // address for array
 reg [11:0]addr_after_id = 12'b0; // count up after ID detected
 reg en_after_id = 1'b0; // enable signal after ID detected
-(* mark_debug = "true" *) reg rx_en; // D-FF edge alignment
-(* mark_debug = "true" *) reg [7:0] rxdata; // D-FF
+reg rx_en; // D-FF edge alignment
+ reg [7:0] rxdata; // D-FF
 reg [7:0] shift1_rxdata = 0;
 //reg [23:0] startaddr = 0; // coordinate
 

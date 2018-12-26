@@ -3,7 +3,6 @@ control output signals for byte_data
 
 
 */
-
 module send_control(
 	input wire clk125MHz,
 	input wire RST,

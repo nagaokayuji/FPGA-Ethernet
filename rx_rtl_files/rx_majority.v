@@ -10,10 +10,10 @@ module rx_majority (
   input wire rx_enable,
  // input wire rx_error,
   output wire tmp, // connected to led[5] // en_out
-  (* mark_debug = "true" *) output wire loss_detected,
+  output wire loss_detected,
   input wire [5:0] switches,
- (* mark_debug = "true" *) output wire en_out,
- (* mark_debug = "true" *) output wire [7:0] data_out
+ output wire en_out,
+ output wire [7:0] data_out
   );
 
 
