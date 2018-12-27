@@ -1,8 +1,4 @@
 `timescale 1ns / 1ns
-`include "./dpramtest.2.v"
-`include "./true_dpram_sclk.v"
-`include "./comparator.v"
-
 module tb_dpramtest;
 
 reg clk,reset,rx_en;

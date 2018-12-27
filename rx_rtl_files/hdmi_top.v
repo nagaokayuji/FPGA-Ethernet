@@ -4,8 +4,8 @@ input wire clk,//100MHz system clock
 input wire RST,
 input wire clk125MHz,
 input wire dclk,// 125MHz ethernet clock 
-(* mark_debug = "true" *)input wire [7:0] data_in,
-(* mark_debug = "true" *)input wire data_en,
+input wire [7:0] data_in,
+input wire data_en,
 output wire hdmi_tx_clk_n,hdmi_tx_clk_p,
 output wire [2:0] hdmi_tx_n,
 output wire [2:0] hdmi_tx_p

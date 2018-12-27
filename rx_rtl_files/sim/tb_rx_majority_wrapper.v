@@ -39,7 +39,7 @@ task onepacket;
 			rx_data = segment_number[7:0];
 			else if (i == whereis_segment + 2)
 			rx_data = id;
-			else if (i == whereis_segment + 5)
+			else if (i == whereis_segment + 3)
 			rx_data = aux;
 			else rx_data = 8'h55;
 			#CYCLE;
@@ -68,7 +68,7 @@ initial begin
 		for (each_id = 1; each_id <= 3; each_id = each_id + 1) begin
 			for (each_seg = 0; each_seg < segment_num_max; each_seg = each_seg + 1) begin
 				#(CYCLE*10);
-				onepacket(each_seg,each_id,8'hff);
+				onepacket(each_seg,each_id,aux);
 			end
 			#(CYCLE*30);
 		end

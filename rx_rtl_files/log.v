@@ -6,7 +6,7 @@
 // --~~ -~ -> --~-~-~-~-~ : 1 clock 
 //-------------------
 
-module log #(parameter whereisaux = 3)(
+module log #(parameter whereisaux = 0)(
    (* mark_debug = "true" *) input wire rx_en,
    (* mark_debug = "true" *) input wire [7:0] rx_data,
    (* mark_debug = "true" *) input wire rst,

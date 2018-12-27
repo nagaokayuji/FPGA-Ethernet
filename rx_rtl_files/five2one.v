@@ -631,7 +631,7 @@ always @(posedge clk) begin
 	if (start) begin
 		casex (compares)
 			10'b1111111111: begin
-				which_one <= 1; // anything is ok
+				which_one <= 2; // anything is ok
 				lastaddress <= lastaddr1;
 				end
 			10'b0000111111: begin
@@ -639,7 +639,7 @@ always @(posedge clk) begin
 				lastaddress <= lastaddr3;
 				end
 			10'b0111000111: begin
-				which_one <= 1; // 2 is incorrect
+				which_one <= 3; // 2 is incorrect
 				lastaddress <= lastaddr1;
 				end
 			10'b1011011001: begin
@@ -655,7 +655,7 @@ always @(posedge clk) begin
 				lastaddress <= lastaddr4;
 			end
 			10'b11xx1xxxxx: begin
-				which_one <= 1; // 123 is correct
+				which_one <= 2; // 123 is correct
 				lastaddress <= lastaddr1;
 			end
 			10'b1x1xx1xxxx: begin
@@ -667,7 +667,7 @@ always @(posedge clk) begin
 				lastaddress <= lastaddr5;
 			end
 			10'bx11xxxx1xx: begin
-				which_one <= 1; //134 is correct
+				which_one <= 3; //134 is correct
 				lastaddress <= lastaddr1;
 			end
 			10'bx1x1xxxx1x: begin

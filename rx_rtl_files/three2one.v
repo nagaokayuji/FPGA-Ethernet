@@ -1,4 +1,4 @@
-module three2one #(parameter whereisid = 22)
+module three2one #(parameter whereisid = 0)
 (
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
 input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
@@ -363,15 +363,15 @@ always @(posedge clk) begin
 	if (start) begin
 		case (compares)
 			3'b111: begin
-				which_one <= 1; // anything is ok
+				which_one <= 2; // anything is ok
 				lastaddress <= lastaddr1;
 				end
 			3'b010: begin
-				which_one <= 3; // 1 is incorrect
+				which_one <= 2; // 1 is incorrect
 				lastaddress <= lastaddr3;
 				end
 			3'b001: begin
-				which_one <= 1; // 2 is incorrect
+				which_one <= 3; // 2 is incorrect
 				lastaddress <= lastaddr1;
 				end
 			3'b100: begin

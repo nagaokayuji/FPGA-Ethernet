@@ -1,4 +1,4 @@
-module rx_majority_wrapper #(parameter whereis_segment_num = 35, SEGMENT_NUM_MAX = 50 // maybe ok
+module rx_majority_wrapper #(parameter whereis_segment_num = 34, SEGMENT_NUM_MAX = 50 // maybe ok
 )
 (
 	input wire clk125MHz,
@@ -18,11 +18,14 @@ module rx_majority_wrapper #(parameter whereis_segment_num = 35, SEGMENT_NUM_MAX
 (* mark_debug = "true" *) reg [11:0] count_edge = 0;
 (* mark_debug = "true" *) reg [15:0] segment_num = 0;
 (* mark_debug = "true" *) reg segment_num_en = 0;
+(* mark_debug = "true" *) reg [7:0] rx_id_fordebug;
+(* mark_debug = "true" *) reg [7:0] aux_fordebug;
+
 always @(posedge rx_clk) begin
 	rx_en <= rx_enable;
 	rxdata <= rx_data;
 
-	if (rx_en) begin
+	if (rx_en && rx_enable) begin // to reduce last one
 		count_edge <= count_edge + 1'b1;
 	end	else begin
 		count_edge <= 1'b0;
@@ -36,6 +39,12 @@ always @(posedge rx_clk) begin
 	else if (count_edge == whereis_segment_num +1) begin
 		segment_num[7:0] <= rxdata;
 		segment_num_en <= 1'b1;
+	end
+	else if (count_edge == whereis_segment_num + 2) begin
+		rx_id_fordebug <= rxdata;
+	end
+	else if (count_edge == whereis_segment_num+3) begin
+		aux_fordebug <= rxdata;
 	end
 end
 
