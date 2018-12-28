@@ -39,8 +39,8 @@ end
 
 assign segment_num_max = (switches[7:6] == 2'b00) ? 1:
 															switches[7:6] == 2'b01 ? 5:
-															switches[7:6] == 2'b10 ? 121:
-															switches[7:6] == 2'b11 ? 150 : 1;
+															switches[7:6] == 2'b10 ? 50:
+															switches[7:6] == 2'b11 ? 100 : 1;
 assign redundancy = switches[5:4] == 2'b00 ? 1:
 												switches[5:4] == 2'b01 ? 3:
 												switches[5:4] == 2'b10 ? 5:

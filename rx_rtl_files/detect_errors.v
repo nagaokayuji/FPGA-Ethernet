@@ -28,14 +28,14 @@ module detect_errors #(parameter whereis_aux = 0)(
 localparam maxcount = 100000;
 localparam maxaux = 8'b11111111;
 
-localparam validation_max = 3;
-reg [7:0] validation_rom [validation_max - 1: 0];
+//localparam validation_max = 3;
+//reg [7:0] validation_rom [validation_max - 1: 0];
 reg [15:0] count_edge;
 reg [7:0] aux = maxaux;
 reg [7:0] aux_prev;
 
-wire aux_on = (whereis_aux == count_edge) && valid;
-wire aux_on_1 = (whereis_aux + 1'b1 == count_edge) && valid;
+wire aux_on = (whereis_aux == count_edge);// && valid;
+wire aux_on_1 = (whereis_aux + 1'b1 == count_edge);// && valid;
 wire [7:0] next_aux = (aux_prev == maxaux) ? 0 : (aux_prev + 1'b1);
 wire aux_ok = (aux == next_aux);
 

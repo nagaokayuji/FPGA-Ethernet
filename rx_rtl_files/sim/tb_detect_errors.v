@@ -2,8 +2,8 @@
 module tb_detect_errors;
 
 parameter CYCLE = 16;
-parameter whereis_aux = 3;
-parameter packetsize = 12;
+parameter whereis_aux = 0;
+parameter packetsize = 15;
 
 
 reg rx_en=0,clk=0, rst = 0;

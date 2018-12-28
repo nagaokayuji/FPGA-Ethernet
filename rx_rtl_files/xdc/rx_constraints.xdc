@@ -87,6 +87,9 @@ create_clock -period 8.000 -name eth_rx_clk_pin -waveform {0.000 4.000} -add [ge
 
 
 
+connect_debug_port u_ila_0/probe7 [get_nets [list {hdmi_top_i/data_in[0]} {hdmi_top_i/data_in[1]} {hdmi_top_i/data_in[2]} {hdmi_top_i/data_in[3]} {hdmi_top_i/data_in[4]} {hdmi_top_i/data_in[5]} {hdmi_top_i/data_in[6]} {hdmi_top_i/data_in[7]}]]
+connect_debug_port u_ila_0/probe11 [get_nets [list hdmi_top_i/data_en]]
+
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
@@ -99,80 +102,56 @@ set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
 set_property port_width 1 [get_debug_ports u_ila_0/clk]
 connect_debug_port u_ila_0/clk [get_nets [list eth_rxck_buf]]
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
-set_property port_width 32 [get_debug_ports u_ila_0/probe0]
-connect_debug_port u_ila_0/probe0 [get_nets [list {detect_errors_i/count[0]} {detect_errors_i/count[1]} {detect_errors_i/count[2]} {detect_errors_i/count[3]} {detect_errors_i/count[4]} {detect_errors_i/count[5]} {detect_errors_i/count[6]} {detect_errors_i/count[7]} {detect_errors_i/count[8]} {detect_errors_i/count[9]} {detect_errors_i/count[10]} {detect_errors_i/count[11]} {detect_errors_i/count[12]} {detect_errors_i/count[13]} {detect_errors_i/count[14]} {detect_errors_i/count[15]} {detect_errors_i/count[16]} {detect_errors_i/count[17]} {detect_errors_i/count[18]} {detect_errors_i/count[19]} {detect_errors_i/count[20]} {detect_errors_i/count[21]} {detect_errors_i/count[22]} {detect_errors_i/count[23]} {detect_errors_i/count[24]} {detect_errors_i/count[25]} {detect_errors_i/count[26]} {detect_errors_i/count[27]} {detect_errors_i/count[28]} {detect_errors_i/count[29]} {detect_errors_i/count[30]} {detect_errors_i/count[31]}]]
+set_property port_width 16 [get_debug_ports u_ila_0/probe0]
+connect_debug_port u_ila_0/probe0 [get_nets [list {i_rx_majority_wrapper/segment_num[0]} {i_rx_majority_wrapper/segment_num[1]} {i_rx_majority_wrapper/segment_num[2]} {i_rx_majority_wrapper/segment_num[3]} {i_rx_majority_wrapper/segment_num[4]} {i_rx_majority_wrapper/segment_num[5]} {i_rx_majority_wrapper/segment_num[6]} {i_rx_majority_wrapper/segment_num[7]} {i_rx_majority_wrapper/segment_num[8]} {i_rx_majority_wrapper/segment_num[9]} {i_rx_majority_wrapper/segment_num[10]} {i_rx_majority_wrapper/segment_num[11]} {i_rx_majority_wrapper/segment_num[12]} {i_rx_majority_wrapper/segment_num[13]} {i_rx_majority_wrapper/segment_num[14]} {i_rx_majority_wrapper/segment_num[15]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
-set_property port_width 32 [get_debug_ports u_ila_0/probe1]
-connect_debug_port u_ila_0/probe1 [get_nets [list {detect_errors_i/ok[0]} {detect_errors_i/ok[1]} {detect_errors_i/ok[2]} {detect_errors_i/ok[3]} {detect_errors_i/ok[4]} {detect_errors_i/ok[5]} {detect_errors_i/ok[6]} {detect_errors_i/ok[7]} {detect_errors_i/ok[8]} {detect_errors_i/ok[9]} {detect_errors_i/ok[10]} {detect_errors_i/ok[11]} {detect_errors_i/ok[12]} {detect_errors_i/ok[13]} {detect_errors_i/ok[14]} {detect_errors_i/ok[15]} {detect_errors_i/ok[16]} {detect_errors_i/ok[17]} {detect_errors_i/ok[18]} {detect_errors_i/ok[19]} {detect_errors_i/ok[20]} {detect_errors_i/ok[21]} {detect_errors_i/ok[22]} {detect_errors_i/ok[23]} {detect_errors_i/ok[24]} {detect_errors_i/ok[25]} {detect_errors_i/ok[26]} {detect_errors_i/ok[27]} {detect_errors_i/ok[28]} {detect_errors_i/ok[29]} {detect_errors_i/ok[30]} {detect_errors_i/ok[31]}]]
+set_property port_width 12 [get_debug_ports u_ila_0/probe1]
+connect_debug_port u_ila_0/probe1 [get_nets [list {i_rx_majority_wrapper/count_edge[0]} {i_rx_majority_wrapper/count_edge[1]} {i_rx_majority_wrapper/count_edge[2]} {i_rx_majority_wrapper/count_edge[3]} {i_rx_majority_wrapper/count_edge[4]} {i_rx_majority_wrapper/count_edge[5]} {i_rx_majority_wrapper/count_edge[6]} {i_rx_majority_wrapper/count_edge[7]} {i_rx_majority_wrapper/count_edge[8]} {i_rx_majority_wrapper/count_edge[9]} {i_rx_majority_wrapper/count_edge[10]} {i_rx_majority_wrapper/count_edge[11]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
 set_property port_width 8 [get_debug_ports u_ila_0/probe2]
-connect_debug_port u_ila_0/probe2 [get_nets [list {detect_errors_i/rx_data[0]} {detect_errors_i/rx_data[1]} {detect_errors_i/rx_data[2]} {detect_errors_i/rx_data[3]} {detect_errors_i/rx_data[4]} {detect_errors_i/rx_data[5]} {detect_errors_i/rx_data[6]} {detect_errors_i/rx_data[7]}]]
+connect_debug_port u_ila_0/probe2 [get_nets [list {i_rx_majority_wrapper/aux_fordebug[0]} {i_rx_majority_wrapper/aux_fordebug[1]} {i_rx_majority_wrapper/aux_fordebug[2]} {i_rx_majority_wrapper/aux_fordebug[3]} {i_rx_majority_wrapper/aux_fordebug[4]} {i_rx_majority_wrapper/aux_fordebug[5]} {i_rx_majority_wrapper/aux_fordebug[6]} {i_rx_majority_wrapper/aux_fordebug[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
-set_property port_width 3 [get_debug_ports u_ila_0/probe3]
-connect_debug_port u_ila_0/probe3 [get_nets [list {detect_errors_i/state[0]} {detect_errors_i/state[1]} {detect_errors_i/state[2]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list {i_rx_majority_wrapper/rx_id_fordebug[0]} {i_rx_majority_wrapper/rx_id_fordebug[1]} {i_rx_majority_wrapper/rx_id_fordebug[2]} {i_rx_majority_wrapper/rx_id_fordebug[3]} {i_rx_majority_wrapper/rx_id_fordebug[4]} {i_rx_majority_wrapper/rx_id_fordebug[5]} {i_rx_majority_wrapper/rx_id_fordebug[6]} {i_rx_majority_wrapper/rx_id_fordebug[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
-set_property port_width 24 [get_debug_ports u_ila_0/probe4]
-connect_debug_port u_ila_0/probe4 [get_nets [list {hdmi_top_i/bram2rgb_i/in_from_ram[0]} {hdmi_top_i/bram2rgb_i/in_from_ram[1]} {hdmi_top_i/bram2rgb_i/in_from_ram[2]} {hdmi_top_i/bram2rgb_i/in_from_ram[3]} {hdmi_top_i/bram2rgb_i/in_from_ram[4]} {hdmi_top_i/bram2rgb_i/in_from_ram[5]} {hdmi_top_i/bram2rgb_i/in_from_ram[6]} {hdmi_top_i/bram2rgb_i/in_from_ram[7]} {hdmi_top_i/bram2rgb_i/in_from_ram[8]} {hdmi_top_i/bram2rgb_i/in_from_ram[9]} {hdmi_top_i/bram2rgb_i/in_from_ram[10]} {hdmi_top_i/bram2rgb_i/in_from_ram[11]} {hdmi_top_i/bram2rgb_i/in_from_ram[12]} {hdmi_top_i/bram2rgb_i/in_from_ram[13]} {hdmi_top_i/bram2rgb_i/in_from_ram[14]} {hdmi_top_i/bram2rgb_i/in_from_ram[15]} {hdmi_top_i/bram2rgb_i/in_from_ram[16]} {hdmi_top_i/bram2rgb_i/in_from_ram[17]} {hdmi_top_i/bram2rgb_i/in_from_ram[18]} {hdmi_top_i/bram2rgb_i/in_from_ram[19]} {hdmi_top_i/bram2rgb_i/in_from_ram[20]} {hdmi_top_i/bram2rgb_i/in_from_ram[21]} {hdmi_top_i/bram2rgb_i/in_from_ram[22]} {hdmi_top_i/bram2rgb_i/in_from_ram[23]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe4]
+connect_debug_port u_ila_0/probe4 [get_nets [list {i_rx_majority_wrapper/rxdata[0]} {i_rx_majority_wrapper/rxdata[1]} {i_rx_majority_wrapper/rxdata[2]} {i_rx_majority_wrapper/rxdata[3]} {i_rx_majority_wrapper/rxdata[4]} {i_rx_majority_wrapper/rxdata[5]} {i_rx_majority_wrapper/rxdata[6]} {i_rx_majority_wrapper/rxdata[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
-set_property port_width 20 [get_debug_ports u_ila_0/probe5]
-connect_debug_port u_ila_0/probe5 [get_nets [list {hdmi_top_i/bram2rgb_i/ram_addr[0]} {hdmi_top_i/bram2rgb_i/ram_addr[1]} {hdmi_top_i/bram2rgb_i/ram_addr[2]} {hdmi_top_i/bram2rgb_i/ram_addr[3]} {hdmi_top_i/bram2rgb_i/ram_addr[4]} {hdmi_top_i/bram2rgb_i/ram_addr[5]} {hdmi_top_i/bram2rgb_i/ram_addr[6]} {hdmi_top_i/bram2rgb_i/ram_addr[7]} {hdmi_top_i/bram2rgb_i/ram_addr[8]} {hdmi_top_i/bram2rgb_i/ram_addr[9]} {hdmi_top_i/bram2rgb_i/ram_addr[10]} {hdmi_top_i/bram2rgb_i/ram_addr[11]} {hdmi_top_i/bram2rgb_i/ram_addr[12]} {hdmi_top_i/bram2rgb_i/ram_addr[13]} {hdmi_top_i/bram2rgb_i/ram_addr[14]} {hdmi_top_i/bram2rgb_i/ram_addr[15]} {hdmi_top_i/bram2rgb_i/ram_addr[16]} {hdmi_top_i/bram2rgb_i/ram_addr[17]} {hdmi_top_i/bram2rgb_i/ram_addr[18]} {hdmi_top_i/bram2rgb_i/ram_addr[19]}]]
+set_property port_width 32 [get_debug_ports u_ila_0/probe5]
+connect_debug_port u_ila_0/probe5 [get_nets [list {detect_errors_i/count[0]} {detect_errors_i/count[1]} {detect_errors_i/count[2]} {detect_errors_i/count[3]} {detect_errors_i/count[4]} {detect_errors_i/count[5]} {detect_errors_i/count[6]} {detect_errors_i/count[7]} {detect_errors_i/count[8]} {detect_errors_i/count[9]} {detect_errors_i/count[10]} {detect_errors_i/count[11]} {detect_errors_i/count[12]} {detect_errors_i/count[13]} {detect_errors_i/count[14]} {detect_errors_i/count[15]} {detect_errors_i/count[16]} {detect_errors_i/count[17]} {detect_errors_i/count[18]} {detect_errors_i/count[19]} {detect_errors_i/count[20]} {detect_errors_i/count[21]} {detect_errors_i/count[22]} {detect_errors_i/count[23]} {detect_errors_i/count[24]} {detect_errors_i/count[25]} {detect_errors_i/count[26]} {detect_errors_i/count[27]} {detect_errors_i/count[28]} {detect_errors_i/count[29]} {detect_errors_i/count[30]} {detect_errors_i/count[31]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
-set_property port_width 24 [get_debug_ports u_ila_0/probe6]
-connect_debug_port u_ila_0/probe6 [get_nets [list {hdmi_top_i/bram2rgb_i/rgb24bit[0]} {hdmi_top_i/bram2rgb_i/rgb24bit[1]} {hdmi_top_i/bram2rgb_i/rgb24bit[2]} {hdmi_top_i/bram2rgb_i/rgb24bit[3]} {hdmi_top_i/bram2rgb_i/rgb24bit[4]} {hdmi_top_i/bram2rgb_i/rgb24bit[5]} {hdmi_top_i/bram2rgb_i/rgb24bit[6]} {hdmi_top_i/bram2rgb_i/rgb24bit[7]} {hdmi_top_i/bram2rgb_i/rgb24bit[8]} {hdmi_top_i/bram2rgb_i/rgb24bit[9]} {hdmi_top_i/bram2rgb_i/rgb24bit[10]} {hdmi_top_i/bram2rgb_i/rgb24bit[11]} {hdmi_top_i/bram2rgb_i/rgb24bit[12]} {hdmi_top_i/bram2rgb_i/rgb24bit[13]} {hdmi_top_i/bram2rgb_i/rgb24bit[14]} {hdmi_top_i/bram2rgb_i/rgb24bit[15]} {hdmi_top_i/bram2rgb_i/rgb24bit[16]} {hdmi_top_i/bram2rgb_i/rgb24bit[17]} {hdmi_top_i/bram2rgb_i/rgb24bit[18]} {hdmi_top_i/bram2rgb_i/rgb24bit[19]} {hdmi_top_i/bram2rgb_i/rgb24bit[20]} {hdmi_top_i/bram2rgb_i/rgb24bit[21]} {hdmi_top_i/bram2rgb_i/rgb24bit[22]} {hdmi_top_i/bram2rgb_i/rgb24bit[23]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe6]
+connect_debug_port u_ila_0/probe6 [get_nets [list {detect_errors_i/rx_data[0]} {detect_errors_i/rx_data[1]} {detect_errors_i/rx_data[2]} {detect_errors_i/rx_data[3]} {detect_errors_i/rx_data[4]} {detect_errors_i/rx_data[5]} {detect_errors_i/rx_data[6]} {detect_errors_i/rx_data[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
-set_property port_width 8 [get_debug_ports u_ila_0/probe7]
-connect_debug_port u_ila_0/probe7 [get_nets [list {hdmi_top_i/data_in[0]} {hdmi_top_i/data_in[1]} {hdmi_top_i/data_in[2]} {hdmi_top_i/data_in[3]} {hdmi_top_i/data_in[4]} {hdmi_top_i/data_in[5]} {hdmi_top_i/data_in[6]} {hdmi_top_i/data_in[7]}]]
+set_property port_width 32 [get_debug_ports u_ila_0/probe7]
+connect_debug_port u_ila_0/probe7 [get_nets [list {detect_errors_i/ok[0]} {detect_errors_i/ok[1]} {detect_errors_i/ok[2]} {detect_errors_i/ok[3]} {detect_errors_i/ok[4]} {detect_errors_i/ok[5]} {detect_errors_i/ok[6]} {detect_errors_i/ok[7]} {detect_errors_i/ok[8]} {detect_errors_i/ok[9]} {detect_errors_i/ok[10]} {detect_errors_i/ok[11]} {detect_errors_i/ok[12]} {detect_errors_i/ok[13]} {detect_errors_i/ok[14]} {detect_errors_i/ok[15]} {detect_errors_i/ok[16]} {detect_errors_i/ok[17]} {detect_errors_i/ok[18]} {detect_errors_i/ok[19]} {detect_errors_i/ok[20]} {detect_errors_i/ok[21]} {detect_errors_i/ok[22]} {detect_errors_i/ok[23]} {detect_errors_i/ok[24]} {detect_errors_i/ok[25]} {detect_errors_i/ok[26]} {detect_errors_i/ok[27]} {detect_errors_i/ok[28]} {detect_errors_i/ok[29]} {detect_errors_i/ok[30]} {detect_errors_i/ok[31]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe8]
-set_property port_width 12 [get_debug_ports u_ila_0/probe8]
-connect_debug_port u_ila_0/probe8 [get_nets [list {i_rx_majority_wrapper/count_edge[0]} {i_rx_majority_wrapper/count_edge[1]} {i_rx_majority_wrapper/count_edge[2]} {i_rx_majority_wrapper/count_edge[3]} {i_rx_majority_wrapper/count_edge[4]} {i_rx_majority_wrapper/count_edge[5]} {i_rx_majority_wrapper/count_edge[6]} {i_rx_majority_wrapper/count_edge[7]} {i_rx_majority_wrapper/count_edge[8]} {i_rx_majority_wrapper/count_edge[9]} {i_rx_majority_wrapper/count_edge[10]} {i_rx_majority_wrapper/count_edge[11]}]]
+set_property port_width 3 [get_debug_ports u_ila_0/probe8]
+connect_debug_port u_ila_0/probe8 [get_nets [list {detect_errors_i/state[0]} {detect_errors_i/state[1]} {detect_errors_i/state[2]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe9]
-set_property port_width 8 [get_debug_ports u_ila_0/probe9]
-connect_debug_port u_ila_0/probe9 [get_nets [list {i_rx_majority_wrapper/rxdata[0]} {i_rx_majority_wrapper/rxdata[1]} {i_rx_majority_wrapper/rxdata[2]} {i_rx_majority_wrapper/rxdata[3]} {i_rx_majority_wrapper/rxdata[4]} {i_rx_majority_wrapper/rxdata[5]} {i_rx_majority_wrapper/rxdata[6]} {i_rx_majority_wrapper/rxdata[7]}]]
+set_property port_width 1 [get_debug_ports u_ila_0/probe9]
+connect_debug_port u_ila_0/probe9 [get_nets [list i_rx_majority_wrapper/rx_en]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe10]
-set_property port_width 16 [get_debug_ports u_ila_0/probe10]
-connect_debug_port u_ila_0/probe10 [get_nets [list {i_rx_majority_wrapper/segment_num[0]} {i_rx_majority_wrapper/segment_num[1]} {i_rx_majority_wrapper/segment_num[2]} {i_rx_majority_wrapper/segment_num[3]} {i_rx_majority_wrapper/segment_num[4]} {i_rx_majority_wrapper/segment_num[5]} {i_rx_majority_wrapper/segment_num[6]} {i_rx_majority_wrapper/segment_num[7]} {i_rx_majority_wrapper/segment_num[8]} {i_rx_majority_wrapper/segment_num[9]} {i_rx_majority_wrapper/segment_num[10]} {i_rx_majority_wrapper/segment_num[11]} {i_rx_majority_wrapper/segment_num[12]} {i_rx_majority_wrapper/segment_num[13]} {i_rx_majority_wrapper/segment_num[14]} {i_rx_majority_wrapper/segment_num[15]}]]
+set_property port_width 1 [get_debug_ports u_ila_0/probe10]
+connect_debug_port u_ila_0/probe10 [get_nets [list detect_errors_i/rx_en]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe11]
 set_property port_width 1 [get_debug_ports u_ila_0/probe11]
-connect_debug_port u_ila_0/probe11 [get_nets [list hdmi_top_i/data_en]]
+connect_debug_port u_ila_0/probe11 [get_nets [list i_rx_majority_wrapper/segment_num_en]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe12]
 set_property port_width 1 [get_debug_ports u_ila_0/probe12]
-connect_debug_port u_ila_0/probe12 [get_nets [list hdmi_top_i/bram2rgb_i/den_2s]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe13]
-set_property port_width 1 [get_debug_ports u_ila_0/probe13]
-connect_debug_port u_ila_0/probe13 [get_nets [list hdmi_top_i/bram2rgb_i/hd_2s]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe14]
-set_property port_width 1 [get_debug_ports u_ila_0/probe14]
-connect_debug_port u_ila_0/probe14 [get_nets [list i_rx_majority_wrapper/rx_en]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe15]
-set_property port_width 1 [get_debug_ports u_ila_0/probe15]
-connect_debug_port u_ila_0/probe15 [get_nets [list detect_errors_i/rx_en]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
-set_property port_width 1 [get_debug_ports u_ila_0/probe16]
-connect_debug_port u_ila_0/probe16 [get_nets [list i_rx_majority_wrapper/segment_num_en]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
-set_property port_width 1 [get_debug_ports u_ila_0/probe17]
-connect_debug_port u_ila_0/probe17 [get_nets [list detect_errors_i/valid]]
-create_debug_port u_ila_0 probe
-set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
-set_property port_width 1 [get_debug_ports u_ila_0/probe18]
-connect_debug_port u_ila_0/probe18 [get_nets [list hdmi_top_i/bram2rgb_i/vd_2s]]
+connect_debug_port u_ila_0/probe12 [get_nets [list detect_errors_i/valid]]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
