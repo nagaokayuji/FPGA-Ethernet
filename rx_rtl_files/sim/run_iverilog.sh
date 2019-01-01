@@ -6,9 +6,5 @@ if [ $# -ne 1 ]; then
 fi
 
 topmodulename=$1
-echo "$topmodulename"
-topmodulefilename=$topmodulename.v
-echo "$topmodulefilename"
-
 echo "iverilog -s $topmodulename $topmodulename.v ../*.v"
 iverilog -s $topmodulename $topmodulename.v ../*.v
