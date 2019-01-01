@@ -8,12 +8,96 @@ module cnv8to24(
     //input wire [20:0] startaddr8b,
     input wire dclk,
     
-    output reg [16:0] addr2vram = 0,
+    output reg [23:0] addr2vram = 0,
     output reg [1:0] count = 0,
     output reg [7:0] data_rgb,//data_r=0,data_g=0,data_b=0,
-    output reg wea_r,wea_g,wea_b
+    output wire wea_r,wea_g,wea_b
 );
 
+reg [23:0] startaddr;
+reg [7:0] data8b_reg;
+reg en_reg;
+reg [1:0] count_before;
+reg [31:0] detect;
+wire detect_on = (detect == 32'h05a80000);
+reg [3:0] state;
+localparam state_wait = 0;
+localparam state_addr2=1;
+localparam state_addr3=2;
+localparam state_gotaddr=3;
+localparam state_datain=4;
+
+assign wea_r = (count==1);
+assign wea_g = (count==2);
+assign wea_b = (count==3);
+
+
+always @(posedge dclk) begin
+// edge alignment
+	data8b_reg <= data8b;
+	data_rgb <= data8b_reg;
+	en_reg <= en;
+	detect <= {detect[23:0],data8b_reg};
+
+
+	if (en_reg) begin
+		case (state)
+			state_wait: begin
+			count <= 0;
+			startaddr <= 0;
+				if (detect_on) begin
+					startaddr[23:16] <= data8b_reg;
+					state <= state_addr2;
+				end
+			end
+
+			state_addr2: begin
+				startaddr[15:8] <= data8b_reg;
+				state <= state_addr3;
+			end
+
+			state_addr3: begin
+				startaddr[7:0] <= data8b_reg;
+				addr2vram <= {startaddr[23:8],data8b_reg};
+				state <= state_gotaddr;
+				count <= 0;
+				count_before <= 0;
+			end
+			state_gotaddr: begin
+				count_before <= count;
+				count <= 1;
+				state <= state_datain;
+			end
+			state_datain: begin
+				count_before <= count;
+				if (count == 3) begin
+					addr2vram <= addr2vram + 1;
+					count <= 1;
+				end
+				else begin
+					count <= count + 1;
+				end
+			end
+		endcase		
+	end
+	else begin
+		state <= state_wait;
+		count <= 0;
+
+
+	end
+	
+
+
+
+
+	
+
+end
+
+
+
+/*
 reg [23:0] addr8b = 0;
 
 reg [55:0] detecting = 0;
@@ -102,5 +186,5 @@ always @(posedge dclk) begin
     end 
 
 end
-
+*/
 endmodule
