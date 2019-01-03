@@ -31,6 +31,8 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 
 /*
  new plan.
+ a
+ 
 
  delete startaddr & lastaddr @ byte_data.
  use count_for_bram LIKE same address for any txid.
