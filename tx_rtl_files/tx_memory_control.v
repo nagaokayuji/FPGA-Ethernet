@@ -24,12 +24,19 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 	input wire [23:0] lastaddr,
 
 	// output
-	//output wire [7:0] doutb_first,
-	//output wire [7:0] doutb_not_first // txid > 1
 	output reg [23:0] startaddr = 0,
 	//output reg [7:0] doutb_reg
 	output wire [7:0] doutb
 );
+
+/*
+ new plan.
+
+ delete startaddr & lastaddr @ byte_data.
+ use count_for_bram LIKE same address for any txid.
+ switch automatically @ out of byte_data.
+*/
+
 
 // data_user : from byte_data, active high when data enable
 reg [1:0] data_user_reg = 2'b0;
@@ -38,8 +45,8 @@ reg [1:0] data_user_reg = 2'b0;
 wire data_user_neg = (data_user_reg == 2'b10);
 
 // ID == 1 -=-=> startaddr -- lastaddr;
-
 always @(posedge clk125MHz) begin
+	// shift
 	data_user_reg <= {data_user_reg[0] ,data_user};
 	if (data_user_neg && ( txid == redundancy)) begin
 		startaddr <= lastaddr;
@@ -67,10 +74,18 @@ vram_control vram_control_i(
 );
 
 
-
 // txid >= 2 
+// send and save data
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
-genvar i;
+
+/*
+	count_for_bram: addrb for bram1080.
+
+
+	<< about latency>>
+
+
+*/
 reg [7:0] doutb_first_reg;
 reg [7:0] doutb_not_one_reg[SEGMENT_NUMBER_MAX - 1 : 0];
 reg [0:0] wea_bram_not_one_reg[SEGMENT_NUMBER_MAX - 1: 0];
@@ -79,8 +94,10 @@ reg [12:0] count_for_bram_reg;
 wire [7:0] doutb_not_one[SEGMENT_NUMBER_MAX - 1 : 0];
 wire [0:0] wea_bram_not_one[SEGMENT_NUMBER_MAX - 1 : 0]; 
 wire [7:0]  doutb_muxed = doutb_not_one_reg[segment_num];
-assign doutb = txid==1? doutb_first_reg: doutb_muxed;
 
+// doutb: 
+assign doutb = (txid==1) ? 
+				doutb_first_reg: doutb_muxed;
 
 integer m;
 always @(posedge clk125MHz) begin
@@ -93,33 +110,32 @@ always @(posedge clk125MHz) begin
 	end
 	count_for_bram_reg <= count_for_bram;
 	doutb_first_reg <= doutb_first;
-	//doutb_reg <= doutb;
-	
-
 end
 
+genvar i;
 generate
-for (i=0; i < SEGMENT_NUMBER_MAX; i = i + 1) begin
-	bram_1080 bram_1080_inst(
-		.clka(clk125MHz),
-		.wea(wea_bram_not_one_reg[i]),
-		.addra(count_for_bram_reg),
-		.dina(doutb_first_reg),
-		.clkb(clk125MHz),
-		.addrb(count_for_bram_b),
-		.doutb(doutb_not_one[i])
-	);
-end
+	for (i=0; i < SEGMENT_NUMBER_MAX; i = i + 1) begin
+		bram_1080 bram_1080_inst(
+			.clka(clk125MHz),
+			.wea(wea_bram_not_one_reg[i]),
+			.addra(count_for_bram_reg),
+			.dina(doutb_first_reg),
+			.clkb(clk125MHz),
+			.addrb(count_for_bram_b),
+			.doutb(doutb_not_one[i])
+		);
+	end
 endgenerate
 
 function dmux;
-input [15:0] j;
-input [15:0] segment_num;
-input wea;
-	if (j == segment_num) begin
-		dmux = wea;
-	end else begin
-		dmux = 1'b0;
+	input [15:0] j;
+	input [15:0] segment_num;
+	input wea;
+		if (j == segment_num) begin
+			dmux = wea;
+		end 
+		else begin
+			dmux = 1'b0;
 		end
 endfunction
 
@@ -129,5 +145,6 @@ generate
 		assign wea_bram_not_one[k] = dmux(k,segment_num,wea_bram1080);
 	end
 endgenerate
+
 
 endmodule
