@@ -31,7 +31,10 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 	output wire [7:0] doutb
 );
 
+// data_user : from byte_data, active high when data enable
 reg [1:0] data_user_reg = 2'b0;
+
+// detect negedge
 wire data_user_neg = (data_user_reg == 2'b10);
 
 // ID == 1 -=-=> startaddr -- lastaddr;
@@ -49,50 +52,21 @@ wire [7:0] doutb_first;
 wire [7:0] doutb_not_first;
 
 
-// vramaddr_c : selector. r,g,b.
-assign doutb_first = vramaddr_c == 0? 
-			doutb_r: vramaddr_c==2? 
-				doutb_g:vramaddr_c==1?
-				 doutb_b:0; // ID == 1
-
-vram vram_r(
-	.clka(pclk),
-	.clkb(clk125MHz),
-	.wea(ena),
-	.addra(bramaddr24b),
-	.addrb(vramaddr),
-	.dina(rgb_r),//in:5bits
-	.douta(),
-	.dinb(1'b0),
-	.web(1'b0),
-	.doutb(doutb_r)
+vram_control vram_control_i(
+	.pclk(pclk),
+	.clk125MHz(clk125MHz),
+	.ena(ena),
+	.bramaddr24b(bramaddr24b),
+	.vramaddr(vramaddr),
+	.vramaddr_c(vramaddr_c),
+	.din_rgb_r(rgb_r),
+	.din_rgb_g(rgb_g),
+	.din_rgb_b(rgb_b),
+	.doutb_first(doutb_first),
+	.doutb_rgb({doutb_r,doutb_g,doutb_b})
 );
 
-vram vram_g(
-	.clka(pclk),
-	.clkb(clk125MHz),
-	.wea(ena),
-	.addra(bramaddr24b),
-	.addrb(vramaddr),
-	.dina(rgb_g),//in:5bits
-	.douta(),
-	.dinb(1'b0),
-	.web(1'b0),
-	.doutb(doutb_g)//5bits
-);
 
-vram vram_b(
-	.clka(pclk),
-	.clkb(clk125MHz),
-	.wea(ena),
-	.addra(bramaddr24b),
-	.addrb(vramaddr),
-	.dina(rgb_b),//in:5bits
-	.douta(),
-	.dinb(1'b0),
-	.web(1'b0),
-	.doutb(doutb_b)//5bits
-);
 
 // txid >= 2 
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
