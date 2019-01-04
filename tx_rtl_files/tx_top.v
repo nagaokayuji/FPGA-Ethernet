@@ -158,6 +158,7 @@ clocking clocking_i(
 wire [15:0] segment_num;
 wire [7:0] aux,txid;
 wire start_sending;
+wire [7:0] redundancy;
 send_control send_control_i (
 	.clk125MHz(clk125MHz),
 	.RST(rstb),
@@ -168,7 +169,8 @@ send_control send_control_i (
 	.segment_num_inter(segment_num), // segment number
 	.txid_inter(txid), // id
 	.aux_inter(aux), // auxiliary number
-	.start_sending(start_sending)
+	.start_sending(start_sending),
+	.redundancy(redundancy)
 );
 
 
@@ -218,9 +220,6 @@ byte_data data(
 	.advance(adv_data),
 	.startaddr(startaddr),
 	.vramdata(doutb),
-	.vramaddr(addrb),
-	.vramaddr_c(vramaddr_c),
-	.lastaddr(lastaddr),
 	.busy(busy),
 	.data(raw_data),
 	//.mydata(my_data),
@@ -230,10 +229,7 @@ byte_data data(
 	.data_user(raw_data_user),
 	.data_enable(raw_data_enable),
 	.data_valid(raw_data_valid),
-	.counter(byte_data_counter),
-	.count_for_bram(count_for_bram), // output
-	.count_for_bram_b(count_for_bram_b),
-	.count_for_bram_en(count_for_bram_en)
+	.counter(byte_data_counter)
 	);
 
 
@@ -242,6 +238,7 @@ tx_memory_control tx_memory_control_i (
 	.clk125MHz(clk125MHz),
 	.txid(txid),
 	.segment_num(segment_num), // segment_num,  8bits
+	.redundancy(redundancy),
 	.ena(ena),
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
@@ -249,7 +246,7 @@ tx_memory_control tx_memory_control_i (
 	.bramaddr24b(bramaddr24b), // input
 	.byte_data_counter(byte_data_counter),
 	.data_user(raw_data_user),
-	.lastaddr(lastaddr),
+
 
 	// output
 	.doutb(doutb),
