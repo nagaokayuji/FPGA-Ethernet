@@ -22,7 +22,7 @@ module rgmii_tx (
     reg [6:0] enable_frequency = 7'b1111111;
     wire [8:0] times_3;// = 9'b000000000;
     reg [6:0] first_quarter = 7'b0000000;
-    reg [6:0] second_quarter = 7'b00000000;
+    reg [6:0] second_quarter = 7'b0000000;
     reg [6:0] third_quarter = 7'b0000000;
 
      reg [7:0] dout = 8'b00000000;

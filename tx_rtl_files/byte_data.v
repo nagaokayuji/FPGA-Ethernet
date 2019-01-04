@@ -7,19 +7,20 @@
 	input wire [15:0] segment_num,
 	input wire [7:0] index_clone,
 	input wire [7:0] vramdata,
-	input wire [19:0] startaddr,
-	output reg [19:0] vramaddr = 0,
-	output reg [1:0] vramaddr_c = 0, // rgb selector. 
-	output reg [19:0] lastaddr = 0,
+	input wire [23:0] startaddr, // coordinate
+	//output reg [19:0] vramaddr = 0,
+	//output reg [1:0] vramaddr_c = 0, // rgb selector. 
+	//output reg [19:0] lastaddr = 0,
 	output reg busy = 1'b0,
 	output reg [7:0] data = 8'b0,
 	
+	output reg [11:0] counter = 12'b0,
 	output reg data_user = 1'b0,
 	output reg data_valid = 1'b0,
-	output reg data_enable = 1'b0,
-	output reg [12:0] count_for_bram = 0,
-	output reg [12:0] count_for_bram_b=0,
-	output reg count_for_bram_en = 0
+	output reg data_enable = 1'b0
+	//output reg [12:0] count_for_bram = 0,
+	//output reg [12:0] count_for_bram_b=0,
+	//output reg count_for_bram_en = 0
 	//output reg send_busy = 1'b0
 	);
 //parameter VGA_ -> 420*240
@@ -33,7 +34,6 @@ parameter data_bytes = 1440; // 1444 Bytes. 4: my protocol, 1440: payload.
 parameter ip_total_bytes = ip_header_bytes + udp_header_bytes + data_bytes;//20 + 8 + 1444 = 1472 = x5c0
 parameter udp_total_bytes = udp_header_bytes + data_bytes; // 8 + data_bytes = 1452 = x5ac
 reg start_internal = 1'b0;
-reg [11:0] counter = 12'b0;
 
 // added 7/8
 reg [7:0] index_clone_rised;
@@ -86,7 +86,6 @@ assign ip_checksum2 = ip_checksum1[31:16] + ip_checksum1[15:0];
 assign ip_checksum  = ~ip_checksum2;
 reg flag_max = 0;
 // 43( == 0x2b),wrong data
-always @(posedge clk) begin
 //if (counter >= 41 && counter <= 1123) begin
 /*
 43==0x2b
@@ -96,9 +95,10 @@ always @(posedge clk) begin
 addr: 0x24,0x25,0x26==36,37,38
 count=2b == 43のとき，addr=startaddrのデータが必要
 */
+/*
 if (counter == 35) begin flag_max = 0; vramaddr <= startaddr; count_for_bram_b <= 0; count_for_bram <= 0;end
 if (counter >= 41 && counter <= 1122) begin// 43?
-		if (flag_max || (vramaddr > 57600/*xmax * ymax * 3*/))	begin
+		if (flag_max || (vramaddr > 57600))	begin
 		  vramaddr <= 0;
 		  flag_max <= 1;
 		  vramaddr_c <= 0;
@@ -126,7 +126,7 @@ if (counter >= 41 && counter <= 1122) begin// 43?
 	 else count_for_bram_en <= 0;
 end
 end
-
+*/
 
 always @(posedge clk) begin
 	// update the counter
@@ -259,17 +259,22 @@ always @(posedge clk) begin
 
 // 0x2b == 43 // here, wrong data found...
 		12'h2b: begin
-						data_user <= 1'b1;
-						data <= vramdata;
+						data <= startaddr[23:16];
 						end
-		12'h2c: data <= vramdata;
-		12'h2d:data <= vramdata;
+		12'h2c: data <= startaddr[15:8];
+		12'h2d:data <= startaddr[7:0];
+		// 0x2e == 46: begin pixcel data
+		12'h2e:begin
+						data_user <= 1'b1;
+		data <= vramdata; // here.
+		end
 		// ethernet frame check sequence (CRC)
 		// will be addedhere, overwriting these nibbles
        // 12'h462:;
        
        // NOTES: THESE MUST BE CHANGED.
-		12'h5cb: begin // == 12'd1123
+		12'h5cb: begin //1483 // == 12'd1123
+		/*
 		          if (flag_max) lastaddr <= 0;
 		          else
 		         if (vramaddr > 0)
@@ -277,6 +282,7 @@ always @(posedge clk) begin
 		         else
 		          lastaddr <= 0;
 
+*/
 							
 				//lastaddr <= vramaddr - 1; 
 				data_valid <= 1'b0;
@@ -294,7 +300,7 @@ always @(posedge clk) begin
 							----------------------------------------------------------------------------------
  */
  
-		12'h5e1: begin// == 12'd1145
+		12'h5e1: begin// 1505 // == 12'd1145
 				counter <= 12'b0;// here.
 				busy <= 1'b0;
 				end

@@ -13,20 +13,36 @@ module vram_control (
 	output wire [7:0] doutb_first,
 	output wire [23:0] doutb_rgb
 );
+/*
+outlook: addr <-> data 1:1.
 
-wire [7:0] doutb_r = doutb_rgb[23:16];
-wire [7:0] doutb_g = doutb_rgb[15:8];
-wire [7:0] doutb_b = doutb_rgb[7:0];
+*/
+assign doutb_rgb = {doutb_r,doutb_g_dummy, doutb_b_dummy};
+
+wire [7:0] doutb_g_dummy = doutb_g + 1;
+wire [7:0] doutb_b_dummy = doutb_b + 2;
+
+
+wire [7:0] doutb_r;
+wire [7:0] doutb_g;
+wire [7:0] doutb_b;
 
 wire [7:0] rgb_r = din_rgb_r;
 wire [7:0] rgb_g = din_rgb_g;
 wire [7:0] rgb_b = din_rgb_b;
 
+/*
+	vramaddr = (addr_b / 3);
+	color = vramaddr % 3;
+*/
+
+
+
 // vramaddr_c : selector. r,g,b.
 assign doutb_first = vramaddr_c == 0? 
-			doutb_r: vramaddr_c==2? 
-				doutb_g:vramaddr_c==1?
-				 doutb_b:0; // ID == 1
+			doutb_r: vramaddr_c==1? 
+				doutb_g_dummy:vramaddr_c==2?
+				 doutb_b_dummy:0; // ID == 1
 
 vram vram_r(
 	.clka(pclk),
@@ -36,7 +52,7 @@ vram vram_r(
 	.addrb(vramaddr),
 	.dina(rgb_r),//in:5bits
 	.douta(),
-	.dinb(1'b0),
+	.dinb(8'b0),
 	.web(1'b0),
 	.doutb(doutb_r)
 );
@@ -49,7 +65,7 @@ vram vram_g(
 	.addrb(vramaddr),
 	.dina(rgb_g),//in:5bits
 	.douta(),
-	.dinb(1'b0),
+	.dinb(8'b0),
 	.web(1'b0),
 	.doutb(doutb_g)//5bits
 );
@@ -62,10 +78,9 @@ vram vram_b(
 	.addrb(vramaddr),
 	.dina(rgb_b),//in:5bits
 	.douta(),
-	.dinb(1'b0),
+	.dinb(8'b0),
 	.web(1'b0),
 	.doutb(doutb_b)//5bits
 );
-
 
 endmodule

@@ -180,9 +180,9 @@ wire pclk;
 wire ena;
 wire [23:0] bramaddr24b;
 wire [7:0] rgb_r,rgb_g,rgb_b;
-hdmi_top (
+hdmi_top hdmi_top_i (
 	// clk,rst
-	.clk100MHz(clk100MHz),
+	.clk100MHz(clk100MHz_buffered),
 	.rstb(rstb), // active HIGH
 	// hdmi
 	.hdmi_rx_clk_n(hdmi_rx_clk_n),
@@ -210,6 +210,7 @@ wire [12:0] count_for_bram;
 wire [12:0] count_for_bram_b;
 wire [1:0] vramaddr_c;
 wire count_for_bram_en;
+wire [11:0] byte_data_counter;
 reg [15:0] m = 0;
 byte_data data(
 	.clk(clk125MHz),
@@ -229,6 +230,7 @@ byte_data data(
 	.data_user(raw_data_user),
 	.data_enable(raw_data_enable),
 	.data_valid(raw_data_valid),
+	.counter(byte_data_counter),
 	.count_for_bram(count_for_bram), // output
 	.count_for_bram_b(count_for_bram_b),
 	.count_for_bram_en(count_for_bram_en)
@@ -245,11 +247,7 @@ tx_memory_control tx_memory_control_i (
 	.rgb_g(rgb_g),
 	.rgb_b(rgb_b),
 	.bramaddr24b(bramaddr24b), // input
-	.vramaddr(addrb),
-	.vramaddr_c(vramaddr_c),
-	.count_for_bram(count_for_bram), // input
-	.count_for_bram_b(count_for_bram_b), // input
-	.count_for_bram_en(count_for_bram_en), // 
+	.byte_data_counter(byte_data_counter),
 	.data_user(raw_data_user),
 	.lastaddr(lastaddr),
 
