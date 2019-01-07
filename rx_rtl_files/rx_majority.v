@@ -11,7 +11,7 @@ module rx_majority (
  // input wire rx_error,
   output wire tmp, // connected to led[5] // en_out
   output wire loss_detected,
-  input wire [5:0] switches,
+  input wire [7:0] redundancy,
  output wire en_out,
  output wire [7:0] data_out
   );
@@ -29,12 +29,11 @@ module rx_majority (
 
 
 parameter id_location = 6'h0;
-wire [2:0] redundancy = switches[5:4]==0? 1: switches[5:4]==1? 3 : switches[5:4]== 2 ? 5:0;
 
 
 wire [7:0] data_out_1;
 wire en_out_1,loss_detected_1;
-one2one one2one_inst(
+one2one #(.whereisid(id_location)) one2one_inst(
     .clk(rx_clk),
     .clk125MHz(clk125MHz),
     .rst(reset),

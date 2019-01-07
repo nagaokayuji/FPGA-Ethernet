@@ -1,7 +1,7 @@
 // one 2 one module.
 // outputs 2 clocks later.
 
-module one2one(
+module one2one #(parameter whereisid = 0)(
     input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
  input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
     //input wire [3:0] switches, // input switches 
@@ -11,7 +11,6 @@ module one2one(
    output wire lost		// loss detected. 
  //(* mark_debug = "true" *)   output wire[2:0] comp3bit // for debug. maybe deleted soon
     );
-    localparam whereisid = 6'h22;
     
     reg [7:0] rxdata=0;
     reg rx_en = 0;
@@ -28,11 +27,11 @@ module one2one(
         addr <= addr + 1'b1;
      end
      else begin
-        addr <= 1'b0;
+        addr <= 0;
         rx_id <= 4'b0;
      end
         
-     if (addr == whereisid) begin
+     if (addr == whereisid && rx_en) begin
         rx_id <= rxdata[3:0];
       end
       else if (addr > whereisid) begin

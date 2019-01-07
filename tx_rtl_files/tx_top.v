@@ -194,6 +194,7 @@ hdmi_top hdmi_top_i (
 	.hdmi_rx_scl(hdmi_rx_scl),
 	.hdmi_rx_sda(hdmi_rx_sda),
 // output
+    .pclk(pclk),
 	.hdmi_rx_hpa(hdmi_rx_hpa),
 	.hdmi_rx_txen(hdmi_rx_txen),
 	.ena(ena),

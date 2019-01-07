@@ -1,4 +1,6 @@
 module rgmii_rx (
+    input wire rst,
+    input wire clk125MHz,
 	input wire rx_clk,
 	input wire rx_ctl,
 	input wire [3:0] rx_data,
@@ -6,11 +8,16 @@ module rgmii_rx (
 	output reg link_100mb,
 	output reg link_1000mb,
 	output reg link_full_duplex,
-	output wire [7:0] raw_data,
-	output wire data_enable,
+	output wire [7:0] raw_data_f,
+	output wire data_enable_f,
 	output wire data_error
 	);
 	
+(* mark_debug = "true" *) wire [7:0] raw_data;
+(* mark_debug = "true" *) wire data_enable;
+
+
+
 wire [1:0] raw_ctl;
 assign data_enable = raw_ctl[0];
 assign data_error = raw_ctl[0] ^ raw_ctl[1];
@@ -99,7 +106,31 @@ data <= raw_data;
 		.S(1'b0)
 		);
 
+//=========================
+//        FIFO
+//=========================
 
+
+(* mark_debug = "true" *) wire wr_en,rd_en,full,empty;
+(* mark_debug = "true" *) wire en_fifo_out;
+(* mark_debug = "true" *) wire [7:0] data_fifo_out;
+assign rd_en = !empty;
+assign wr_en = 1'b1 && !full;
+
+fifo_9w16d rx_fifo (
+.rst(rst),
+.wr_clk(rx_clk),
+.rd_clk(clk125MHz),
+.din({data_enable, raw_data}),
+.wr_en(wr_en),
+.rd_en(rd_en),
+.dout({en_fifo_out,data_fifo_out}),
+.full(full),
+.empty(empty)
+);
+
+assign raw_data_f = data_fifo_out;
+assign data_enable_f = en_fifo_out;
 	
 	always @(posedge rx_clk) begin
 	/*

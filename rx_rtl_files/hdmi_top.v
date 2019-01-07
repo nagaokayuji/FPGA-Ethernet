@@ -147,7 +147,7 @@ output wire [2:0] hdmi_tx_p
     .TMDS_Data_p(hdmi_tx_p),
     .TMDS_Data_n(hdmi_tx_n),
     .aRst(RST),
-    .vid_pData({rgb24bit[15:8],rgb24bit[23:16],rgb24bit[7:0]}), // modified
+    .vid_pData({rgb24bit[23:16],rgb24bit[15:8],rgb24bit[7:0]}), // modified
     .vid_pVDE(den),
     .vid_pHSync(hd),
     .vid_pVSync(vd),

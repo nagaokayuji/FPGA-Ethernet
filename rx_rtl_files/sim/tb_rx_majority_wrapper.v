@@ -2,7 +2,7 @@ module tb_rx_majority_wrapper;
 
 
 parameter CYCLE = 16;
-parameter packetsize = 16;
+parameter packetsize = 55;
 parameter whereis_segment = 5;
 parameter segment_num_max = 3;
 reg clk125MHz,rst,rx_clk,rx_enable;
@@ -18,7 +18,7 @@ rx_majority_wrapper #(.whereis_segment_num(whereis_segment), .SEGMENT_NUM_MAX(se
 	.rx_enable(rx_enable),
 	.tmp(tmp),
 	.loss_detected(loss_detected),
-	.switches(6'b010101),
+	.redundancy(8'd5),
 	.en_out(en_out),
 	.data_out(data_out)
 );

@@ -8,7 +8,7 @@ module rx_majority_wrapper #(parameter whereis_segment_num = 34, SEGMENT_NUM_MAX
 	input wire rx_enable,
 	output wire tmp,
 	output wire loss_detected,
-	input wire [5:0] switches,
+	input wire [7:0] redundancy,
 	output wire en_out,
 	output wire [7:0] data_out
 );
@@ -68,7 +68,7 @@ for (i=0; i<SEGMENT_NUM_MAX; i=i+1) begin
 		.rx_enable(rx_enable_seg[i]),
 		.tmp(),
 		.loss_detected(),
-		.switches(switches),
+		.redundancy(redundancy),
 		.en_out(en_out_seg[i]),
 		.data_out(data_out_seg[i])
 	);

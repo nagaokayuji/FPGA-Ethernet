@@ -13,6 +13,7 @@ module cnv8to24(
     output reg [7:0] data_rgb,//data_r=0,data_g=0,data_b=0,
     output wire wea_r,wea_g,wea_b
 );
+localparam max_addr = 57600;
 
 reg [23:0] startaddr;
 reg [7:0] data8b_reg;
@@ -31,7 +32,7 @@ assign wea_r = (count==1);
 assign wea_g = (count==2);
 assign wea_b = (count==3);
 
-
+wire [23:0] next_addr2vram = (addr2vram < max_addr) ? addr2vram + 1 : 0;
 always @(posedge dclk) begin
 // edge alignment
 	data8b_reg <= data8b;
@@ -71,7 +72,7 @@ always @(posedge dclk) begin
 			state_datain: begin
 				count_before <= count;
 				if (count == 3) begin
-					addr2vram <= addr2vram + 1;
+					addr2vram <= next_addr2vram;
 					count <= 1;
 				end
 				else begin

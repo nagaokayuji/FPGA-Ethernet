@@ -39,6 +39,13 @@ module rx_top(
 parameter whereisid = 16'd25;
 wire RST = !resetn;
 
+(* mark_debug = "true" *) wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
+
+
+
+
+
+
 reg [26:0] max_count = 27'b0;
 reg [26:0] count = 27'b0;
 reg [1:0] speed = 2'b11;
@@ -93,13 +100,16 @@ wire link_10mb;
 wire link_100mb;
 wire link_1000mb;
 wire link_full_duplex;
-wire [7:0] rx_data;
+wire [7:0] raw_data_f;
 wire rx_valid;
-wire rx_enable;
+wire rx_enable_f;
 wire rx_error;
 // no meanings
 rgmii_rx i_rgmii_rx(
+    .rst(RST),
+    .clk125MHz(clk125MHz),
 	.rx_clk(eth_rxck_buf),
+	
 	//.switches5(switches[5]),
 	.rx_ctl(eth_rxctl),
 	.rx_data(eth_rxd),
@@ -107,14 +117,33 @@ rgmii_rx i_rgmii_rx(
 	.link_100mb(link_100mb),
 	.link_1000mb(link_1000mb),
 	.link_full_duplex(link_full_duplex),
-	.raw_data(rx_data),
-	.data_enable(rx_enable),
+	.raw_data_f(raw_data_f),
+	.data_enable_f(rx_enable_f),
 	.data_error(rx_error)
 	);
+	
+/*
+reg [7:0] eth_rxd_ff1, eth_rxd_ff2, eth_rxd_ff3;
+reg eth_en_ff1, eth_en_ff2, eth_en_ff3;
+
+always @(posedge clk125MHz) begin
+eth_rxd_ff1 <= rx_data_source;
+eth_rxd_ff2 <= eth_rxd_ff1;
+eth_rxd_ff3 <= eth_rxd_ff2;
+
+eth_en_ff1 <= rx_enable_source;
+eth_en_ff2 <= eth_en_ff1;
+eth_en_ff3 <= eth_en_ff2;
+end
+*/
+
+wire [7:0] rx_data = raw_data_f;
+wire rx_enable = rx_enable_f;
+
 
 wire sfd_wait;
 ext_preamble i_ext_preamble (
-	.rx_clk(eth_rxck_buf),
+	.rx_clk(clk125MHz),
 	.rx_data(rx_data),
 	.rx_enable(rx_enable),
 	.sfd_wait(sfd_wait)
@@ -123,7 +152,7 @@ ext_preamble i_ext_preamble (
 wire [7:0] rawdata;
 wire raw_en;
 ext_crc ext_crc_inst(
-	.rx_clk(eth_rxck_buf),
+	.rx_clk(clk125MHz),
 	.rx_data(rx_data),
 	.rx_enable(rx_enable),
 	.sfd_wait(sfd_wait),
@@ -143,13 +172,13 @@ reg [7:0] data_out;
 */
 rx_majority_wrapper i_rx_majority_wrapper (
 	.clk125MHz(clk125MHz),
-	.rx_clk(eth_rxck_buf),
+	.rx_clk(clk125MHz),
 	.reset(rstb),
 	.rx_data(rawdata),
 	.rx_enable(raw_en),
 	.loss_detected(loss_detected),
 	.tmp(tmp),
-	.switches(switches),
+	.redundancy(redundancy),
 	.en_out(en_out),
 	.data_out(data_out)
 );
@@ -158,49 +187,6 @@ rx_majority_wrapper i_rx_majority_wrapper (
 reg [26:0] count_led = 27'b0;
 parameter max_for_led = 27'd71072000;
 
-// LED5: tmp
-// tmp : ====================en_out
-reg [26:0] count_led3 = 27'b0;
-reg led5 = 1'b0;
-always @(posedge clk125MHz) begin
-if (count_led3 >= max_for_led) begin
-	count_led3 <= 27'b0;
-	led5 <= 1'b0;
-end
-else if (tmp || count_led3 > 27'b0) begin
-	count_led3 <= count_led3 + 1'b1;
-	led5 <= 1'b1;
-end
-else begin
-	count_led3 <= 27'b0;
-	led5 <= 1'b0;
-end
-end
-
-// LED6: LOSS_DETECT 
-// LED7: 
-
-
-reg [26:0] count_led2 = 27'b0;
-reg led6 = 1'b0;
-reg loss_detected_internal = 1'b0;
-always @(posedge clk125MHz) begin
-if (count_led2 >= max_for_led) begin
-	count_led2 <= 27'b0;
-	led6 <= 1'b0;
-end
-else if (loss_detected || count_led2 > 27'b0) begin
-	count_led2 <= count_led2 + 1'b1;
-	led6 <= 1'b1;
-end
-else begin
-	count_led2 <= 27'b0;
-	led6 <= 1'b0;
-end
-end
-
-assign leds[5] = led5;
-assign leds[6] = led6;
 
 
 
@@ -223,7 +209,7 @@ clocking clocking_i(
 reg [7:0] data_out_reg;
 reg en_out_reg;
 
-always @(posedge eth_rxck_buf) begin
+always @(posedge clk125MHz) begin
 	data_out_reg <= data_out;
 	en_out_reg <= en_out;
 end
@@ -235,38 +221,17 @@ detect_errors detect_errors_i (
 	.rst(RST),
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),
-	.clk(eth_rxck_buf),
+	.clk(clk125MHz),
 	.count(countp),
 	.ok(okp),
 	.valid(valid),
 	.state(state_d_e));
 
-reg [31:0] count_led0 = 0;
-reg led0 = 0;
-always @(posedge clk125MHz) begin
-	if (count_led0 >= max_for_led) begin
-		count_led0 <= 27'b0;
-		led0 <= 0;
-	end
-	else if (valid || count_led0 > 0) begin
-	count_led0 <= count_led0 + 1;
-	led0 <= 1'b1;
-	end
-	else begin
-		count_led0 <= 27'b0;
-		led0 <= 1'b0;
-	end
- end
-
- assign leds[0] = led0;
- assign leds[1] = started;
- assign leds[2] = finished;
-
 
 hdmi_top hdmi_top_i (
 	.clk(clk100MHz_buffered),
 	.RST(rstb),
-	.dclk(eth_rxck_buf),
+	.dclk(clk125MHz),
 	.clk125MHz(clk125MHz),
 	.data_in(data_out_reg),
 	.data_en(en_out_reg),
@@ -275,5 +240,7 @@ hdmi_top hdmi_top_i (
 	.hdmi_tx_n(hdmi_tx_n),
 	.hdmi_tx_p(hdmi_tx_p)
 );
+
+assign leds = switches;
 
 endmodule

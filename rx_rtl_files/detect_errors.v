@@ -70,11 +70,17 @@ reg [7:0] samecount;
 
 wire aux_on = (whereis_aux == count_edge && rx_en);// && valid;
 wire aux_on_1 = (whereis_aux + 1'b1 == count_edge);// && valid;
+wire aux_on_2 = (whereis_aux + 2 == count_edge);
+wire aux_on_3 = (whereis_aux + 3 == count_edge);
+
 //wire [7:0] next_aux = (aux_prev == maxaux) ? 0 : (aux_prev + 1'b1);
 //wire aux_ok = (aux == next_aux);
 wire [7:0] next_samecount = (samecount == segment_number_max - 1)?
 							0: samecount + 1;
 
+reg [31:0] cal_los_inter;
+reg [31:0] cal_los__inter;
+reg [31:0] cal_los___inter;
 //-~-~-~-^ function ----------------
 function [7:0] next_aux_func;
 	input [7:0] aux_prev;
@@ -112,7 +118,9 @@ localparam state_init = 0;
 localparam state_started = 1;
 localparam state_running = 2;
 localparam state_run = 3;
-localparam state_inner = 4;
+localparam state_run_error1 = 4;
+localparam state_run_error2 = 5;
+localparam state_run_error3 = 6;
 localparam state_finished = 7;
 
 always @(posedge clk) begin
@@ -129,6 +137,7 @@ always @(posedge clk) begin
 		state = state_init;
 	end
 	else begin //!rst
+	
 	//------- counting edge.------
 		if (rx_en) begin
 			count_edge <= count_edge + 1'b1;
@@ -157,14 +166,39 @@ always @(posedge clk) begin
 						samecount <= next_samecount;
 					end
 					else begin // not ok
+					   state <= state_run_error1;
+					   cal_los_inter <= calculate_losts(aux_prev, samecount, aux, segment_number_max);
 						ng <= ng + 1'b1;
-						samecount <= 0;
-						lostnum <= lostnum + calculate_losts(aux_prev, samecount, aux, segment_number_max);
+						
 					end
 				end
+			
+				
+
+				
+			   
 
 				if (count == maxcount) state = state_finished;
 			end // end of state_run
+
+			state_run_error1:begin
+				cal_los__inter <= cal_los_inter;
+				state <= state_run_error2;
+				
+			end
+			state_run_error2: begin
+//				if (aux_on_2) begin
+					cal_los___inter <= cal_los__inter;
+					state = state_run_error3;
+//				end
+			end
+			state_run_error3: begin
+//				if (aux_on_3) begin
+					lostnum <= lostnum + cal_los___inter;
+					samecount <= 0;
+					state = state_run;
+//				end
+			end
 
 			state_finished: begin
 			end

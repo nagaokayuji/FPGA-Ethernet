@@ -67,6 +67,9 @@ parameter state_id_not_1_sent = 4;
 
 wire timer_done = (count == max_count);
 
+wire [7:0] txid_next = (txid <= redundancy) ? txid + 1 : 1 ;
+wire [15:0] segment_num_next = (segment_num < segment_num_max) ? segment_num + 1 : segment_num_init;
+
 always @(posedge clk125MHz) begin
 	if (RST) begin
 		state = 0;
@@ -118,15 +121,20 @@ always @(posedge clk125MHz) begin
 			state_id_1_sent: begin
 				start_sending <= 1'b0;
 
-				if (segment_num == segment_num_max - 1) begin
-					state <= state_id_not_1;
-					segment_num <= segment_num_init;
-					txid <= txid + 1'b1;
-					aux <= aux;
+				if (segment_num >= segment_num_max - 1) begin
+					if (txid >= redundancy) begin
+						state <= state_id_1;
+						segment_num <= segment_num_init;
+					end else begin
+						state <= state_id_not_1;
+						segment_num <= segment_num_init;
+						txid <= txid_next;
+						aux <= aux;
+					end
 				end
 				else begin
 					state <= state_id_1;
-					segment_num <= segment_num + 1'b1;
+					segment_num <= segment_num_next;
 				end
 			end // end off state_id_1_sent
 
@@ -145,7 +153,7 @@ always @(posedge clk125MHz) begin
 
 			state_id_not_1_sent: begin
 				start_sending <= 1'b0;
-				if (segment_num == segment_num_max - 1) begin
+				if (segment_num >= segment_num_max - 1) begin
 					if (txid == redundancy) begin
 						state <= state_id_1;
 						aux <= aux + 1'b1;
@@ -153,14 +161,14 @@ always @(posedge clk125MHz) begin
 						txid <= 1'b1;
 					end
 					else begin
-						txid <= txid + 1'b1;
+						txid <= txid_next;
 						segment_num <= segment_num_init;
 						state <= state_id_not_1;
 					end
 				end
 				else begin
 					state <= state_id_not_1;
-					segment_num <= segment_num + 1'b1;
+					segment_num <= segment_num_next;
 				end
 			end
 			

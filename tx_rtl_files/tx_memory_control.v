@@ -66,7 +66,7 @@ endfunction
 */
 
 
-
+wire data_user_neg = (data_user_reg == 2'b10);
 reg [3:0] state = 0;
 reg count_for_bram_en;
 reg [11:0] count_for_bram;
@@ -162,8 +162,7 @@ end
 // data_user : from byte_data, active high when data enable
 reg [1:0] data_user_reg = 2'b0;
 
-// detect negedge
-wire data_user_neg = (data_user_reg == 2'b10);
+
 
 // ID == 1 -=-=> startaddr -- lastaddr;
 always @(posedge clk125MHz) begin
