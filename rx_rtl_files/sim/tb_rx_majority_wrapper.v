@@ -2,7 +2,7 @@ module tb_rx_majority_wrapper;
 
 
 parameter CYCLE = 16;
-parameter packetsize = 55;
+parameter packetsize = 577;
 parameter whereis_segment = 34;
 parameter segment_num_max = 5;
 reg clk125MHz,rst,rx_enable;
@@ -52,6 +52,8 @@ task onepacket;
 			else if (i == 27) rx_data = 8'ha8;
 			else if (i == 28) rx_data = 8'h01;
 			else if (i == 29) rx_data = 8'h40;
+			else if ( i == 32) rx_data = 8'h01;
+			else if (i==33) rx_data = 8'h02;
 			else rx_data = ((segment_number+3) * (aux+4) * 11 + 1) % 255;
 			#CYCLE;
 		end
@@ -75,10 +77,11 @@ initial begin
 	rst = 0;
 	#CYCLE;
 
-	for (aux = 0; aux < 277; aux = aux + 1) begin
+	for (aux = 0; aux < 43; aux = aux + 1) begin
 		for (each_id = 1; each_id <= 3; each_id = each_id + 1) begin
 			for (each_seg = 0; each_seg < segment_num_max; each_seg = each_seg + 1) begin
 				#(CYCLE*10);
+				if (aux != 10 || each_id != 1 || each_seg != 0)
 				onepacket(each_seg,each_id,aux);
 			end
 			#(CYCLE*30);

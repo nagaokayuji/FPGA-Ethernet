@@ -313,7 +313,7 @@ always @(posedge clk) begin
 		end
 
 		state_got1_got2_got3: begin // =============4'd9
-			start <= 0
+			start <= 0;
 			
 			if (rx_id_inter == 1) begin
 				state <= state_done;
@@ -363,23 +363,45 @@ always @(posedge clk) begin
 	if (start) begin
 		case (compares)
 			3'b111: begin
-				which_one <= 2; // anything is ok
-				lastaddress <= lastaddr1;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; // anything is ok
+					lastaddress <= lastaddr2;
+				end
+				else begin
+					which_one <= 3;
+					lastaddress <= lastaddr3;
+				end
 				datalost <= 0;
 				end
 			3'b010: begin
-				which_one <= 2; // 1 is incorrect
-				lastaddress <= lastaddr3;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; // 1 is incorrect
+					lastaddress <= lastaddr3;
+				end
+				else begin
+					which_one <=2;
+					lastaddress <= lastaddr2;
+				end
 				datalost <= 1;
 				end
 			3'b001: begin
-				which_one <= 3; // 2 is incorrect
-				lastaddress <= lastaddr1;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; // 2 is incorrect
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 1;
+					lastaddress <= lastaddr1;
+				end
 				datalost <= 1;
 				end
 			3'b100: begin
-				which_one <= 2; // 3 is incorrect
-				lastaddress <= lastaddr2;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; // 3 is incorrect
+					lastaddress <= lastaddr2;
+				end else begin
+					which_one <= 1;
+					lastaddress <= lastaddr1;
+				end
 				datalost <= 1;
 				end
 			default: begin

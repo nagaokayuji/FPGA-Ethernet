@@ -118,80 +118,102 @@ connect_debug_port u_ila_0/probe7 [get_nets [list {i_rx_majority_wrapper/genblk1
 connect_debug_port u_ila_0/probe15 [get_nets [list i_rgmii_rx/matte_rise]]
 
 
+
+
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
 set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 32768 [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 16384 [get_debug_cores u_ila_0]
 set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
-set_property C_INPUT_PIPE_STAGES 1 [get_debug_cores u_ila_0]
+set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
 set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
 set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
 set_property port_width 1 [get_debug_ports u_ila_0/clk]
 connect_debug_port u_ila_0/clk [get_nets [list clocking_i/inst/clk_out1]]
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
-set_property port_width 8 [get_debug_ports u_ila_0/probe0]
-connect_debug_port u_ila_0/probe0 [get_nets [list {detect_errors_i/aux_prev[0]} {detect_errors_i/aux_prev[1]} {detect_errors_i/aux_prev[2]} {detect_errors_i/aux_prev[3]} {detect_errors_i/aux_prev[4]} {detect_errors_i/aux_prev[5]} {detect_errors_i/aux_prev[6]} {detect_errors_i/aux_prev[7]}]]
+set_property port_width 12 [get_debug_ports u_ila_0/probe0]
+connect_debug_port u_ila_0/probe0 [get_nets [list {i_rx_majority_wrapper/count_edge[0]} {i_rx_majority_wrapper/count_edge[1]} {i_rx_majority_wrapper/count_edge[2]} {i_rx_majority_wrapper/count_edge[3]} {i_rx_majority_wrapper/count_edge[4]} {i_rx_majority_wrapper/count_edge[5]} {i_rx_majority_wrapper/count_edge[6]} {i_rx_majority_wrapper/count_edge[7]} {i_rx_majority_wrapper/count_edge[8]} {i_rx_majority_wrapper/count_edge[9]} {i_rx_majority_wrapper/count_edge[10]} {i_rx_majority_wrapper/count_edge[11]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe1]
 set_property port_width 8 [get_debug_ports u_ila_0/probe1]
-connect_debug_port u_ila_0/probe1 [get_nets [list {detect_errors_i/rx_data[0]} {detect_errors_i/rx_data[1]} {detect_errors_i/rx_data[2]} {detect_errors_i/rx_data[3]} {detect_errors_i/rx_data[4]} {detect_errors_i/rx_data[5]} {detect_errors_i/rx_data[6]} {detect_errors_i/rx_data[7]}]]
+connect_debug_port u_ila_0/probe1 [get_nets [list {i_rx_majority_wrapper/aux_fordebug[0]} {i_rx_majority_wrapper/aux_fordebug[1]} {i_rx_majority_wrapper/aux_fordebug[2]} {i_rx_majority_wrapper/aux_fordebug[3]} {i_rx_majority_wrapper/aux_fordebug[4]} {i_rx_majority_wrapper/aux_fordebug[5]} {i_rx_majority_wrapper/aux_fordebug[6]} {i_rx_majority_wrapper/aux_fordebug[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe2]
-set_property port_width 8 [get_debug_ports u_ila_0/probe2]
-connect_debug_port u_ila_0/probe2 [get_nets [list {i_rx_majority_wrapper/aux_fordebug[0]} {i_rx_majority_wrapper/aux_fordebug[1]} {i_rx_majority_wrapper/aux_fordebug[2]} {i_rx_majority_wrapper/aux_fordebug[3]} {i_rx_majority_wrapper/aux_fordebug[4]} {i_rx_majority_wrapper/aux_fordebug[5]} {i_rx_majority_wrapper/aux_fordebug[6]} {i_rx_majority_wrapper/aux_fordebug[7]}]]
+set_property port_width 16 [get_debug_ports u_ila_0/probe2]
+connect_debug_port u_ila_0/probe2 [get_nets [list {i_rx_majority_wrapper/segment_num[0]} {i_rx_majority_wrapper/segment_num[1]} {i_rx_majority_wrapper/segment_num[2]} {i_rx_majority_wrapper/segment_num[3]} {i_rx_majority_wrapper/segment_num[4]} {i_rx_majority_wrapper/segment_num[5]} {i_rx_majority_wrapper/segment_num[6]} {i_rx_majority_wrapper/segment_num[7]} {i_rx_majority_wrapper/segment_num[8]} {i_rx_majority_wrapper/segment_num[9]} {i_rx_majority_wrapper/segment_num[10]} {i_rx_majority_wrapper/segment_num[11]} {i_rx_majority_wrapper/segment_num[12]} {i_rx_majority_wrapper/segment_num[13]} {i_rx_majority_wrapper/segment_num[14]} {i_rx_majority_wrapper/segment_num[15]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
-set_property port_width 12 [get_debug_ports u_ila_0/probe3]
-connect_debug_port u_ila_0/probe3 [get_nets [list {i_rx_majority_wrapper/count_edge[0]} {i_rx_majority_wrapper/count_edge[1]} {i_rx_majority_wrapper/count_edge[2]} {i_rx_majority_wrapper/count_edge[3]} {i_rx_majority_wrapper/count_edge[4]} {i_rx_majority_wrapper/count_edge[5]} {i_rx_majority_wrapper/count_edge[6]} {i_rx_majority_wrapper/count_edge[7]} {i_rx_majority_wrapper/count_edge[8]} {i_rx_majority_wrapper/count_edge[9]} {i_rx_majority_wrapper/count_edge[10]} {i_rx_majority_wrapper/count_edge[11]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list {i_rx_majority_wrapper/rxdata[0]} {i_rx_majority_wrapper/rxdata[1]} {i_rx_majority_wrapper/rxdata[2]} {i_rx_majority_wrapper/rxdata[3]} {i_rx_majority_wrapper/rxdata[4]} {i_rx_majority_wrapper/rxdata[5]} {i_rx_majority_wrapper/rxdata[6]} {i_rx_majority_wrapper/rxdata[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
 set_property port_width 8 [get_debug_ports u_ila_0/probe4]
-connect_debug_port u_ila_0/probe4 [get_nets [list {detect_errors_i/samecount[0]} {detect_errors_i/samecount[1]} {detect_errors_i/samecount[2]} {detect_errors_i/samecount[3]} {detect_errors_i/samecount[4]} {detect_errors_i/samecount[5]} {detect_errors_i/samecount[6]} {detect_errors_i/samecount[7]}]]
+connect_debug_port u_ila_0/probe4 [get_nets [list {i_rx_majority_wrapper/rx_id_fordebug[0]} {i_rx_majority_wrapper/rx_id_fordebug[1]} {i_rx_majority_wrapper/rx_id_fordebug[2]} {i_rx_majority_wrapper/rx_id_fordebug[3]} {i_rx_majority_wrapper/rx_id_fordebug[4]} {i_rx_majority_wrapper/rx_id_fordebug[5]} {i_rx_majority_wrapper/rx_id_fordebug[6]} {i_rx_majority_wrapper/rx_id_fordebug[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
 set_property port_width 8 [get_debug_ports u_ila_0/probe5]
-connect_debug_port u_ila_0/probe5 [get_nets [list {i_rx_majority_wrapper/rxdata[0]} {i_rx_majority_wrapper/rxdata[1]} {i_rx_majority_wrapper/rxdata[2]} {i_rx_majority_wrapper/rxdata[3]} {i_rx_majority_wrapper/rxdata[4]} {i_rx_majority_wrapper/rxdata[5]} {i_rx_majority_wrapper/rxdata[6]} {i_rx_majority_wrapper/rxdata[7]}]]
+connect_debug_port u_ila_0/probe5 [get_nets [list {detect_errors_i/aux_prev[0]} {detect_errors_i/aux_prev[1]} {detect_errors_i/aux_prev[2]} {detect_errors_i/aux_prev[3]} {detect_errors_i/aux_prev[4]} {detect_errors_i/aux_prev[5]} {detect_errors_i/aux_prev[6]} {detect_errors_i/aux_prev[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
-set_property port_width 16 [get_debug_ports u_ila_0/probe6]
-connect_debug_port u_ila_0/probe6 [get_nets [list {i_rx_majority_wrapper/segment_num[0]} {i_rx_majority_wrapper/segment_num[1]} {i_rx_majority_wrapper/segment_num[2]} {i_rx_majority_wrapper/segment_num[3]} {i_rx_majority_wrapper/segment_num[4]} {i_rx_majority_wrapper/segment_num[5]} {i_rx_majority_wrapper/segment_num[6]} {i_rx_majority_wrapper/segment_num[7]} {i_rx_majority_wrapper/segment_num[8]} {i_rx_majority_wrapper/segment_num[9]} {i_rx_majority_wrapper/segment_num[10]} {i_rx_majority_wrapper/segment_num[11]} {i_rx_majority_wrapper/segment_num[12]} {i_rx_majority_wrapper/segment_num[13]} {i_rx_majority_wrapper/segment_num[14]} {i_rx_majority_wrapper/segment_num[15]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe6]
+connect_debug_port u_ila_0/probe6 [get_nets [list {detect_errors_i/aux[0]} {detect_errors_i/aux[1]} {detect_errors_i/aux[2]} {detect_errors_i/aux[3]} {detect_errors_i/aux[4]} {detect_errors_i/aux[5]} {detect_errors_i/aux[6]} {detect_errors_i/aux[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
 set_property port_width 8 [get_debug_ports u_ila_0/probe7]
-connect_debug_port u_ila_0/probe7 [get_nets [list {i_rx_majority_wrapper/rx_id_fordebug[0]} {i_rx_majority_wrapper/rx_id_fordebug[1]} {i_rx_majority_wrapper/rx_id_fordebug[2]} {i_rx_majority_wrapper/rx_id_fordebug[3]} {i_rx_majority_wrapper/rx_id_fordebug[4]} {i_rx_majority_wrapper/rx_id_fordebug[5]} {i_rx_majority_wrapper/rx_id_fordebug[6]} {i_rx_majority_wrapper/rx_id_fordebug[7]}]]
+connect_debug_port u_ila_0/probe7 [get_nets [list {i_rgmii_rx/raw_data[0]} {i_rgmii_rx/raw_data[1]} {i_rgmii_rx/raw_data[2]} {i_rgmii_rx/raw_data[3]} {i_rgmii_rx/raw_data[4]} {i_rgmii_rx/raw_data[5]} {i_rgmii_rx/raw_data[6]} {i_rgmii_rx/raw_data[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe8]
 set_property port_width 8 [get_debug_ports u_ila_0/probe8]
-connect_debug_port u_ila_0/probe8 [get_nets [list {detect_errors_i/aux[0]} {detect_errors_i/aux[1]} {detect_errors_i/aux[2]} {detect_errors_i/aux[3]} {detect_errors_i/aux[4]} {detect_errors_i/aux[5]} {detect_errors_i/aux[6]} {detect_errors_i/aux[7]}]]
+connect_debug_port u_ila_0/probe8 [get_nets [list {i_rgmii_rx/data_fifo_out[0]} {i_rgmii_rx/data_fifo_out[1]} {i_rgmii_rx/data_fifo_out[2]} {i_rgmii_rx/data_fifo_out[3]} {i_rgmii_rx/data_fifo_out[4]} {i_rgmii_rx/data_fifo_out[5]} {i_rgmii_rx/data_fifo_out[6]} {i_rgmii_rx/data_fifo_out[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe9]
 set_property port_width 3 [get_debug_ports u_ila_0/probe9]
 connect_debug_port u_ila_0/probe9 [get_nets [list {detect_errors_i/state[0]} {detect_errors_i/state[1]} {detect_errors_i/state[2]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe10]
-set_property port_width 1 [get_debug_ports u_ila_0/probe10]
-connect_debug_port u_ila_0/probe10 [get_nets [list i_rx_majority_wrapper/loss_detected]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe10]
+connect_debug_port u_ila_0/probe10 [get_nets [list {detect_errors_i/rx_data[0]} {detect_errors_i/rx_data[1]} {detect_errors_i/rx_data[2]} {detect_errors_i/rx_data[3]} {detect_errors_i/rx_data[4]} {detect_errors_i/rx_data[5]} {detect_errors_i/rx_data[6]} {detect_errors_i/rx_data[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe11]
-set_property port_width 1 [get_debug_ports u_ila_0/probe11]
-connect_debug_port u_ila_0/probe11 [get_nets [list detect_errors_i/rx_en]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe11]
+connect_debug_port u_ila_0/probe11 [get_nets [list {detect_errors_i/samecount[0]} {detect_errors_i/samecount[1]} {detect_errors_i/samecount[2]} {detect_errors_i/samecount[3]} {detect_errors_i/samecount[4]} {detect_errors_i/samecount[5]} {detect_errors_i/samecount[6]} {detect_errors_i/samecount[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe12]
-set_property port_width 1 [get_debug_ports u_ila_0/probe12]
-connect_debug_port u_ila_0/probe12 [get_nets [list i_rx_majority_wrapper/rx_en]]
+set_property port_width 32 [get_debug_ports u_ila_0/probe12]
+connect_debug_port u_ila_0/probe12 [get_nets [list {detect_errors_i/ok[0]} {detect_errors_i/ok[1]} {detect_errors_i/ok[2]} {detect_errors_i/ok[3]} {detect_errors_i/ok[4]} {detect_errors_i/ok[5]} {detect_errors_i/ok[6]} {detect_errors_i/ok[7]} {detect_errors_i/ok[8]} {detect_errors_i/ok[9]} {detect_errors_i/ok[10]} {detect_errors_i/ok[11]} {detect_errors_i/ok[12]} {detect_errors_i/ok[13]} {detect_errors_i/ok[14]} {detect_errors_i/ok[15]} {detect_errors_i/ok[16]} {detect_errors_i/ok[17]} {detect_errors_i/ok[18]} {detect_errors_i/ok[19]} {detect_errors_i/ok[20]} {detect_errors_i/ok[21]} {detect_errors_i/ok[22]} {detect_errors_i/ok[23]} {detect_errors_i/ok[24]} {detect_errors_i/ok[25]} {detect_errors_i/ok[26]} {detect_errors_i/ok[27]} {detect_errors_i/ok[28]} {detect_errors_i/ok[29]} {detect_errors_i/ok[30]} {detect_errors_i/ok[31]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe13]
-set_property port_width 1 [get_debug_ports u_ila_0/probe13]
-connect_debug_port u_ila_0/probe13 [get_nets [list i_rx_majority_wrapper/segment_num_en]]
+set_property port_width 32 [get_debug_ports u_ila_0/probe13]
+connect_debug_port u_ila_0/probe13 [get_nets [list {detect_errors_i/ng[0]} {detect_errors_i/ng[1]} {detect_errors_i/ng[2]} {detect_errors_i/ng[3]} {detect_errors_i/ng[4]} {detect_errors_i/ng[5]} {detect_errors_i/ng[6]} {detect_errors_i/ng[7]} {detect_errors_i/ng[8]} {detect_errors_i/ng[9]} {detect_errors_i/ng[10]} {detect_errors_i/ng[11]} {detect_errors_i/ng[12]} {detect_errors_i/ng[13]} {detect_errors_i/ng[14]} {detect_errors_i/ng[15]} {detect_errors_i/ng[16]} {detect_errors_i/ng[17]} {detect_errors_i/ng[18]} {detect_errors_i/ng[19]} {detect_errors_i/ng[20]} {detect_errors_i/ng[21]} {detect_errors_i/ng[22]} {detect_errors_i/ng[23]} {detect_errors_i/ng[24]} {detect_errors_i/ng[25]} {detect_errors_i/ng[26]} {detect_errors_i/ng[27]} {detect_errors_i/ng[28]} {detect_errors_i/ng[29]} {detect_errors_i/ng[30]} {detect_errors_i/ng[31]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe14]
-set_property port_width 1 [get_debug_ports u_ila_0/probe14]
-connect_debug_port u_ila_0/probe14 [get_nets [list detect_errors_i/valid]]
+set_property port_width 32 [get_debug_ports u_ila_0/probe14]
+connect_debug_port u_ila_0/probe14 [get_nets [list {detect_errors_i/count[0]} {detect_errors_i/count[1]} {detect_errors_i/count[2]} {detect_errors_i/count[3]} {detect_errors_i/count[4]} {detect_errors_i/count[5]} {detect_errors_i/count[6]} {detect_errors_i/count[7]} {detect_errors_i/count[8]} {detect_errors_i/count[9]} {detect_errors_i/count[10]} {detect_errors_i/count[11]} {detect_errors_i/count[12]} {detect_errors_i/count[13]} {detect_errors_i/count[14]} {detect_errors_i/count[15]} {detect_errors_i/count[16]} {detect_errors_i/count[17]} {detect_errors_i/count[18]} {detect_errors_i/count[19]} {detect_errors_i/count[20]} {detect_errors_i/count[21]} {detect_errors_i/count[22]} {detect_errors_i/count[23]} {detect_errors_i/count[24]} {detect_errors_i/count[25]} {detect_errors_i/count[26]} {detect_errors_i/count[27]} {detect_errors_i/count[28]} {detect_errors_i/count[29]} {detect_errors_i/count[30]} {detect_errors_i/count[31]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe15]
 set_property port_width 1 [get_debug_ports u_ila_0/probe15]
-connect_debug_port u_ila_0/probe15 [get_nets [list i_rx_majority_wrapper/validation]]
+connect_debug_port u_ila_0/probe15 [get_nets [list i_rgmii_rx/en_fifo_out]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
+set_property port_width 1 [get_debug_ports u_ila_0/probe16]
+connect_debug_port u_ila_0/probe16 [get_nets [list i_rx_majority_wrapper/loss_detected]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
+set_property port_width 1 [get_debug_ports u_ila_0/probe17]
+connect_debug_port u_ila_0/probe17 [get_nets [list i_rx_majority_wrapper/rx_en]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
+set_property port_width 1 [get_debug_ports u_ila_0/probe18]
+connect_debug_port u_ila_0/probe18 [get_nets [list detect_errors_i/rx_en]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe19]
+set_property port_width 1 [get_debug_ports u_ila_0/probe19]
+connect_debug_port u_ila_0/probe19 [get_nets [list i_rx_majority_wrapper/segment_num_en]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe20]
+set_property port_width 1 [get_debug_ports u_ila_0/probe20]
+connect_debug_port u_ila_0/probe20 [get_nets [list i_rx_majority_wrapper/validation]]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

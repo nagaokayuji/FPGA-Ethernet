@@ -628,83 +628,163 @@ always @(posedge clk) begin
 	if (start) begin
 		casex (compares)
 			10'b1111111111: begin
-				which_one <= 2; // anything is ok
-				lastaddress <= lastaddr1;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; // anything is ok
+					lastaddress <= lastaddr2;
+				end else begin
+					which_one <= 3;
+					lastaddress <= lastaddr3;
+				end
 				datalost <= 0;
 				end
 			10'b0000111111: begin
-				which_one <= 3; // 1 is incorrect
-				lastaddress <= lastaddr3;
+				if (rx_id_inter != 2) begin
+					which_one <= 3; // 1 is incorrect
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 4;
+					lastaddress <= lastaddr4;
+				end
 				datalost <= 1;
 				end
 			10'b0111000111: begin
-				which_one <= 3; // 2 is incorrect
-				lastaddress <= lastaddr1;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; // 2 is incorrect
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 4;
+					lastaddress <= lastaddr4;
+				end
 				datalost <= 1;
 				end
 			10'b1011011001: begin
-				which_one <= 2; // 3 is incorrect
-				lastaddress <= lastaddr2;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; // 3 is incorrect
+					lastaddress <= lastaddr2;
+				end else begin
+					which_one <= 4;
+					lastaddress <= lastaddr4;
+				end
 				datalost <= 1;
 				end
 			10'b1101101010: begin
-				which_one <= 3; // 4 is incorrect
-				lastaddress <= lastaddr3;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; // 4 is incorrect
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 2;
+					lastaddress <= lastaddr2;
+				end
 				datalost <= 1;
 			end
 			10'b1110110100: begin
-				which_one <= 4; // 5 is incorrect
-				lastaddress <= lastaddr4;
+				if (rx_id_inter != 4) begin
+					which_one <= 4; // 5 is incorrect
+					lastaddress <= lastaddr4;
+				end else begin
+					which_one <= 2;
+					lastaddress <= lastaddr2;
+				end
 				datalost <= 1;
 			end
 			10'b11xx1xxxxx: begin
-				which_one <= 2; // 123 is correct
-				lastaddress <= lastaddr1;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; // 123 is correct
+					lastaddress <= lastaddr2;
+				end else begin
+					which_one <= 3;
+					lastaddress <= lastaddr3;
+				end
 				datalost <= 1;
 			end
 			10'b1x1xx1xxxx: begin
-				which_one <= 2; // 124 is correct
-				lastaddress <= lastaddr2;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; // 124 is correct
+					lastaddress <= lastaddr2;
+				end else begin
+					which_one <= 4;
+					lastaddress <= lastaddr4;
+				end
 				datalost <= 1;
 			end
 			10'b1xx1xx1xxx: begin
-				which_one <= 5; // 125 is correct
-				lastaddress <= lastaddr5;
+				if (rx_id_inter != 5) begin
+					which_one <= 5; // 125 is correct
+					lastaddress <= lastaddr5;
+				end else begin
+					which_one <= 2;
+					lastaddress <= lastaddr2;
+				end
 				datalost <= 1;
 			end
 			10'bx11xxxx1xx: begin
-				which_one <= 3; //134 is correct
-				lastaddress <= lastaddr1;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; //134 is correct
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 4;
+					lastaddress <= lastaddr4;
+				end
 				datalost <= 1;
 			end
 			10'bx1x1xxxx1x: begin
-				which_one <= 3; //135 is correct
-				lastaddress <= lastaddr3;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; //135 is correct
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 5;
+					lastaddress <= lastaddr5;
+				end
 				datalost <= 1;
 			end
 			10'bxx11xxxxx1: begin
-				which_one <= 4; //145 is correct
-				lastaddress <= lastaddr4;
+				if (rx_id_inter != 4) begin
+					which_one <= 4; //145 is correct
+					lastaddress <= lastaddr4;
+				end else begin
+					which_one <= 5;
+					lastaddress <= lastaddr5;
+				end
 				datalost <= 1;
 			end
 			10'bxxxx11x1xx: begin
-				which_one <= 2; //234 is correct
-				lastaddress <= lastaddr2;
+				if (rx_id_inter != 2) begin
+					which_one <= 2; //234 is correct
+					lastaddress <= lastaddr2;
+				end else begin
+					which_one <= 3;
+					lastaddress <= lastaddr3;
+				end
 				datalost <= 1;
 			end
 			10'bxxxx1x1x1x: begin
-				which_one <= 3; ///235 is correct
-				lastaddress <= lastaddr3;
+				if (rx_id_inter != 3) begin
+					which_one <= 3; ///235 is correct
+					lastaddress <= lastaddr3;
+				end else begin
+					which_one <= 2;
+					lastaddress <= lastaddr2;
+				end
 				datalost <= 1;
 			end
 			10'bxxxxx11xx1: begin
-				which_one <= 4; //245 is correct
-				lastaddress <= lastaddr4;
+				if (rx_id_inter != 4) begin
+					which_one <= 4; //245 is correct
+					lastaddress <= lastaddr4;
+				end else begin
+					which_one <= 2;
+					lastaddress <= lastaddr2;
+				end
 				datalost <= 1;
 			end
 			10'bxxxxxxx111: begin
-				which_one <= 5; //345 is correct
-				lastaddress <= lastaddr5;
+				if (rx_id_inter != 5) begin
+					which_one <= 5; //345 is correct
+					lastaddress <= lastaddr5;
+				end else begin
+					which_one <= 3;
+					lastaddress <= lastaddr3;
+				end
 				datalost <= 1;
 			end
 			default: begin

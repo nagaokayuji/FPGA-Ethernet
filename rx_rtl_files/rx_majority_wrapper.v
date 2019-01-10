@@ -97,7 +97,7 @@ always @(posedge clk125MHz) begin
 					validation <= 0;
 				end
 			(33): begin
-				if (8'h02) != rxdata)
+				if (8'h02 != rxdata)
 					validation <= 0;
 				end
 
