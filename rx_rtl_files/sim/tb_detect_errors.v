@@ -3,8 +3,8 @@ module tb_detect_errors;
 
 parameter CYCLE = 16;
 parameter whereis_aux = 0;
-parameter packetsize = 15;
-parameter segment_number_max = 4;
+parameter packetsize = 33;
+parameter segment_number_max = 16'd50;
 
 
 reg rx_en=0,clk=0, rst = 0;
@@ -14,10 +14,10 @@ wire [31:0] count,ok,ng,lostnum;
 wire valid;
 wire [2:0] state;
 
-detect_errors #(.whereis_aux(whereis_aux),
-			.segment_number_max(segment_number_max)) detect_errors_i(
+detect_errors #(.whereis_aux(whereis_aux)) detect_errors_i(
 	.clk(clk),
 	.rst(rst),
+	.segment_number_max(segment_number_max),
 	.rx_en(rx_en),
 	.rx_data(rx_data),
 	.count(count),
@@ -43,7 +43,7 @@ task onepacket;
 		for (i = 0; i < packetsize; i = i+1) begin
 				case (i)
 					whereis_aux: rx_data = aux;
-					default: rx_data = 8'h99;
+					default: rx_data = 8'h12;
 				endcase
 			#CYCLE;
 		end // end for
@@ -71,15 +71,15 @@ initial begin
 	rst = 0;
 	#(CYCLE * 3);
 
-	for (i=0; i<50; i=i+1) begin
+	for (i=0; i<270; i=i+1) begin
 		for (j=0;j<segment_number_max;j=j+1) begin
-			if (i % 5 != 0 || j != 2) begin
+			if (i!=12 || !(j==7 || j==8))
 			onepacket(i);
 			#(CYCLE*10);
-			end
 		end
-
+		#(CYCLE*3);
 	end
+
 	rst = 1;
 	#CYCLE;
 	rst = 0;

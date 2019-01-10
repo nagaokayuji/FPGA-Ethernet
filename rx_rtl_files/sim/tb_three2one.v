@@ -1,5 +1,5 @@
 `timescale 1ns / 1ns
-module tb_five2one;
+module tb_three2one;
 
 reg clk,rst,rx_en;
 reg [7:0] rxdata;
@@ -8,10 +8,9 @@ wire [7:0] out1,out2;
 
 initial
   begin
-      // wave.vcd という名前で波形データファイルを出力
-      $dumpfile("wf_five2one.vcd");
+      $dumpfile("wf_three2one.vcd");
       // 全てのポートを波形データに含める
-      $dumpvars(0, tb_five2one);
+      $dumpvars(0, tb_three2one);
       // シミュレータ実行時に counter_1 のポート COUNT を
       // モニタする（値が変化した時に表示）
       $monitor(rxdata,": %h %h %h %b", rxdata,out1,out2,rx_en);
@@ -27,7 +26,7 @@ reg [3:0] switches = 4'b1;
 reg clk125MHz;
 //reg [11:0] addr_b = 12'b0;
 parameter whereis_id = 0;
-five2one #(.whereisid(whereis_id)) uut (
+three2one #(.whereisid(whereis_id)) uut (
 	.clk(clk),
 	.rst(rst),
 	.rx_en_w(rx_en),
@@ -75,8 +74,7 @@ rst = 0;
 #cycle;
 
 for (k=0; k<30; k=k+1) begin
-	for (j=1; j<=5; j=j+1) begin
-	if (j != 1 && j != 5)
+	for (j=1; j<=3; j=j+1) begin
 	onepacket(j,k);
 
 	end

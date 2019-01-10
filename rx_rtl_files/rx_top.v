@@ -39,7 +39,7 @@ module rx_top(
 parameter whereisid = 16'd25;
 wire RST = !resetn;
 
-(* mark_debug = "true" *) wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
+wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
 
 
 
@@ -172,7 +172,6 @@ reg [7:0] data_out;
 */
 rx_majority_wrapper i_rx_majority_wrapper (
 	.clk125MHz(clk125MHz),
-	.rx_clk(clk125MHz),
 	.reset(rstb),
 	.rx_data(rawdata),
 	.rx_enable(raw_en),

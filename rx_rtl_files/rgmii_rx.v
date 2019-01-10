@@ -111,11 +111,68 @@ data <= raw_data;
 //=========================
 
 
-(* mark_debug = "true" *) wire wr_en,rd_en,full,empty;
+(* mark_debug = "true" *) wire wr_en,rd_en,full,empty, prog_empty, prog_full;
 (* mark_debug = "true" *) wire en_fifo_out;
+
 (* mark_debug = "true" *) wire [7:0] data_fifo_out;
-assign rd_en = !empty;
-assign wr_en = 1'b1 && !full;
+
+
+ wire matte = !en_fifo_out && prog_empty;
+
+
+reg [1:0] matte_rise_detect;
+reg [9:0] waitcount = 0;
+reg wait_on = 0;
+reg [9:0] waitcount_wr = 0;
+reg coldwrite_on = 0;
+wire matte_rise = matte_rise_detect == 2'b01;
+localparam wait_max = 60;
+always @(posedge clk125MHz) begin
+    if (rst) begin
+        matte_rise_detect = 0;
+        waitcount = 0;
+        wait_on = 0;
+        coldwrite_on = 0;
+        waitcount_wr = 0;
+    end
+
+
+    matte_rise_detect = {matte_rise_detect[0],matte};
+    if (matte_rise) begin
+        wait_on <= 1;
+    end
+    
+    if (wait_on) begin
+        if (waitcount >= wait_max) begin
+            waitcount <= 0;
+            wait_on <= 0;
+        end
+        else begin
+            wait_on <= 1;
+            waitcount <= waitcount + 1;
+        end
+     end
+ 
+    if (prog_full) begin
+        coldwrite_on <= 1;
+    end
+    
+    if (coldwrite_on) begin
+        if (waitcount_wr >= wait_max) begin
+            waitcount_wr <= 0;
+            coldwrite_on <= 0;
+        end
+        else begin
+            coldwrite_on <= 1;
+            waitcount_wr <= waitcount_wr + 1;
+        end
+    end
+end
+
+
+assign rd_en = !wait_on; // -> en_fifo_out || !prog_empty
+assign wr_en = !prog_full;
+
 
 fifo_9w16d rx_fifo (
 .rst(rst),
@@ -126,6 +183,8 @@ fifo_9w16d rx_fifo (
 .rd_en(rd_en),
 .dout({en_fifo_out,data_fifo_out}),
 .full(full),
+.prog_full(prog_full),
+.prog_empty(prog_empty),
 .empty(empty)
 );
 

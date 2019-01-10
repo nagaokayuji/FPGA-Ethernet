@@ -1,5 +1,5 @@
 module five2one #(parameter whereisid = 22) (
-    input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
+    input wire clk,rst,rx_en_w, // clk, rst, en, clk for output
   input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
   output wire [7:0] data_out, // output data
   output reg en_out,		// output enable
@@ -359,12 +359,15 @@ always @(posedge clk) begin
 		state_wait:	begin //=================4'd0
 			start <= 0;
 			if (rx_id_inter == 1)	begin
+			/*
 				if (rx_id_prev == r) begin
 					state <= state_got1; //=====4'd1
 				end
 				else begin
 					state <= state_lost_got1; //=====4'd2
 				end
+			*/
+				state <= state_got1;
 			end
 			else if (rx_id_inter == 2) begin
 				state <= state_lost1_got2; //=======4'd3
@@ -622,93 +625,103 @@ wire [9:0] compares = {comp_result12,comp_result13,comp_result14,comp_result15,
 												comp_result45}; // 1_2,2_3,1_3
 reg [11:0] lastaddress = 0;
 always @(posedge clk) begin
-	if (state == state_datalost) begin
-		datalost <= 1;
-	end else begin
-		datalost <= 0;
-	end
-
 	if (start) begin
 		casex (compares)
 			10'b1111111111: begin
 				which_one <= 2; // anything is ok
 				lastaddress <= lastaddr1;
+				datalost <= 0;
 				end
 			10'b0000111111: begin
 				which_one <= 3; // 1 is incorrect
 				lastaddress <= lastaddr3;
+				datalost <= 1;
 				end
 			10'b0111000111: begin
 				which_one <= 3; // 2 is incorrect
 				lastaddress <= lastaddr1;
+				datalost <= 1;
 				end
 			10'b1011011001: begin
 				which_one <= 2; // 3 is incorrect
 				lastaddress <= lastaddr2;
+				datalost <= 1;
 				end
 			10'b1101101010: begin
 				which_one <= 3; // 4 is incorrect
 				lastaddress <= lastaddr3;
+				datalost <= 1;
 			end
 			10'b1110110100: begin
 				which_one <= 4; // 5 is incorrect
 				lastaddress <= lastaddr4;
+				datalost <= 1;
 			end
 			10'b11xx1xxxxx: begin
 				which_one <= 2; // 123 is correct
 				lastaddress <= lastaddr1;
+				datalost <= 1;
 			end
 			10'b1x1xx1xxxx: begin
 				which_one <= 2; // 124 is correct
 				lastaddress <= lastaddr2;
+				datalost <= 1;
 			end
 			10'b1xx1xx1xxx: begin
 				which_one <= 5; // 125 is correct
 				lastaddress <= lastaddr5;
+				datalost <= 1;
 			end
 			10'bx11xxxx1xx: begin
 				which_one <= 3; //134 is correct
 				lastaddress <= lastaddr1;
+				datalost <= 1;
 			end
 			10'bx1x1xxxx1x: begin
 				which_one <= 3; //135 is correct
 				lastaddress <= lastaddr3;
+				datalost <= 1;
 			end
 			10'bxx11xxxxx1: begin
 				which_one <= 4; //145 is correct
 				lastaddress <= lastaddr4;
+				datalost <= 1;
 			end
 			10'bxxxx11x1xx: begin
 				which_one <= 2; //234 is correct
 				lastaddress <= lastaddr2;
+				datalost <= 1;
 			end
 			10'bxxxx1x1x1x: begin
 				which_one <= 3; ///235 is correct
 				lastaddress <= lastaddr3;
+				datalost <= 1;
 			end
 			10'bxxxxx11xx1: begin
 				which_one <= 4; //245 is correct
 				lastaddress <= lastaddr4;
+				datalost <= 1;
 			end
 			10'bxxxxxxx111: begin
 				which_one <= 5; //345 is correct
 				lastaddress <= lastaddr5;
+				datalost <= 1;
 			end
 			default: begin
 				which_one <= 0;
 				datalost <= 1;
 			end
 		endcase
-	end
-	datalost <= 0;
+	end else 
+		datalost <= 0;
 end
 
 // sender logic
 reg started = 0;
 // correct_data from bram B port
-wire [7:0] data_correct = which_one == 0? 0: which_one == 1? q_b1: which_one == 2? 
+wire [7:0] data_correct = which_one == 0? 8'h18: which_one == 1? q_b1: which_one == 2? 
 													q_b2: which_one == 3? q_b3:
-													which_one == 4? q_b4: which_one == 5? q_b5:0;
+													which_one == 4? q_b4: which_one == 5? q_b5:8'h17;
 reg [7:0] data_correct_shift1 = 0;
 always @(posedge clk) begin
 	data_correct_shift1 <= data_correct;

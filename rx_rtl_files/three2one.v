@@ -1,6 +1,6 @@
 module three2one #(parameter whereisid = 0)
 (
-    input wire clk,rst,rx_en_w,clk125MHz, // clk, rst, en, clk for output
+    input wire clk,rst,rx_en_w, // clk, rst, en, clk for output
 input wire [7:0] rxdata_w, // input data, wire --> aligned: rx_data
 
   output wire [7:0] data_out, // output data
@@ -198,12 +198,15 @@ always @(posedge clk) begin
 		state_wait:	begin //=================4'd0
 			start <= 0;
 			if (rx_id_inter == 1)	begin
+			/*
 				if (rx_id_prev == r) begin
 					state <= state_got1; //=====4'd1
 				end
 				else begin
 					state <= state_lost_got1; //=====4'd2
 				end
+			*/
+				state <= state_got1;
 			end
 			else if (rx_id_inter == 2) begin
 				state <= state_lost1_got2; //=======4'd3
@@ -354,29 +357,29 @@ wire [2:0] compares = {comp_result1,comp_result3,comp_result2}; // 1_2,2_3,1_3
 reg [11:0] lastaddress = 0;
 //wire [2:0] comp3bit = compares;
 always @(posedge clk) begin
-	if (state == state_datalost) begin
-		datalost <= 1;
-	end else begin
-		datalost <= 0;
-	end
+	
 
 	if (start) begin
 		case (compares)
 			3'b111: begin
 				which_one <= 2; // anything is ok
 				lastaddress <= lastaddr1;
+				datalost <= 0;
 				end
 			3'b010: begin
 				which_one <= 2; // 1 is incorrect
 				lastaddress <= lastaddr3;
+				datalost <= 1;
 				end
 			3'b001: begin
 				which_one <= 3; // 2 is incorrect
 				lastaddress <= lastaddr1;
+				datalost <= 1;
 				end
 			3'b100: begin
 				which_one <= 2; // 3 is incorrect
 				lastaddress <= lastaddr2;
+				datalost <= 1;
 				end
 			default: begin
 				which_one <= 0;
@@ -384,7 +387,7 @@ always @(posedge clk) begin
 			end
 		endcase
 	end
-	datalost <= 0;
+	else datalost <= 0;
 end
 
 // sender logic
