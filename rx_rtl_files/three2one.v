@@ -281,7 +281,7 @@ always @(posedge clk) begin
 				state <= state_lost_got1;
 			end
 			else if (rx_id_inter == 2) begin
-				state <= state_lost1_got2;
+				state <= state_done;
 			end
 			else if (rx_id_inter == 3) begin
 				state <= state;
@@ -297,7 +297,7 @@ always @(posedge clk) begin
 				state <= state_lost_got1; // start sending
 			end
 			else if (rx_id_inter == 2) begin
-				state <= state_datalost;
+				state <= state_done;
 			end
 			else if (rx_id_inter == 3) begin
 				state <= state;
@@ -313,7 +313,8 @@ always @(posedge clk) begin
 		end
 
 		state_got1_got2_got3: begin // =============4'd9
-			start <= 0;
+			start <= 0
+			
 			if (rx_id_inter == 1) begin
 				state <= state_done;
 			end
@@ -414,7 +415,7 @@ always @(posedge clk) begin
 	if (start_inter || started) begin
 		addr_b <= addr_b + 1'b1;
 	end
-	if (start_inter) begin
+	if (start_inter && (which_one != 0)) begin
 		en_out <= 1'b1;
 	end
 	else begin

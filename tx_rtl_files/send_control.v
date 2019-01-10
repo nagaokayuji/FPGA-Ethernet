@@ -124,6 +124,7 @@ always @(posedge clk125MHz) begin
 				if (segment_num >= segment_num_max - 1) begin
 					if (txid >= redundancy) begin
 						state <= state_id_1;
+						aux <= aux + 1;
 						segment_num <= segment_num_init;
 					end else begin
 						state <= state_id_not_1;

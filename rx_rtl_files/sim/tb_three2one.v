@@ -75,6 +75,7 @@ rst = 0;
 
 for (k=0; k<30; k=k+1) begin
 	for (j=1; j<=3; j=j+1) begin
+	if (j != 1)
 	onepacket(j,k);
 
 	end

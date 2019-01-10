@@ -92,6 +92,15 @@ always @(posedge clk125MHz) begin
 				if (ip_src_addr[7:0] != rxdata)
 					validation <= 0;
 					end
+			(32): begin
+				if (8'h01 != rxdata)
+					validation <= 0;
+				end
+			(33): begin
+				if (8'h02) != rxdata)
+					validation <= 0;
+				end
+
 		endcase
 	end
 

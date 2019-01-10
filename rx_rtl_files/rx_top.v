@@ -40,7 +40,7 @@ parameter whereisid = 16'd25;
 wire RST = !resetn;
 
 wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
-
+wire [7:0] segment_number_max = (switches[7:6] == 2'b00)? 1 : (switches[7:6] == 2'b01)? 5 : (switches[7:6] == 2'b10) ? 50: 100;
 
 
 
@@ -221,6 +221,7 @@ detect_errors detect_errors_i (
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),
 	.clk(clk125MHz),
+	.segment_number_max(segment_number_max),
 	.count(countp),
 	.ok(okp),
 	.valid(valid),

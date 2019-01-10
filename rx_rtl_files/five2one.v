@@ -742,7 +742,7 @@ always @(posedge clk) begin
 	if (start_inter || started) begin
 		addr_b <= addr_b + 1'b1;
 	end
-	if (start_inter) begin
+	if (start_inter && (which_one != 0)) begin
 		en_out <= 1'b1;
 	end
 	else begin

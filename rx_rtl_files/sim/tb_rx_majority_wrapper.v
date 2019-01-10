@@ -16,7 +16,7 @@ rx_majority_wrapper #(.whereis_segment_num(whereis_segment), .SEGMENT_NUM_MAX(se
 	.rx_data(rx_data),
 	.rx_enable(rx_enable),
 	.loss_detected(loss_detected),
-	.redundancy(8'd5),
+	.redundancy(8'd3),
 	.en_out(en_out),
 	.data_out(data_out)
 );
@@ -75,7 +75,7 @@ initial begin
 	rst = 0;
 	#CYCLE;
 
-	for (aux = 0; aux < 5; aux = aux + 1) begin
+	for (aux = 0; aux < 277; aux = aux + 1) begin
 		for (each_id = 1; each_id <= 3; each_id = each_id + 1) begin
 			for (each_seg = 0; each_seg < segment_num_max; each_seg = each_seg + 1) begin
 				#(CYCLE*10);

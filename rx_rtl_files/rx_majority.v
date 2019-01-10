@@ -93,9 +93,9 @@ always @(posedge clk125MHz) begin
     en_out_ff <= en_out_c;
     loss_detected_ff <= loss_detected_c;
 end
+
 assign data_out = data_out_ff;
 assign en_out = en_out_ff;
 assign loss_detected = loss_detected_ff;
-
 
 endmodule

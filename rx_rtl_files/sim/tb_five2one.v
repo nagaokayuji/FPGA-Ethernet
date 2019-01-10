@@ -74,15 +74,19 @@ rst = 1;
 rst = 0;
 #cycle;
 
-for (k=0; k<30; k=k+1) begin
-	for (j=1; j<=5; j=j+1) begin
-	if (j != 1 && j != 5)
-	onepacket(j,k);
 
-	end
-	#(cycle*10);
-end
 #(cycle*20);
+
+for (k=0; k<=8; k=k+1) begin
+for (j=1; j<=5; j=j+1) begin
+		if (j!=1 && j!= 5) 
+		onepacket(j,k);
+		#(cycle*20);
+		end
+
+
+#(cycle*30);
+end
 
 $finish;
 end
