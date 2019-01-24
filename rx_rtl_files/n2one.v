@@ -1,4 +1,4 @@
-module rx_majority (
+module n2one (
 	input wire clk,
 	input wire rst,
 	input wire [7:0] rxd,
@@ -34,7 +34,7 @@ bram_compare dpram1(
 	.clka(clk),
 	.clkb(clk)
 );
-bram_compare dpram3(
+bram_compare dpram2(
 	.dina(dina[15:8]),
 	.dinb(8'b0),
 	.addra(addra[23:12]),
@@ -63,8 +63,24 @@ wire [7:0] dina_0 = dina[7:0], dina_1 = dina[15:8], dina_2 = dina[23:16],
 				douta_0 = douta[7:0], douta_1 = douta[15:8], douta_2 = douta[23:16];
 */
 
+wire [7:0] data_out5;
+wire en_out5, lost_5;
+five2one_v2 five2one (
+	.clk(clk),
+	.rst(rst),
+	.rxen(rxen),
+	.rxd(rxd),
+	.data_out(data_out5),
+	.en_out(en_out5),
+	.lost(lost_5),
 
-
+	// BRAMs
+	.dina(dina),
+	.douta(douta),
+	.addra(addra),
+	.addrb(addrb),
+	.wea(wea)
+);
 
 // r == 1
 wire [7:0] data_out_1;
