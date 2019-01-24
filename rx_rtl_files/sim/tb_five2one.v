@@ -39,9 +39,8 @@ five2one #(.whereisid(whereis_id)) uut (
 );
 
 integer i,j,k;
-parameter i_max = 12'h40;
 parameter cycle = 16;
-parameter packetsize = 8;
+parameter packetsize = 35;
 
 task onepacket;
 	input [7:0] id;
@@ -52,7 +51,8 @@ begin
 	for (i=0; i < packetsize; i=i+1) begin
 		if (i == whereis_id)
 			rxdata = id;
-		else rxdata = (seed * seed + i * i * 4 + packetsize * 111) % 255;
+		//else rxdata = (seed * seed + i * i * 4 + packetsize * 111) % 255;
+		 else	rxdata = ((seed+3) * packetsize *33)%255;
 		#cycle;
 	end
 	rx_en = 0;
@@ -77,18 +77,42 @@ rst = 0;
 
 #(cycle*20);
 
-for (k=0; k<=8; k=k+1) begin
-for (j=1; j<=5; j=j+1) begin
-		if (j!=1 && j!= 5) 
-		onepacket(j,k);
+for (k=1; k<=8; k=k+1) begin
+	for (j=1; j<=5; j=j+1) begin
+		if (j+1 != k && j+2 != k) 
+			onepacket(j,k);
 		#(cycle*20);
-		end
+	end
 
+	#(cycle*30);
+end
 
-#(cycle*30);
+for (k=1; k<=8; k=k+1) begin
+	for (j=1; j<=5; j=j+1) begin
+		if (j != k && j+2 != k) 
+			onepacket(j,k);
+		#(cycle*20);
+	end
+	#(cycle*30);
+end
+
+for (k=1; k<=8; k=k+1) begin
+	for (j=1; j<=5; j=j+1) begin
+		if (j != k && j+3 != k) 
+			onepacket(j,k);
+		#(cycle*20);
+	end
+	#(cycle*30);
+end
+for (k=1; k<=8; k=k+1) begin
+	for (j=1; j<=5; j=j+1) begin
+		if (j != k && j+3 != k && j+1 != k) 
+			onepacket(j,k);
+		#(cycle*20);
+	end
+	#(cycle*30);
 end
 
 $finish;
 end
-
 endmodule

@@ -6,7 +6,7 @@ module bram_compare
 	output reg [7:0] douta, doutb
 );
 	// Declare the RAM variable
-	reg [7:0] ram[4095:0];
+	reg [7:0] ram[1500:0];
 	
 	// Port A
 	always @ (posedge clka)
@@ -26,7 +26,7 @@ module bram_compare
 
 	integer i;
 	initial begin
-		for (i=0; i<4096; i=i+1)
-		ram[i] = 8'h0a;
+		for (i=0; i<1500; i=i+1)
+		ram[i] = 8'hxx;
 		end
 endmodule

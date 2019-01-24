@@ -1,4 +1,4 @@
-module rx_majority_wrapper #(parameter whereis_segment_num = 34, SEGMENT_NUM_MAX = 50 // maybe ok
+module rx_majority_wrapper #(parameter whereis_segment_num = 34, SEGMENT_NUM_MAX = 100 // maybe ok
 )
 (
 	input wire clk125MHz,

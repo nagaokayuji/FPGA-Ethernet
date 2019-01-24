@@ -638,7 +638,7 @@ always @(posedge clk) begin
 				datalost <= 0;
 				end
 			10'b0000111111: begin
-				if (rx_id_inter != 2) begin
+				if (rx_id_inter != 3) begin
 					which_one <= 3; // 1 is incorrect
 					lastaddress <= lastaddr3;
 				end else begin

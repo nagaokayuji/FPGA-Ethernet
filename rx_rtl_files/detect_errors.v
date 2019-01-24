@@ -116,6 +116,29 @@ function [31:0] calculate_losts;
 endfunction
 // -------function----------
 
+//==============
+// instantiate HLS IP : lostnum_0
+//================
+reg ap_start;
+wire ap_idle = ~ap_start;
+wire ap_done,ap_ready;
+wire [31:0] ap_return;
+reg [7:0] samecount_prev;
+lostnum_0 lostnum_i (
+    .ap_clk(clk),
+    .ap_rst(rst),
+    .ap_start(ap_start),
+    .ap_done(ap_done),
+    .ap_idle(ap_idle),
+    .ap_ready(ap_ready),
+    .ap_return(ap_return),
+    .segment_num_max({16'h0000,segment_number_max}),
+    .aux_pre({24'h000000,aux_prev}),
+    .aux({24'h000000,aux}),
+    .samecount({24'h000000,samecount_prev})
+    );
+
+
 localparam state_init = 0;
 localparam state_started = 1;
 localparam state_running = 2;
@@ -138,6 +161,7 @@ always @(posedge clk) begin
 		ng <= 0;
 		lostnum <= 0;
 		samecount <= 0;
+		ap_start = 0;
 		state = state_init;
 	end
 	else begin //!rst
@@ -156,8 +180,13 @@ always @(posedge clk) begin
 	//~~-~-~-~-~-~-~-~-~-~-~-~-~--
 		case (state)
 			state_init: begin
-				if (aux_on_1) begin
-					samecount <= 0;
+			 lostnum = 0;
+			 ap_start = 0;
+				if (aux_on_3 && aux_tmp == 0) begin
+				
+				    aux = 0;
+				    aux_prev = 0;
+					samecount = 0;
 					state = state_run;
 				end
 			end
@@ -169,6 +198,7 @@ always @(posedge clk) begin
 				end
 
 				if (aux_on_1) begin
+				    samecount_prev <= samecount;
 					count <= count + 1'b1;
 					if (aux_prev == aux)
 						samecount <= next_samecount;
@@ -180,32 +210,26 @@ always @(posedge clk) begin
 					end
 					else begin // not ok
 						state <= state_run_error1;
-						cal_los_inter <= calculate_losts(aux_prev, samecount, aux, segment_number_max);
 						ng <= ng + 1'b1;
-						
 					end
 				end
-
-				if (count == maxcount) state = state_finished;
+				if (count >= maxcount) state = state_finished;
 			end // end of state_run
 
 			state_run_error1:begin
-				cal_los__inter <= cal_los_inter;
-				state <= state_run_error2;
+			 ap_start = 1;
+			 state = state_run_error2;
 				
 			end
 			state_run_error2: begin
-//				if (aux_on_2) begin
-					cal_los___inter <= cal_los__inter;
-					state = state_run_error3;
-//				end
+               ap_start = 0;
+               if (ap_done) begin
+                   lostnum <= lostnum + ap_return;
+                   state = state_run;
+               end 
 			end
 			state_run_error3: begin
-//				if (aux_on_3) begin
-					lostnum <= lostnum + cal_los___inter;
-					samecount <= 0;
-					state = state_run;
-//				end
+
 			end
 
 			state_finished: begin

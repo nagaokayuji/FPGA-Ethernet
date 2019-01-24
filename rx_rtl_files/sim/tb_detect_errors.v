@@ -71,14 +71,21 @@ initial begin
 	rst = 0;
 	#(CYCLE * 3);
 
-	for (i=0; i<270; i=i+1) begin
+	for (i=0; i<8; i=i+1) begin
 		for (j=0;j<segment_number_max;j=j+1) begin
-			if (i!=12 || !(j==7 || j==8))
+		
+			if (!((i==3&&j>=39) || i==4 || (i==5&&j<13)))
 			onepacket(i);
 			#(CYCLE*10);
 		end
 		#(CYCLE*3);
 	end
+	
+	onepacket(2);
+	#(CYCLE*10);
+	onepacket(1);
+	
+	
 
 	rst = 1;
 	#CYCLE;
