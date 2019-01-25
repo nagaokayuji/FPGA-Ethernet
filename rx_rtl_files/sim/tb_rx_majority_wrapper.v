@@ -15,7 +15,6 @@ rx_majority_wrapper #(.whereis_segment_num(whereis_segment), .SEGMENT_NUM_MAX(se
 	.reset(rst),
 	.rx_data(rx_data),
 	.rx_enable(rx_enable),
-	.loss_detected(loss_detected),
 	.redundancy(8'd3),
 	.en_out(en_out),
 	.data_out(data_out)

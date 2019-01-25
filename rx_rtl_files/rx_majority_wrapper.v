@@ -1,4 +1,4 @@
-module rx_majority_wrapper #(parameter whereis_segment_num = 34, SEGMENT_NUM_MAX = 100 // maybe ok
+module rx_majority_wrapper #(parameter whereis_segment_num = 34,whereisid = 0, SEGMENT_NUM_MAX = 100 // maybe ok
 )
 (
 	input wire clk125MHz,
@@ -6,7 +6,6 @@ module rx_majority_wrapper #(parameter whereis_segment_num = 34, SEGMENT_NUM_MAX
 	input wire [7:0] rx_data,
 	input wire rx_enable,
 	output wire tmp,
-	(* mark_debug = "true" *) output wire loss_detected,
 	input wire [7:0] redundancy,
 	output wire en_out,
 	output wire [7:0] data_out
@@ -150,19 +149,17 @@ always @(posedge clk125MHz) begin
     rxdata_s <= rxdata;
 end
 */
-wire loss_detected_seg[SEGMENT_NUM_MAX - 1: 0];
 genvar i;
 generate
 for (i=0; i<SEGMENT_NUM_MAX; i=i+1) begin
-	rx_majority rx_majority_inst(
-		.clk125MHz(clk125MHz),
-		.reset(reset),
-		.rx_data(rxdata),
-		.rx_enable(rx_enable_seg[i]),
-		.loss_detected(loss_detected_seg[i]),
+	n2one #(.whereisid(whereisid)) n2one_inst(
+		.clk(clk125MHz),
+		.rst(reset),
+		.rxd(rxdata),
+		.rxen(rx_enable_seg[i]),
 		.redundancy(redundancy),
-		.en_out(en_out_seg[i]),
-		.data_out(data_out_seg[i])
+		.en_out_reg(en_out_seg[i]),
+		.data_out_reg(data_out_seg[i])
 	);
 	
 	assign rx_enable_seg[i] = (segment_num_en && (segment_num == i));
@@ -186,7 +183,6 @@ reg [7:0] data_out_seg_reg[SEGMENT_NUM_MAX - 1: 0];
 reg en_out_seg_reg[SEGMENT_NUM_MAX - 1: 0];
 reg [7:0] data_out_one;
 reg en_out_one;
-reg loss_detected_one;
 integer j;
 always @(posedge clk125MHz) begin
     for (j=0; j < SEGMENT_NUM_MAX; j=j+1) begin
@@ -198,11 +194,9 @@ always @(posedge clk125MHz) begin
     end
     data_out_one <= data_out_seg_reg[sel];
     en_out_one <= en_out_seg_reg[sel];
-    loss_detected_one <= loss_detected_seg[sel];
 end
 assign en_out = en_out_one;
 assign data_out = data_out_one;
-assign loss_detected = loss_detected_one;
 
 
 endmodule

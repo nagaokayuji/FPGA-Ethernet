@@ -7,8 +7,7 @@ module one2one #(parameter whereisid = 0)(
     //input wire [3:0] switches, // input switches 
 	// (* mark_debug = "true" *)	output reg [3:0] rx_id_inter=3, // for debug. maybe deleted soon
     output wire [7:0] data_out, // output data
- output wire en_out,		// output enable
-   output wire lost		// loss detected. 
+ output wire en_out		// output enable
  //(* mark_debug = "true" *)   output wire[2:0] comp3bit // for debug. maybe deleted soon
     );
     
@@ -43,7 +42,6 @@ module one2one #(parameter whereisid = 0)(
     
     assign data_out = shift1_rxdata;
     assign en_out = en_after_id;
-    assign lost = 1'b0;
     
      
      

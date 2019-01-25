@@ -175,7 +175,6 @@ rx_majority_wrapper i_rx_majority_wrapper (
 	.reset(rstb),
 	.rx_data(rawdata),
 	.rx_enable(raw_en),
-	.loss_detected(loss_detected),
 	.tmp(tmp),
 	.redundancy(redundancy),
 	.en_out(en_out),
