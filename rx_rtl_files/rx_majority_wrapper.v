@@ -1,4 +1,4 @@
-module rx_majority_wrapper #(parameter whereis_segment_num = 34,whereisid = 0, SEGMENT_NUM_MAX = 100 // maybe ok
+module rx_majority_wrapper #(parameter whereis_segment_num = 34,whereisid = 0, SEGMENT_NUM_MAX = 1 // maybe ok
 )
 (
 	input wire clk125MHz,
@@ -149,6 +149,7 @@ always @(posedge clk125MHz) begin
     rxdata_s <= rxdata;
 end
 */
+
 genvar i;
 generate
 for (i=0; i<SEGMENT_NUM_MAX; i=i+1) begin
@@ -164,7 +165,9 @@ for (i=0; i<SEGMENT_NUM_MAX; i=i+1) begin
 	
 	assign rx_enable_seg[i] = (segment_num_en && (segment_num == i));
 	
-	assign data_out_seg_wire[i] = (en_out_seg[i] == 1'b1) ? data_out_seg[i] : 0;
+	//assign data_out_seg_wire[i] = (en_out_seg[i] == 1'b1) ? data_out_seg[i] : 0;
+
+
 //	assign en_and_data[i] = {en_out_seg[i],data_out_seg_wire[i]};
 end
 endgenerate
@@ -183,6 +186,8 @@ reg [7:0] data_out_seg_reg[SEGMENT_NUM_MAX - 1: 0];
 reg en_out_seg_reg[SEGMENT_NUM_MAX - 1: 0];
 reg [7:0] data_out_one;
 reg en_out_one;
+reg [7:0] data_out_one_reg;
+reg en_out_one_reg;
 integer j;
 always @(posedge clk125MHz) begin
     for (j=0; j < SEGMENT_NUM_MAX; j=j+1) begin
@@ -194,9 +199,12 @@ always @(posedge clk125MHz) begin
     end
     data_out_one <= data_out_seg_reg[sel];
     en_out_one <= en_out_seg_reg[sel];
+    
+    data_out_one_reg <= data_out_one;
+    en_out_one_reg <= en_out_one;
 end
-assign en_out = en_out_one;
-assign data_out = data_out_one;
+assign en_out = en_out_one_reg;
+assign data_out = data_out_one_reg;
 
 
 endmodule

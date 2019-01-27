@@ -40,7 +40,7 @@ parameter whereisid = 16'd25;
 wire RST = !resetn;
 
 wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
-wire [7:0] segment_number_max = (switches[7:6] == 2'b00)? 1 : (switches[7:6] == 2'b01)? 5 : (switches[7:6] == 2'b10) ? 50: 100;
+wire [7:0] segment_number_max = (switches[7:6] == 2'b00)? 1 : (switches[7:6] == 2'b01)? 50 : (switches[7:6] == 2'b10) ? 100: 150;
 
 
 
