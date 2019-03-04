@@ -68,8 +68,8 @@ bram_compare dpram3(
 	.clkb(clk)
 );
 
-(* mark_debug = "true" *)wire [7:0] data_out_5;
-(* mark_debug = "true" *) wire en_out_5;
+wire [7:0] data_out_5;
+wire en_out_5;
 wire [35:0] addra5;
 wire [35:0] addrb5;
 wire [23:0] dina5,douta5,doutb5;
@@ -92,8 +92,8 @@ five2one_v2 #(.whereisid(whereisid)) five2one_v2 (
 );
 
 // r=3
-(* mark_debug = "true" *) wire [7:0] data_out_3;
-(* mark_debug = "true" *) wire en_out_3;
+wire [7:0] data_out_3;
+ wire en_out_3;
 wire [35:0] addra3;
 wire [35:0] addrb3;
 wire [23:0] dina3,douta3,doutb3;

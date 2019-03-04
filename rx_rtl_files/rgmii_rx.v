@@ -12,9 +12,8 @@ module rgmii_rx (
 	output wire data_enable_f,
 	output wire data_error
 	);
-	
-(* mark_debug = "true" *) wire [7:0] raw_data;
-(* mark_debug = "true" *) wire data_enable;
+ wire [7:0] raw_data;
+wire data_enable;
 
 
 
@@ -111,10 +110,10 @@ data <= raw_data;
 //=========================
 
 
-(* mark_debug = "true" *) wire wr_en,rd_en,full,empty, prog_empty, prog_full;
-(* mark_debug = "true" *) wire en_fifo_out;
+wire wr_en,rd_en,full,empty, prog_empty, prog_full;
+wire en_fifo_out;
 
-(* mark_debug = "true" *) wire [7:0] data_fifo_out;
+wire [7:0] data_fifo_out;
 
 
  wire matte = !en_fifo_out && prog_empty;

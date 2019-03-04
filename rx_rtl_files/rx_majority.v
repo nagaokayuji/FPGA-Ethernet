@@ -49,8 +49,7 @@ one2one #(.whereisid(id_location)) one2one_inst(
     .rx_en_w(rx_enable_al),//rx_enable && ~sfd_wait
     .rxdata_w(rx_data_al),
     .data_out(data_out_1),
-    .en_out(en_out_1),
-    .lost(loss_detected_1)
+    .en_out(en_out_1)
 );
 
 wire [7:0] data_out_3;

@@ -76,11 +76,11 @@ initial begin
 	rst = 0;
 	#CYCLE;
 
-	for (aux = 0; aux < 43; aux = aux + 1) begin
+	for (aux = 0; aux < 6; aux = aux + 1) begin
 		for (each_id = 1; each_id <= 3; each_id = each_id + 1) begin
 			for (each_seg = 0; each_seg < segment_num_max; each_seg = each_seg + 1) begin
 				#(CYCLE*10);
-				if (aux != 10 || each_id != 1 || each_seg != 0)
+				//if (aux != 10 || each_id != 1 || each_seg != 0)
 				onepacket(each_seg,each_id,aux);
 			end
 			#(CYCLE*30);

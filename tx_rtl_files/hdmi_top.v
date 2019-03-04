@@ -70,7 +70,7 @@ dvi2rgb_0 dvi2rgb (
 //===================================================================
 
 
-rgb720to480 rgb720to320 (
+rgb2bram rgb720to320 (
 	.i_Clk(), //25.2MHz
 	.i_Clk3x(pclk),
 	.i_Hsync(hsync),

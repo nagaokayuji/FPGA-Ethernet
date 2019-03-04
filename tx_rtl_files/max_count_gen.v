@@ -10,22 +10,22 @@ reg [16:0] max_counter_samepacket = 17'd30;
 // define speed & how fast
 always @(switches) begin
 	case (switches[3:0])
-		4'b0000:	max_count <= 27'd124999999; // 1 pps
-		4'b0001:	max_count <= 27'd62499999; // 2 pps
-		4'b0010:	max_count <= 27'd12499999; // 10 pps
-		4'b0011:	max_count <= 27'd6249999; //20 pps
-		4'b0100:	max_count <= 27'd2499999; // 50 pps
-		4'b0101:	max_count <= 27'd1249999; //100 pps
-		4'b0110:	max_count <= 27'd624999; // 200pps
-		4'b0111:	max_count <= 27'd249999; //500 pps
-		4'b1000:	max_count <= 27'd124999; // 1000 pps
-		4'b1001:	max_count <= 27'd62499; //2000 pps
-		4'b1010:	max_count <= 27'd24999; //5000 pps
-		4'b1011:	max_count <= 27'd12499; //10000 pps
-		4'b1100:	max_count <= 27'd6249; //20000 pps
-		4'b1101:	max_count <= 27'd2499; //50000 pps
-		4'b1110:	max_count <= 27'd1249; //100000pps
-		default:	max_count <= 27'd30; //ok? 
+		4'b0000:	max_count <= 27'd124999999; // 1 pps , 0.0115Mbps
+		4'b0001:	max_count <= 27'd62499999; // 2 pps, 0.023Mbps
+		4'b0010:	max_count <= 27'd12499999; // 10 pps, 0.115Mbps
+		4'b0011:	max_count <= 27'd6249999; //20 pps   0.23Mbps
+		4'b0100:	max_count <= 27'd2499999; // 50 pps, 0.5756Mbps 
+		4'b0101:	max_count <= 27'd1249999; //100 pps, 1.15Mbps
+		4'b0110:	max_count <= 27'd624999; // 200pps, 2.30Mbps
+		4'b0111:	max_count <= 27'd249999; //500 pps, 5.72Mbps
+		4'b1000:	max_count <= 27'd124999; // 1000 pps, 11.388Mbps
+		4'b1001:	max_count <= 27'd62499; //2000 pps, 22.52Mbps
+		4'b1010:	max_count <= 27'd24999; //5000 pps, 54.46Mbps
+		4'b1011:	max_count <= 27'd12499; //10000 pps, 103.307Mbps
+		4'b1100:	max_count <= 27'd6249; //20000 pps, 187.28Mbps
+		4'b1101:	max_count <= 27'd2499; //50000 pps, 365.575Mbps
+		4'b1110:	max_count <= 27'd1249; //100000pps, 535.515Mbps
+		default:	max_count <= 27'd30; //ok? 979.59Mbps
 	endcase
 	/*
 	    case (switches[7:6])

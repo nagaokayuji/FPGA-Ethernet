@@ -1,179 +1,130 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2018/07/12 21:51:17
-// Design Name: 
-// Module Name: tb_rx_majority
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
 module tb_rx_majority;
 
-localparam clknum = 80;
-localparam step = 10;
-localparam step125 = 8;
+parameter step = 16;
+parameter packetsize = 10;
+parameter whereisid = 0;
+
 
 reg clk;
-reg reset;
+reg rst;
 reg rx_clk;
-reg [7:0] rx_data;
-reg rx_enable;
-reg sfd_wait;
-wire [7:0] out1;
-wire [7:0] out2;
-wire [11:0] out3;
+reg [7:0] rxd;
+reg rxen;
+wire [7:0] data_out;
+wire en_out;
+
+integer i;
+task onepacket;
+	input [7:0] id;
+	input [31:0] seed;
+begin
+	#step;
+	rxen = 1;
+	for (i=0; i<packetsize; i=i+1) begin
+		if (i==whereisid)
+			rxd = id;
+		else if (i == packetsize - 1)
+			rxd = 8'hef;
+		else rxd = ((seed+3)*packetsize * 33 + i) % 255;
+		#step;
+	end
+	rxen = 0;
+	#(step*7);
+end
+endtask
 
 
+integer j,k,l;
 rx_majority rx_majority(
-    .clk(clk),
-    .reset(reset),
-    .uart_rxd(),
-    .uart_txd(),
-    .rx_clk(rx_clk),
-    .sfd_wait(sfd_wait),
-    .rx_data(rx_data),
-    .rx_enable(rx_enable),
-    .rx_error(),
-    .out1(out1),
-    .out2(out2),
-    .out3(out3)
+    .reset(rst),
+    .clk125MHz(clk),
+    .rx_data(rxd),
+    .rx_enable(rxen),
+		.redundancy(8'd5),
+		.en_out(en_out),
+		.data_out(data_out),
+		.loss_detected()
     );
     
-    
- always begin
-    clk = 0;    #(step/2);
-    clk = 1;    #(step/2);
- end
- always begin
-    rx_clk = 0; #(step125/2);
-    rx_clk = 1; #(step125/2);
- end
- 
- always begin
- rx_data = 8'hde;#(step125);
- rx_data = 8'had; #(step125);
- rx_data = 8'hbe; #(step125);
- rx_data = 8'hef; #(step125);
- end
- always begin
-    rx_enable = 0; #(step125 * 4);
-    rx_enable = 1; #(step125 * 4);
- end
- 
- initial begin
- reset = 0;
- rx_enable <= 0;
- rx_data <= 0;
- #(step) reset=1;
- #(step) reset=0;
- sfd_wait = 0;
- /*
- #(step*5);
- rx_enable = 1'b1;
- rx_data = 8'hde;
- #(step125);
- rx_data = 8'had;
- #(step125);
- rx_data = 8'hbe;
- #(step125);
- rx_data = 8'hef;
-// rx_enable = 1'b0;
- 
- #(step*3);
- #(step125);
- rx_enable = 1'b1;
- rx_data = 8'hde;
-  #(step125);
- rx_data = 8'had;
- #(step125);
- rx_data = 8'hbe;
- #(step125);
- rx_data = 8'hef;
- rx_enable = 1'b0;
- 
-  #(step125);
- rx_data = 8'had;
- #(step125);
- rx_data = 8'hbe;
- #(step125);
- rx_data = 8'hef;
-  rx_enable = 1'b1;
- rx_data = 8'hde;
- #(step125);
- rx_data = 8'had;
- #(step125);
- rx_data = 8'hbe;
- #(step125);
- rx_data = 8'hef;
-// rx_enable = 1'b0;
- 
- #(step*3);
- #(step125);
- rx_enable = 1'b1;
- rx_data = 8'hde;
-  #(step125);
- rx_data = 8'had;
- #(step125);
- rx_data = 8'hbe;
- #(step125);
- rx_data = 8'hef;
- rx_enable = 1'b0;
- 
-  #(step125);
- rx_data = 8'had;
- #(step125);
- rx_data = 8'hbe;
- #(step125);
- rx_data = 8'hef;
-   #(step125);
-rx_data = 8'had;
-#(step125);
-rx_data = 8'hbe;
-#(step125);
-rx_data = 8'hef;
- rx_enable = 1'b1;
-rx_data = 8'hde;
-#(step125);
-rx_data = 8'had;
-#(step125);
-rx_data = 8'hbe;
-#(step125);
-rx_data = 8'hef;
-// rx_enable = 1'b0;
+		always begin
+			#8 clk = !clk;
+		end
+	
+	initial begin
+		$dumpfile("wf_tb_rx_majority.vcd");
+		$dumpvars(0,tb_rx_majority);
+	clk = 0; rst = 0; rxd = 0; rxen = 0;
 
-#(step*3);
-#(step125);
-rx_enable = 1'b1;
-rx_data = 8'hde;
- #(step125);
-rx_data = 8'had;
-#(step125);
-rx_data = 8'hbe;
-#(step125);
-rx_data = 8'hef;
-rx_enable = 1'b0;
-#20;
-rx_data = 8'had;
-#(step125);
-rx_data = 8'hbe;
-#(step125);
-rx_data = 8'hef;
- */
- #(step125*60);
- $finish;
- end
+	#step;
+	rst = 1;
+	#step;
+	rst = 0;
+	#step;
+	l=1;
+	for (k = 0; k <= 6; k=k+1) begin
+		for (j = 1; j <= 5; j=j+1) begin
+			onepacket(j,k);
+			#(step*5);
+		end
+		#(step*10);
+	end
+
+	#(step*100);
+	
+	l=2;
+	for (k = 0; k <= 6; k=k+1) begin
+		for (j = 1; j <= 5; j=j+1) begin
+			if (k == j)
+			onepacket(j,k*k);
+			else
+			onepacket(j,k);
+
+			#(step*5);
+		end
+		#(step*10);
+	end
+	l=3;
+
+	#(step*100);
+// 2 packets loss
+	for (k = 0; k <= 7; k=k+1) begin
+		for (j = 1; j <= 5; j=j+1) begin
+			if (k == j || k == j+1)
+			onepacket(j,k*k);
+			else 
+			onepacket(j,k);
+			#(step*5);
+		end
+		#(step*10);
+	end
+	l=4;
+
+	#(step*100);
+	for (k = 0; k <= 8; k=k+1) begin
+		for (j = 1; j <= 5; j=j+1) begin
+			if (k == j && k == j+2)
+			onepacket(j,k*k);
+			else
+			onepacket(j,k);
+			#(step*5);
+		end
+		#(step*10);
+	end
+	#(step*100);
+	l=5;
+	for (k = 0; k <= 9; k=k+1) begin
+		for (j = 1; j <= 5; j=j+1) begin
+			if (k != j && k != j+3)
+			onepacket(j,k);
+			#(step*5);
+		end
+		#(step*10);
+	end
+#(step*33);
+	$finish;
+
+end
     
+ 
 endmodule

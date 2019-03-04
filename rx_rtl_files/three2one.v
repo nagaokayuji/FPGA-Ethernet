@@ -151,8 +151,7 @@ comparator comp1(
 	.en(en_after_id),
 	.bramout(out2),
 	.valid(comp_valid1),
-	.result(comp_result1),
-	.shift4_result()
+	.result(comp_result1)
 );
 
 comparator comp2(
@@ -161,8 +160,7 @@ comparator comp2(
 	.en(en_after_id),
 	.bramout(out3),
 	.valid(comp_valid2),
-	.result(comp_result2),
-	.shift4_result()
+	.result(comp_result2)
 );
 
 comparator comp3(
@@ -171,8 +169,7 @@ comparator comp3(
 	.en(en_after_id),
 	.bramout(out3),
 	.valid(comp_valid3),
-	.result(comp_result3),
-	.shift4_result()
+	.result(comp_result3)
 );
 //=====================
 // STATE CONTROL

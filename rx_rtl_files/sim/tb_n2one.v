@@ -12,7 +12,7 @@ n2one uut(
 	.rst(rst),
 	.rxd(rxd),
 	.rxen(rxen),
-	.redundancy(8'd3),
+	.redundancy(8'd5),
 
 	.en_out_reg(en_out),
 	.data_out_reg(data_out)
@@ -33,7 +33,7 @@ begin
 			rxd = id;
 		else if (i == packetsize - 1)
 			rxd = 8'hef;
-		else rxd = ((seed+3)*packetsize * 33) % 255;
+		else rxd = ((seed+3)*packetsize * 33 + i) % 255;
 		#step;
 	end
 	rxen = 0;

@@ -63,3 +63,7 @@ set_property -dict {PACKAGE_PIN W2 IOSTANDARD TMDS_33} [get_ports {hdmi_rx_p[1]}
 set_property -dict {PACKAGE_PIN V2 IOSTANDARD TMDS_33} [get_ports {hdmi_rx_n[2]}]
 set_property -dict {PACKAGE_PIN U2 IOSTANDARD TMDS_33} [get_ports {hdmi_rx_p[2]}]
 
+
+set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
+set_property CONFIG_MODE SPIx4 [current_design]

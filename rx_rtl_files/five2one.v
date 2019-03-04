@@ -247,8 +247,7 @@ comparator comp1(
 	.en(en_after_id),
 	.bramout(out2),
 	.valid(comp_valid12),
-	.result(comp_result12),
-	.shift4_result()
+	.result(comp_result12)
 );
 
 comparator comp2(
@@ -257,8 +256,7 @@ comparator comp2(
 	.en(en_after_id),
 	.bramout(out3),
 	.valid(comp_valid13),
-	.result(comp_result13),
-	.shift4_result()
+	.result(comp_result13)
 );
 
 comparator comp3(
@@ -267,8 +265,7 @@ comparator comp3(
 	.en(en_after_id),
 	.bramout(out4),
 	.valid(comp_valid14),
-	.result(comp_result14),
-	.shift4_result()
+	.result(comp_result14)
 );
 comparator comp4(
 	.clk(clk),
@@ -276,8 +273,7 @@ comparator comp4(
 	.en(en_after_id),
 	.bramout(out5),
 	.valid(comp_valid15),
-	.result(comp_result15),
-	.shift4_result()
+	.result(comp_result15)
 );
 comparator comp5(
 	.clk(clk),
@@ -285,8 +281,7 @@ comparator comp5(
 	.en(en_after_id),
 	.bramout(out3),
 	.valid(comp_valid23),
-	.result(comp_result23),
-	.shift4_result()
+	.result(comp_result23)
 );
 comparator comp6(
 	.clk(clk),
@@ -294,8 +289,7 @@ comparator comp6(
 	.en(en_after_id),
 	.bramout(out4),
 	.valid(comp_valid24),
-	.result(comp_result24),
-	.shift4_result()
+	.result(comp_result24)
 );
 comparator comp7(
 	.clk(clk),
@@ -303,8 +297,7 @@ comparator comp7(
 	.en(en_after_id),
 	.bramout(out5),
 	.valid(comp_valid25),
-	.result(comp_result25),
-	.shift4_result()
+	.result(comp_result25)
 );
 comparator comp8(
 	.clk(clk),
@@ -312,8 +305,7 @@ comparator comp8(
 	.en(en_after_id),
 	.bramout(out4),
 	.valid(comp_valid34),
-	.result(comp_result34),
-	.shift4_result()
+	.result(comp_result34)
 );
 comparator comp9(
 	.clk(clk),
@@ -321,8 +313,7 @@ comparator comp9(
 	.en(en_after_id),
 	.bramout(out5),
 	.valid(comp_valid35),
-	.result(comp_result35),
-	.shift4_result()
+	.result(comp_result35)
 );
 comparator comp10(
 	.clk(clk),
@@ -330,8 +321,7 @@ comparator comp10(
 	.en(en_after_id),
 	.bramout(out5),
 	.valid(comp_valid45),
-	.result(comp_result45),
-	.shift4_result()
+	.result(comp_result45)
 );
 //=====================
 // STATE CONTROL

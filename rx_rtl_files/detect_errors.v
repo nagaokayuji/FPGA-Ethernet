@@ -51,6 +51,7 @@ module detect_errors #(parameter whereis_aux = 0)(
 	input wire clk,
 	input wire rst,
 	input wire [15:0] segment_number_max,
+	(* mark_debug = "true" *) input wire [15:0] seg,
 	(* mark_debug = "true" *) input wire rx_en,
 	(* mark_debug = "true" *) input wire [7:0] rx_data,
 	(* mark_debug = "true" *) output reg [31:0] count,
@@ -68,6 +69,7 @@ reg [15:0] count_edge;
 (* mark_debug = "true" *) reg [7:0] aux = maxaux;
 (* mark_debug = "true" *) reg [7:0] aux_prev;
 (* mark_debug = "true" *) reg [7:0] samecount;
+reg [15:0] seg_prev,seg_tmp;
 
 wire aux_on = (whereis_aux == count_edge && rx_en);// && valid;
 wire aux_on_delay = (whereis_aux + 3 == count_edge);
@@ -79,6 +81,9 @@ wire aux_on_3 = (whereis_aux + 7 == count_edge);
 //wire aux_ok = (aux == next_aux);
 wire [7:0] next_samecount = (samecount == segment_number_max - 1)?
 							0: samecount + 1;
+							
+reg count_on;
+							
 
 reg [31:0] cal_los_inter;
 reg [31:0] cal_los__inter;
@@ -98,6 +103,23 @@ function [7:0] next_aux_func;
 		end
 	end
 endfunction
+//-=-=-=-=
+function [15:0] next_seg_func;
+    input [7:0] aux_prev;
+    input [7:0] aux;
+    input [15:0] seg_prev;
+   // input [15:0] seg;
+    begin
+        if (aux_prev == aux) begin
+            next_seg_func = seg_prev + 1'b1;
+        end
+        else begin
+            next_seg_func = 0;
+        end
+    end
+endfunction
+
+
 //-~-~-~-~-~
 function [31:0] calculate_losts;
 	input [7:0] aux_prev;
@@ -148,6 +170,13 @@ localparam state_run_error2 = 5;
 localparam state_run_error3 = 6;
 localparam state_finished = 7;
 
+reg mem [65535:0];
+wire [23:0] memaddr = {aux,seg[7:0]};
+// count
+
+
+localparam state_count_on = 5;
+localparam stat_count_off = 4;
 reg [7:0] aux_tmp;
 always @(posedge clk) begin
 	if (rst) begin
@@ -162,6 +191,8 @@ always @(posedge clk) begin
 		lostnum <= 0;
 		samecount <= 0;
 		ap_start = 0;
+		count_on = 0;
+		seg_prev = 0;
 		state = state_init;
 	end
 	else begin //!rst
@@ -183,7 +214,7 @@ always @(posedge clk) begin
 			 lostnum = 0;
 			 ap_start = 0;
 				if (aux_on_3 && aux_tmp == 0) begin
-				
+				    seg_prev = 0;
 				    aux = 0;
 				    aux_prev = 0;
 					samecount = 0;
@@ -193,18 +224,22 @@ always @(posedge clk) begin
 
 			state_run: begin
 				if (aux_on_delay) begin
+				    seg_tmp <= seg;
+				    seg_prev <= seg_tmp;
+				    
 					aux <= aux_tmp;
-					aux_prev = aux;
+					aux_prev <= aux;
 				end
-
-				if (aux_on_1) begin
+                
+				else if (aux_on_1) begin
 				    samecount_prev <= samecount;
 					count <= count + 1'b1;
 					if (aux_prev == aux)
 						samecount <= next_samecount;
 					else samecount <= 0;
 
-					if (next_aux_func(aux_prev, samecount, segment_number_max) == aux) begin
+					//if (next_aux_func(aux_prev, samecount, segment_number_max) == aux) begin
+					if (next_seg_func(aux_prev,aux,seg_prev) == seg) begin
 						ok <= ok + 1'b1;
 						//samecount <= next_samecount;
 					end

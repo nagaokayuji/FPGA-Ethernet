@@ -4,6 +4,7 @@ module rx_top(
 	output wire [7:0] leds,
 	input wire rstb,
 	input wire btnl,
+	input wire btnu,
 	input wire resetn,
 
 	// uart
@@ -170,6 +171,7 @@ wire [7:0] data_out;
 reg en_out;
 reg [7:0] data_out;
 */
+wire [15:0] seg_out;
 rx_majority_wrapper i_rx_majority_wrapper (
 	.clk125MHz(clk125MHz),
 	.reset(rstb),
@@ -178,6 +180,7 @@ rx_majority_wrapper i_rx_majority_wrapper (
 	.tmp(tmp),
 	.redundancy(redundancy),
 	.en_out(en_out),
+	.seg_out(seg_out),
 	.data_out(data_out)
 );
 
@@ -215,16 +218,25 @@ end
 wire [31:0] countp,okp;
 wire finished,started,valid;
 wire [2:0] state_d_e;
+wire [31:0] ngp,lostnum;
 detect_errors detect_errors_i (
 	.rst(RST),
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),
 	.clk(clk125MHz),
 	.segment_number_max(segment_number_max),
+	.seg(seg_out),
 	.count(countp),
 	.ok(okp),
+	.ng(ngp),
+	.lostnum(lostnum),
 	.valid(valid),
 	.state(state_d_e));
+
+
+// --- add microblaze here.
+
+
 
 
 hdmi_top hdmi_top_i (
@@ -238,6 +250,16 @@ hdmi_top hdmi_top_i (
 	.hdmi_tx_clk_p(hdmi_tx_clk_p),
 	.hdmi_tx_n(hdmi_tx_n),
 	.hdmi_tx_p(hdmi_tx_p)
+);
+
+design_2_wrapper (
+.Clk(clk100MHz),
+.resetn(resetn),
+.uart_rtl_0_rxd(uart_rxd),
+.uart_rtl_0_txd(uart_txd),
+.gpio_rtl_0_tri_i(ngp),
+.gpio_rtl_1_tri_i(countp),
+.interrupt(btnu)
 );
 
 assign leds = switches;

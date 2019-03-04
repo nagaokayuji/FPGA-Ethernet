@@ -5,10 +5,10 @@ module bram2rgb(
 //input wire [7:0] cdata,
 //input wire pclk,
 input wire clk,xrst,en,
-(* mark_debug = "true" *) input wire [23:0] in_from_ram,
-(* mark_debug = "true" *) output  reg [19:0] ram_addr=0,
+input wire [23:0] in_from_ram,
+output  reg [19:0] ram_addr=0,
 output  reg vd_2s,hd_2s,
-(* mark_debug = "true" *) output  reg [23:0] rgb24bit=0,
+output  reg [23:0] rgb24bit=0,
 output   reg den_2s=0
     );
     
@@ -35,8 +35,9 @@ reg [1:0] den_shift;
   wire [15:0] vdata = 16'd480;
   wire [15:0] vfp   = 16'd10;
   wire vsp   = 1;
+  reg [2:0] ramaddr_sw  = 0;
   
-  
+  reg sw = 0;
 
   reg  [15:0] hcnt, vcnt;
   reg  [ 7:0] shift;
@@ -46,7 +47,8 @@ reg [17:0] ram_addr_ini = 0;
 //wire ram_addrw = (vcnt - 35) * hdata + hcnt - 145; // ok.
 
 
-
+reg vcnt_sw = 0;
+reg hcnt_sw = 0;
   always@(posedge clk or negedge xrst)
     begin//=
     
@@ -60,13 +62,14 @@ reg [17:0] ram_addr_ini = 0;
 
     
     if(hcnt<hsync+hbp+hdata+hfp-16'd1) begin // maybe hcnt:640~800.  hsync
-    
-      hcnt <= hcnt + 1;
+      //hcnt_sw <= hcnt_sw + 1;
+      hcnt <= hcnt + 1'b1;
     end
          else begin
             hcnt <= 0;
               if(vcnt<vsync+vbp+vdata+vfp-16'd1) begin
-               vcnt <= vcnt + 1;
+                //vcnt_sw <= vcnt_sw + 1;
+               vcnt <= vcnt + 1'b1;
               
              end
            else begin
@@ -84,20 +87,28 @@ reg [17:0] ram_addr_ini = 0;
     
     if (vd) begin ram_addr_ini <= 0; ram_addr <= 0;end
     
-    if (hcnt == hsync - 1 && vcnt >= vsync + vbp)begin  if (ram_addr_ini < 57600) ram_addr_ini <= ram_addr_ini + 320; if (ram_addr < 57600) ram_addr <= ram_addr_ini; end
+    if (hcnt == hsync - 1 && vcnt >= vsync + vbp)begin 
+           sw <= sw + 1'b1;
+         if (sw) begin
+        if (ram_addr_ini < 57600)
+            ram_addr_ini <= ram_addr_ini + 320;
+             if (ram_addr < 57600) ram_addr <= ram_addr_ini;
+        end
+     end
 
     if(hsync+hbp<=hcnt && hcnt<hsync+hbp+hdata && vsync+vbp<=vcnt && vcnt<vsync+vbp+vdata) begin// valid
         den <= 1;
 
-                    
-        if (hsync+hbp<=hcnt && hcnt< hsync+hbp+320+5 && vcnt < vsync+vbp+180+5)begin
+        if (hsync+hbp<=hcnt && hcnt< hsync+hbp+640 && vcnt < vsync+vbp+360)begin
             if (ram_addr < 57600)
-                ram_addr <= ram_addr + 1;
+                hcnt_sw <= hcnt_sw + 1'b1;
+                
+                ram_addr <= ram_addr + hcnt_sw;
             
             rgb24bit <= in_from_ram;
             
         end
-        else rgb24bit <= 24'hff00ff;
+        else rgb24bit <= 24'h000000;
     
     end
     else begin
