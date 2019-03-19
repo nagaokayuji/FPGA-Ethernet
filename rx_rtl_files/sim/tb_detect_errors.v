@@ -4,7 +4,7 @@ module tb_detect_errors;
 parameter CYCLE = 16;
 parameter whereis_aux = 0;
 parameter packetsize = 33;
-parameter segment_number_max = 16'd1;
+parameter segment_number_max = 16'd50;
 
 
 reg rx_en=0,clk=0, rst = 0;
@@ -73,8 +73,9 @@ initial begin
 	rst = 0;
 	#(CYCLE * 3);
 	#(CYCLE * 30);
+	#(CYCLE * 16'hffff);
 	for (k=0;k<10;k=k+1) begin
-	for (i=0; i<=5; i=i+1) begin
+	for (i=0; i<=255; i=i+1) begin
 		for (j=0;j<segment_number_max;j=j+1) begin
 			segment_number = j;
 			if ((k != 2 || k != 5) && j != 2)
@@ -88,7 +89,7 @@ initial begin
 	
 	
 
-	for (i=0; i<8; i=i+1) begin
+	for (i=0; i<=255; i=i+1) begin
 		for (j=0;j<segment_number_max;j=j+1) begin
 			segment_number = j;
 		

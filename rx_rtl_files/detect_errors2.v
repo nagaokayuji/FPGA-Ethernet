@@ -40,8 +40,14 @@ localparam state_count_on = 5;
 localparam state_ref = 6;
 localparam state_finished = 7;
 
+//reg [0:0] mem [65535:0];　
 reg mem [65535:0];
+reg [15:0] memaddr_reg;
+reg mem_late;
 wire [15:0] memaddr = {aux,seg[7:0]};
+always @(posedge clk) begin
+    memaddr_reg <= memaddr;
+end
 integer i;
 reg [7:0] aux_tmp;
 reg [15:0] addr;
@@ -55,7 +61,6 @@ always @(posedge clk) begin
 		aux <= 0;
 		aux_prev <= 0;
 		ng <= 0;
-		lostnum <= 0;
 		addr <= 0;
  
 		count_on = 0;
@@ -114,8 +119,8 @@ always @(posedge clk) begin
 					aux <= aux_tmp;
 					aux_prev <= aux;
 				end
-				if (aux_on_1) begin
-					mem[memaddr] = 1'b1;
+				if (aux_on_2) begin
+					mem[memaddr_reg] <= 1'b1;
 				end
 				if ((seg == segment_number_max - 1 && aux == maxaux && aux_on_3)) begin
 					addr <= 0;
@@ -124,24 +129,28 @@ always @(posedge clk) begin
 			end // end of state_count_on
 
 			state_ref: begin
+			    mem_late <= mem[addr];
+
 				addr <= addr + 1'b1;
 				if ((0 <= addr[15:8] && addr[15:8] <= maxaux) && (0 <= addr[7:0] && addr[7:0] < segment_number_max)) begin
 					if (count >= maxcount) begin
 						state <= state_finished;
 					end
 					count <= count + 1'b1;
-					if (mem[addr] == 1'b1) begin
+					if (mem_late == 1'b1) begin
 						ok <= ok + 1'b1;
 					end
 					else begin
 						ng <= ng + 1'b1;
 					end
 				end
-				mem[addr] <= 0;
+				
+				mem[addr] <= 1'b0;
 				if (addr[15:8] == maxaux && addr[7:0] == segment_number_max - 1'b1) begin
 					state <= state_count_off;
 					addr <= 0;
 				end
+			
 			end
 
 			state_finished: begin
@@ -149,4 +158,5 @@ always @(posedge clk) begin
 		endcase
 	end
 end
+
 endmodule
