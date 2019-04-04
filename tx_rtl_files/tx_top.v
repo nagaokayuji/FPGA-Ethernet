@@ -28,7 +28,8 @@ module tx_top(
 	);
 		
 //wire [2:0] redundancy = {switches[5],switches[4],1'b1}; //3bit, takes values of 1,3,5,7
-
+wire start_frame;
+wire oneframe_done;
 reg [1:0] speed = 2'b11;
 reg adv_data = 1'b0;
 wire CLK100MHz_buffered;
@@ -164,6 +165,8 @@ send_control send_control_i (
 	.RST(rstb),
 	.switches(switches),
 	.busy(busy),
+	.start_frame(start_frame),
+	.oneframe_done(oneframe_done),
 	
 	// output
 	.segment_num_inter(segment_num), // segment number
@@ -201,7 +204,8 @@ hdmi_top hdmi_top_i (
 	.bramaddr24b(bramaddr24b),
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
-	.rgb_b(rgb_b)
+	.rgb_b(rgb_b),
+	.start_frame(start_frame)
 );
 
 
@@ -237,6 +241,7 @@ byte_data data(
 tx_memory_control tx_memory_control_i (
 	.pclk(pclk),
 	.clk125MHz(clk125MHz),
+	.rst(rstb),
 	.txid(txid),
 	.segment_num(segment_num), // segment_num,  8bits
 	.redundancy(redundancy),
@@ -251,7 +256,8 @@ tx_memory_control tx_memory_control_i (
 
 	// output
 	.doutb(doutb),
-	.startaddr(startaddr)
+	.startaddr(startaddr),
+	.oneframe_done(oneframe_done)
 );
 
 endmodule

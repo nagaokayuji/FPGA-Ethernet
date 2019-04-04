@@ -11,12 +11,12 @@
 	//output reg [19:0] vramaddr = 0,
 	//output reg [1:0] vramaddr_c = 0, // rgb selector. 
 	//output reg [19:0] lastaddr = 0,
-	output reg busy = 1'b0,
-	output reg [7:0] data = 8'b0,
+	(* mark_debug = "true" *) output reg busy = 1'b0,
+	(* mark_debug = "true" *) output reg [7:0] data = 8'b0,
 	
 	output reg [11:0] counter = 12'b0,
 	output reg data_user = 1'b0,
-	output reg data_valid = 1'b0,
+	(* mark_debug = "true" *) output reg data_valid = 1'b0,
 	output reg data_enable = 1'b0
 	//output reg [12:0] count_for_bram = 0,
 	//output reg [12:0] count_for_bram_b=0,

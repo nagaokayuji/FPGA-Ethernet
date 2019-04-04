@@ -12,7 +12,8 @@ module hdmi_top(
 	output wire hdmi_rx_txen,
 	output wire ena,
 	output wire [23:0] bramaddr24b,
-	output wire [7:0] rgb_r,rgb_g,rgb_b
+	output wire [7:0] rgb_r,rgb_g,rgb_b,
+	output wire start_frame
 );
 
 assign hdmi_rx_hpa = 1'b1;
@@ -41,8 +42,8 @@ clk_for_hdmi clk_for_hdmi_i(
 	.clk_out1(refclk)
 );
 
-(* mark_debug = "true" *) wire [23:0] pdata;
-(* mark_debug = "true" *) wire vde,hsync,vsync,pclk5x;
+wire [23:0] pdata;
+wire vde,hsync,vsync,pclk5x;
 wire pclklocked;
 dvi2rgb_0 dvi2rgb (
 	.TMDS_Clk_p(hdmi_rx_clk_p),
@@ -70,7 +71,7 @@ dvi2rgb_0 dvi2rgb (
 //===================================================================
 
 
-rgb2bram rgb720to320 (
+rgb2bram rgb720to320 (//rgb2bram
 	.i_Clk(), //25.2MHz
 	.i_Clk3x(pclk),
 	.i_Hsync(hsync),
@@ -87,7 +88,8 @@ rgb2bram rgb720to320 (
 	.bramaddr24b(bramaddr24b),
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
-	.rgb_b(rgb_b)
+	.rgb_b(rgb_b),
+	.start_frame(start_frame)
 );  
 
   

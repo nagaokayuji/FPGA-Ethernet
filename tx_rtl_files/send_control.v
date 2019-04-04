@@ -8,12 +8,14 @@ module send_control(
 	input wire RST,
 	input wire [7:0] switches, // [7:6] : fragment, [5:4]: redundancy, [3:0]: speed
 	input wire busy,
+(* mark_debug = "true" *)	input wire start_frame,
+(* mark_debug = "true" *)	input wire oneframe_done,
 
 	// output
-	output reg [15:0] segment_num_inter = 0,
-	output reg [7:0] txid_inter = 1,
-	output reg [7:0] aux_inter = 0,
-	output reg start_sending = 0,
+(* mark_debug = "true" *)		output reg [15:0] segment_num_inter = 0,
+(* mark_debug = "true" *)		output reg [7:0] txid_inter = 1,
+(* mark_debug = "true" *)		output reg [7:0] aux_inter = 0,
+(* mark_debug = "true" *)		output reg start_sending = 0,
 	output wire [7:0] redundancy // switches[5:4]
 );
 reg [7:0] aux = 0;
@@ -21,6 +23,7 @@ reg [15:0] segment_num = 0;
 reg [7:0] txid = 1;
 wire [15:0] segment_num_max; // switches[7:6]
 wire [27:0] max_count; // calculated by switches[3:0]
+wire hdmimode = (switches[3:0] == 4'b0000);
 max_count_gen max_count_gen_i (
 	.switches(switches[7:0]), //input
 	.max_count(max_count), // output
@@ -58,20 +61,30 @@ while (true) {
 
 
 
-reg [3:0] state = 0;
-parameter state_wait = 0;
-parameter state_id_1 = 1;
-parameter state_id_not_1 = 2;
-parameter state_id_1_sent = 3;
-parameter state_id_not_1_sent = 4;
+(* mark_debug = "true" *) reg [3:0] state = 0;
+localparam state_wait = 0;
+localparam state_id_1 = 1;
+localparam state_id_not_1 = 2;
+localparam state_id_1_sent = 3;
+localparam state_id_not_1_sent = 4;
+localparam state_wait_for_frame = 5;
 
-wire timer_done = (count == max_count);
+(* mark_debug = "true" *) wire timer_done = (count == max_count);//hdmimode ? () : (count == max_count) ;
+
+// if (hdmi_mode && hdmistate == ???)
+(* mark_debug = "true" *)reg [1:0] hdmistate = 0;
+localparam hdmi_wait = 0;
+localparam hdmi_sending = 1;
+localparam hdmi_sent = 2;
+
+
 
 wire [7:0] txid_next = (txid <= redundancy) ? txid + 1 : 1 ;
 wire [15:0] segment_num_next = (segment_num < segment_num_max) ? segment_num + 1 : segment_num_init;
 
 always @(posedge clk125MHz) begin
 	if (RST) begin
+		hdmistate = 0;
 		state = 0;
 		segment_num = 0;
 		txid = 0;
@@ -81,34 +94,74 @@ always @(posedge clk125MHz) begin
 		txid_inter = 0;
 		aux = 0;
 	end else begin
+		if (oneframe_done && hdmimode) begin // oneframe_done is used only HERE. now lock sareteru
+			hdmistate <= hdmi_sent;
+			state <= state_wait;
+			txid <= 1'b1;
+			txid_inter <= 1'b1;
+			segment_num <= segment_num_init;
+			start_sending <= 1'b0;
+		end
+
 		if (timer_done) begin
 			count <= 0;
 		end
 		else
-		if (!busy) begin
+		if (!busy && (!hdmimode || (hdmimode && hdmistate != hdmi_sent))) begin
 			count <= count + 1'b1;
-			counter_samepacket <= counter_samepacket + 1'b1;
+			//counter_samepacket <= counter_samepacket + 1'b1;
 		end else begin
 			count <= 0;
-			counter_samepacket <= 0;
+			//counter_samepacket <= 0;
 		end
 
 		case (state)
-			state_wait: begin 
-				state <= state_id_1;
-				txid <= 1'b1;
-				segment_num <= segment_num_init;
-				aux <= 1'b0;
+			state_wait: begin
+				if (!hdmimode) begin 
+					state <= state_id_1;
+					txid <= 1'b1;
+					segment_num <= segment_num_init;
+					aux <= 1'b0;
+					
+				end else begin // if hdmimode.
+					if (start_frame) begin
+						state <= state_id_1;
+						txid <= 1'b1;
+						segment_num <= segment_num_init;
+						hdmistate <= hdmi_sending;
+					end
+				end
 			end
 
 			state_id_1: begin
+				if (hdmimode) begin
+					if (start_frame) begin
+						hdmistate <= hdmi_sending;
+					end
+				end
 				if (timer_done) begin
-					segment_num_inter <= segment_num;
-					txid_inter <= 1'b1;
-					aux_inter <= aux;
-					txid <= 1'b1;
-					start_sending <= 1'b1;
-					state <= state_id_1_sent;
+					if (!hdmimode) begin
+						segment_num_inter <= segment_num;
+						txid_inter <= 1'b1;
+						aux_inter <= aux;
+						txid <= 1'b1;
+						start_sending <= 1'b1;
+						state <= state_id_1_sent;
+					end
+					else begin // hdmimode
+						if (hdmistate != hdmi_sent) begin
+							segment_num_inter <= segment_num;
+							txid_inter <= 1'b1;
+							aux_inter <= aux;
+							txid <= 1'b1;
+							start_sending <= 1'b1;
+							state <= state_id_1_sent;
+							hdmistate <= hdmi_sending;
+						end
+						else begin
+							start_sending <= 1'b0;
+						end
+					end
 				end 
 				else begin  //============= NOT timer_done
 					txid <= txid;
@@ -172,7 +225,15 @@ always @(posedge clk125MHz) begin
 					segment_num <= segment_num_next;
 				end
 			end
-			
+			// start_frame: start signal
+			// oneframe_done: frame send signal
+			/*
+			state_wait_for_frame: begin
+				if (start_frame) begin
+					state <= state_id_1;
+				end
+			end
+			*/
 		endcase
 	end
 end

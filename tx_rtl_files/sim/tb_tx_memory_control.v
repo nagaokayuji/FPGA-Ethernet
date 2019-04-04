@@ -14,12 +14,15 @@ wire [23:0] startaddr;
 
 wire [7:0] doutb;
 wire [7:0] aux;
+wire start_frame,oneframe_done;
 
 send_control send_control_i (
 	.clk125MHz(clk),
 	.RST(rst),
-	.switches(8'b01011111),
+	.switches(8'b01010000),
 	.busy(busy),
+	.start_frame(start_frame),
+	.oneframe_done(oneframe_done),
 
 	.segment_num_inter(segment_num),
 	.txid_inter(txid),
@@ -60,7 +63,9 @@ tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 	.byte_data_counter(byte_data_counter),
 	.bramaddr24b(bramaddr24b),
 	.data_user(data_user),
+
 	.startaddr(startaddr),
+	.oneframe_done(oneframe_done),
 	.doutb(doutb)
 );
 

@@ -27,6 +27,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 
 	// output
 	output reg [23:0] startaddr = 0,
+	output wire oneframe_done,
 	//output reg [7:0] doutb_reg
 	output wire [7:0] doutb
 );
@@ -50,7 +51,7 @@ reg [23:0] vramaddr;
 localparam start_with_latency = 46 - 3 ;
 localparam start_pixel = 46;
 localparam payload = 1440 - 3;
-localparam max_vramaddr = (320*180);
+localparam max_vramaddr = 10;//(320*180);
 
 /*
 function [12:0] make_addrb_not_one;
@@ -65,6 +66,7 @@ function [12:0] make_addrb_not_one;
 endfunction
 */
 
+assign oneframe_done = (/*segment_num == SEGMENT_NUMBER_MAX ||*/ vramaddr >= max_vramaddr/* || bramaddr24b >= max_vramaddr */) && ( txid >= redundancy);
 
 wire data_user_neg = (data_user_reg == 2'b10);
 reg [3:0] state = 0;
@@ -150,6 +152,7 @@ always @(posedge clk125MHz) begin
 				startaddr <= startaddr_ram[segment_num];
 			end
 			if (txid == 1) state = id1;
+		//	if ()
 
 		end
 	endcase

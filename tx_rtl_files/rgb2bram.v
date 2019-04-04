@@ -26,8 +26,7 @@ always @(opsedge i_clk or negedge i_hsync or negedge i_vsync) // ----important?
 */
 
 
-module 
-rgb720to480 #(
+module rgb2bram #(
  parameter ACTIVE_COLS = 320,//640, 
  parameter ACTIVE_ROWS = 180)//480) 
 
@@ -45,13 +44,20 @@ rgb720to480 #(
  (* mark_debug = "true" *)  output reg [9:0] o_Col_Count = 0, 
   (* mark_debug = "true" *) output reg [9:0] o_Row_Count = 0,
  (* mark_debug = "true" *) output  reg [31:0] bramaddr24b = 0,
-  (* mark_debug = "true" *) output reg [7:0] rgb_r,rgb_g,rgb_b
+  (* mark_debug = "true" *) output reg [7:0] rgb_r,rgb_g,rgb_b,
+	(* mark_debug = "true" *) output reg start_frame
  );  
  
  wire i_HSync = !i_Hsync;
  wire i_VSync = !i_Vsync; // =============active reverse=========
- 
- 
+// -> active low 
+
+reg [1:0] vsync_fall;
+
+always @(posedge i_Clk) begin
+	vsync_fall <= {vsync_fall[0],i_VSync};
+	start_frame <= (vsync_fall == 2'b10);
+ end
   (* mark_debug = "true" *) reg [2:0] count_three = 0;
  wire three = (count_three == 2'b11);//=====================modified
  (* mark_debug = "true" *) reg [23:0] data_sampling = 0;

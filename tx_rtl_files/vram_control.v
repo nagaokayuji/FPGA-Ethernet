@@ -6,12 +6,12 @@ module vram_control (
 (* mark_debug = "true" *)	input wire [23:0] bramaddr24b,
 	input wire [23:0] vramaddr,
 	input wire [2:0] vramaddr_c,
-(* mark_debug = "true" *)	input wire [7:0] din_rgb_r,
-(* mark_debug = "true" *)	input wire [7:0] din_rgb_g,
-(* mark_debug = "true" *)	input wire [7:0] din_rgb_b,
+input wire [7:0] din_rgb_r,
+input wire [7:0] din_rgb_g,
+input wire [7:0] din_rgb_b,
 
-(* mark_debug = "true" *)	output wire [7:0] doutb_first,
-(* mark_debug = "true" *)	output wire [23:0] doutb_rgb
+output wire [7:0] doutb_first,
+output wire [23:0] doutb_rgb
 );
 /*
 outlook: addr <-> data 1:1.

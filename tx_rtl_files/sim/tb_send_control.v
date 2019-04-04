@@ -9,16 +9,22 @@ reg clk,busy,rst;
 wire [15:0] segment_num;
 wire [7:0] txid,txid_inter,aux;
 wire start_sending;
+reg start_frame, oneframe_done;
 
 send_control uut(
 	.clk125MHz(clk),
 	.RST(rst),
-	.switches(8'b01011111),
+	.switches(8'b01010000),
+//	.switches(8'b01011111),
 	.busy(busy),
+	.start_frame(start_frame),
+	.oneframe_done(oneframe_done),
 
-	.segment_num(segment_num),
+	// output
+	.segment_num_inter(segment_num),
 	.txid_inter(txid_inter),
-	.aux(aux),
+	.aux_inter(aux),
+	.redundancy(),
 	.start_sending(start_sending)
 );
 
@@ -30,8 +36,28 @@ end
 initial begin
 	clk = 0;
 	busy = 0;
+	oneframe_done = 0;
+	start_frame = 0;
 	rst=0;
-	#30000;
+	#20;
+	start_frame = 1;
+	#8;
+	start_frame = 0;
+	#4000;
+	oneframe_done = 1;
+	#8;
+	oneframe_done = 0;
+
+	#4000;// stop here.
+	#20;
+	start_frame = 1;
+	#8;
+	start_frame = 0;
+	#4000;
+	oneframe_done = 1;
+	#8;
+	oneframe_done = 0;
+	#2000;
 	$finish;
 end
 
