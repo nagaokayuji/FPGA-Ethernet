@@ -6,7 +6,7 @@ module max_count_gen (
 );
 
 
-reg [16:0] max_counter_samepacket = 17'd30;
+reg [16:0] max_counter_samepacket = 17'd50;
 // define speed & how fast
 always @(switches) begin
 	if (switches[3:0] != 4'b0000) begin

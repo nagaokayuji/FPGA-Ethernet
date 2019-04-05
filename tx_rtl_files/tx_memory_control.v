@@ -11,6 +11,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 	input wire [7:0] txid,  // ID
 	input wire [15:0] segment_num, // segment_number. add next
 	input wire [7:0] redundancy,
+	input wire [15:0] segment_num_max,
 	input wire ena,   // en signal for VRAMs A port
 	input wire [7:0] rgb_r, // from hdmi_top
 	input wire [7:0] rgb_g, // from hdmi_top
@@ -23,6 +24,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 	//input wire [12:0] count_for_bram_b,
 	//input wire count_for_bram_en,
 	input wire data_user, // use for make startaddr. 43~
+	input wire hdmimode,
 	//input wire [23:0] lastaddr,
 
 	// output
@@ -33,25 +35,22 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 );
 
 /*
- new plan.
-
  delete startaddr & lastaddr @ byte_data.
+ '''
  use count_for_bram LIKE same address for any txid.
  switch automatically @ out of byte_data.
-
-
- add state machine?
+ '''
 
  added: byte_data_counter
  THUS, it is possible to decide {segment_number,id,aux,counter} -> {doutb}
  function is ok. we have to do is : make addrb
 */
 reg [2:0] vramaddr_c;
-reg [23:0] vramaddr;
+(* mark_debug = "true" *) reg [23:0] vramaddr;
 localparam start_with_latency = 46 - 3 ;
 localparam start_pixel = 46;
 localparam payload = 1440 - 3;
-localparam max_vramaddr = 10;//(320*180);
+localparam max_vramaddr = (320*180);
 
 /*
 function [12:0] make_addrb_not_one;
@@ -66,7 +65,9 @@ function [12:0] make_addrb_not_one;
 endfunction
 */
 
-assign oneframe_done = (/*segment_num == SEGMENT_NUMBER_MAX ||*/ vramaddr >= max_vramaddr/* || bramaddr24b >= max_vramaddr */) && ( txid >= redundancy);
+assign oneframe_done = (redundancy == 1) ? 
+	(vramaddr >= max_vramaddr - 1) : 
+	( addr_overed && ( txid >= redundancy) && (segment_num == segment_num_max - 1));
 
 wire data_user_neg = (data_user_reg == 2'b10);
 reg [3:0] state = 0;
@@ -76,87 +77,109 @@ reg [23:0] startaddr_ram [SEGMENT_NUMBER_MAX - 1: 0];
 localparam state_default = 0;
 localparam id1 = 1;
 localparam id_not1 = 2;
+reg [7:0] id_prev;
 
 wire [2:0] next_vramaddr_c = (vramaddr_c == 2) ? 0: vramaddr_c + 1;
+wire txbusy = (byte_data_counter != 0) ? 1'b1 : 1'b0;
 
-reg [2:0] vramaddr_d3; // three times use
+reg [2:0] vramaddr_d3; // three times use// 0,1,2,0,1,2,...
 wire [23:0] next_vramaddr = (vramaddr_d3 == 2) ? 
-					((vramaddr < max_vramaddr) ? vramaddr + 1: 0): vramaddr;
+					((vramaddr < max_vramaddr - 1'b1) ? vramaddr + 1: 0): vramaddr;
 wire [2:0] next_vramaddr_d3 = (vramaddr_d3 == 2) ?
 		0: (vramaddr_d3 + 1);
 
+reg addr_overed, addr_overed_before;
+reg resetplease;
+
 always @(posedge clk125MHz) begin
 	if (rst) begin
-	 state = 0;
-	 vramaddr = 0;
-	 vramaddr_c = 0;
-	 startaddr = 0;
+		addr_overed = 0;
+		state = 0;
+		vramaddr = 0;
+		vramaddr_c = 0;
+		startaddr = 0;
+		resetplease = 0;
 	end
-	case (state)
-		state_default: begin
-			if (txid != 1) state = id_not1;
-			else if (txid == 1) state = id1;
-
-			vramaddr_c <= 0;
+	else begin
+		/*
+		if (data_user_neg) begin
+			addr_overed_before <= addr_overed;
+			addr_overed <= 1'b0;
+		end
+		*/
+	/*
+		if (vramaddr >= max_vramaddr) begin
 			vramaddr <= 0;
-			vramaddr_d3 <= 0;
 		end
-		id1: begin
-			if (txid != 1) state = id_not1;
+		else begin
+	*/
+			case (state)
+				state_default: begin
+					if (txid != 1) state = id_not1;
+					else if (txid == 1) state = id1;
 
-			// make vramaddr_c & vramaddr
-			if (data_user_neg) begin
-				vramaddr_c = 0;
-				vramaddr <= vramaddr + 1;
+					vramaddr_c <= 0;
+					vramaddr <= 0;
+					vramaddr_d3 <= 0;
+				end
+				id1: begin
+					if (txid != 1) state = id_not1;
 
-			end
-
-			if (byte_data_counter == start_with_latency - 2) begin
-				startaddr <= vramaddr;
-				startaddr_ram[segment_num] = vramaddr;
-			end
-			if (byte_data_counter >= start_with_latency && (byte_data_counter < start_with_latency + payload)) begin
-				vramaddr <= next_vramaddr;
-				if (byte_data_counter != start_with_latency)
-					vramaddr_d3 <= next_vramaddr_d3;
-			end
-			else begin
-				vramaddr_d3 <= 0;
-
-			end
-
-			vramaddr_c <= vramaddr_d3;
-
-
-			if (byte_data_counter >= start_pixel  && (byte_data_counter < start_pixel + payload ))begin
-				count_for_bram_en <= 1;
-				if (count_for_bram_en) begin
-					count_for_bram <= (byte_data_counter - start_pixel);
+					if (hdmimode && (redundancy != 1) && (vramaddr >= max_vramaddr - 1 )) begin
+						addr_overed <= 1'b1;
 					end
+					else if (hdmimode && (redundancy == 1 && vramaddr >= max_vramaddr - 1)) state = state_default;
+					else begin
+						// make vramaddr_c & vramaddr
+						if (data_user_neg && !addr_overed) begin
+							vramaddr_c = 0;
+							vramaddr <= vramaddr + 1;
+						end
 
+						if (byte_data_counter == start_with_latency - 2) begin
+							startaddr <= vramaddr;
+							startaddr_ram[segment_num] = vramaddr;
+						end
+						if (byte_data_counter >= start_with_latency && (byte_data_counter < start_with_latency + payload)) begin
+							vramaddr <= next_vramaddr;
+							if (byte_data_counter != start_with_latency)
+								vramaddr_d3 <= next_vramaddr_d3;
+						end
+						else begin
+							vramaddr_d3 <= 0;
+						end
 
-
-			end
-			else begin
-				count_for_bram_en <= 0;
-				count_for_bram <= 0;
-			end
-
-
-		end
-		id_not1: begin
-			vramaddr_c <= 0;
-			vramaddr_d3 <= 0;
-			//vramaddr <= 0;
-			if (byte_data_counter == start_with_latency - 2) begin
-				startaddr <= startaddr_ram[segment_num];
-			end
-			if (txid == 1) state = id1;
-		//	if ()
-
-		end
-	endcase
-
+						vramaddr_c <= vramaddr_d3;
+						if (byte_data_counter >= start_pixel  && (byte_data_counter < start_pixel + payload ))begin
+							count_for_bram_en <= 1;
+							if (count_for_bram_en) begin
+								count_for_bram <= (byte_data_counter - start_pixel);
+								end
+						end
+						else begin
+							count_for_bram_en <= 0;
+							count_for_bram <= 0;
+						end
+					end
+				end
+				id_not1: begin
+					vramaddr_c <= 0;
+					vramaddr_d3 <= 0;
+					if (byte_data_counter == start_with_latency - 2) begin
+						startaddr <= startaddr_ram[segment_num];
+					end
+					if (txid == 1) begin
+						if (addr_overed) begin
+							state = state_default;
+							addr_overed <= 1'b0;
+						end
+						else begin
+							state = id1;
+						end
+					end
+				end
+			endcase
+	end
 end
 
 //wire [11:0] count_for_bram = (count_for_bram_en) ? (byte_data_counter - (start_pixel)) : 0;
@@ -164,8 +187,6 @@ end
 
 // data_user : from byte_data, active high when data enable
 reg [1:0] data_user_reg = 2'b0;
-
-
 
 // ID == 1 -=-=> startaddr -- lastaddr;
 always @(posedge clk125MHz) begin
@@ -205,15 +226,6 @@ vram_control vram_control_i(
 // send and save data
 // count_for_bram_en: have to be reconsidered
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
-
-/*
-	count_for_bram: addrb for bram1080.
-
-
-	<< about latency>>
-
-
-*/
 reg [7:0] doutb_first_reg;
 reg [7:0] doutb_first__reg,doutb_first___reg;
 reg [7:0] doutb_not_one_reg[SEGMENT_NUMBER_MAX - 1 : 0];

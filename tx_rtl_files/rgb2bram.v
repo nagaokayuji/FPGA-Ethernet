@@ -1,50 +1,30 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2018/10/14 17:57:45
-// Design Name: 
-// Module Name: rgb720to480
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 /*
 asynchronous. i_hsync,i_vsync -> like reset signals
 always @(opsedge i_clk or negedge i_hsync or negedge i_vsync) // ----important?
 
 */
-
-
 module rgb2bram #(
  parameter ACTIVE_COLS = 320,//640, 
  parameter ACTIVE_ROWS = 180)//480) 
 
- (input            i_Clk, //25.2MHz
- input i_Clk3x,
- (* mark_debug = "true" *)   input wire i_Hsync,
- (* mark_debug = "true" *)    input wire i_Vsync,
- (* mark_debug = "true" *)    input wire [23:0] data24b,
- (* mark_debug = "true" *) input wire vde,
-  output           o_HSync,
-  output           o_VSync,
-  (* mark_debug = "true" *) output reg enout,
-  (* mark_debug = "true" *) output reg  [21:0] bramaddr8b,
- (* mark_debug = "true" *)  output reg [7:0] data8b,
- (* mark_debug = "true" *)  output reg [9:0] o_Col_Count = 0, 
-  (* mark_debug = "true" *) output reg [9:0] o_Row_Count = 0,
- (* mark_debug = "true" *) output  reg [31:0] bramaddr24b = 0,
-  (* mark_debug = "true" *) output reg [7:0] rgb_r,rgb_g,rgb_b,
+(
+	input            i_Clk, //25.2MHz
+	input i_Clk3x,
+	input wire i_Hsync,
+	input wire i_Vsync,
+	input wire [23:0] data24b,
+	input wire vde,
+	output           o_HSync,
+	output           o_VSync,
+	output reg enout,
+	output reg  [21:0] bramaddr8b,
+	output reg [7:0] data8b,
+	output reg [9:0] o_Col_Count = 0, 
+	output reg [9:0] o_Row_Count = 0,
+	output reg [31:0] bramaddr24b = 0,
+	output reg [7:0] rgb_r,rgb_g,rgb_b,
 	(* mark_debug = "true" *) output reg start_frame
  );  
  
@@ -58,9 +38,9 @@ always @(posedge i_Clk) begin
 	vsync_fall <= {vsync_fall[0],i_VSync};
 	start_frame <= (vsync_fall == 2'b10);
  end
-  (* mark_debug = "true" *) reg [2:0] count_three = 0;
+reg [2:0] count_three = 0;
  wire three = (count_three == 2'b11);//=====================modified
- (* mark_debug = "true" *) reg [23:0] data_sampling = 0;
+reg [23:0] data_sampling = 0;
  reg fallen_h = 0;
  reg fallen_v = 0;
  reg vclk = 0;
@@ -76,7 +56,7 @@ always @(posedge i_Clk) begin
  //bramaddr8b <= (o_Col_Count + o_Row_Count * ACTIVE_COLS)*3 + (count_three);
  //if (half) begin
  
- if ((!i_HSync) || (!i_VSync) || (!vde)) begin
+ if ((!i_HSync) || (!i_VSync) || (!vde)) begin // blank
   inaaaa = 1;
 
  

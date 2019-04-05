@@ -6321,3 +6321,84 @@ selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "Untitle
 // HMemoryUtils.trashcanNow. Engine heap size: 7,463 MB. GUI used memory: 109 MB. Current time: 4/4/19, 12:33:03 PM JST
 // HMemoryUtils.trashcanNow. Engine heap size: 7,463 MB. GUI used memory: 109 MB. Current time: 4/4/19, 1:03:03 PM JST
 // HMemoryUtils.trashcanNow. Engine heap size: 7,463 MB. GUI used memory: 109 MB. Current time: 4/4/19, 1:33:03 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,463 MB. GUI used memory: 109 MB. Current time: 4/4/19, 2:03:03 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,463 MB. GUI used memory: 109 MB. Current time: 4/4/19, 2:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,463 MB. GUI used memory: 109 MB. Current time: 4/4/19, 3:03:04 PM JST
+// Elapsed time: 264925 seconds
+selectButton(PAResourceTtoZ.TaskBanner_CLOSE, (String) null); // k (aA, cp)
+closeTask("Simulation", "Behavioral Simulation - Functional - sim_1 - tb_detect_errors", "DesignTask.SIMULATION");
+// bx (cp):  Close : addNotify
+// TclEventType: WAVEFORM_CLOSE_WCFG
+// TclEventType: SIMULATION_CLOSE_SIMULATION
+// WARNING: HEventQueue.dispatchEvent() is taking  1007 ms.
+// Tcl Message: close_sim 
+// Tcl Message: INFO: [Simtcl 6-16] Simulation closed 
+dismissDialog("Close"); // bx (cp)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, rx_top (rx_top.v)]", 1, true); // B (D, cp) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, rx_top (rx_top.v)]", 1, true, false, false, false, false, true); // B (D, cp) - Double Click - Node
+selectCodeEditor("rx_top.v", 107, 609); // cl (w, cp)
+selectCodeEditor("rx_top.v", 107, 609, false, false, false, false, true); // cl (w, cp) - Double Click
+selectCodeEditor("rx_top.v", 109, 618); // cl (w, cp)
+selectCodeEditor("rx_top.v", 109, 618, false, false, false, false, true); // cl (w, cp) - Double Click
+selectCodeEditor("rx_top.v", 374, 610); // cl (w, cp)
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, rx_top (rx_top.v)]", 1); // B (D, cp)
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, rx_top (rx_top.v), i_rx_majority_wrapper : rx_majority_wrapper (rx_majority_wrapper.v)]", 5, true); // B (D, cp) - Node
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, rx_top (rx_top.v), i_rx_majority_wrapper : rx_majority_wrapper (rx_majority_wrapper.v)]", 5, true, false, false, false, false, true); // B (D, cp) - Double Click - Node
+// Elapsed time: 104 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "rx_majority_wrapper.v", 2); // k (j, cp)
+selectCodeEditor("rx_majority_wrapper.v", 231, 397); // cl (w, cp)
+// HMemoryUtils.trashcanNow. Engine heap size: 7,468 MB. GUI used memory: 119 MB. Current time: 4/4/19, 3:33:04 PM JST
+// Elapsed time: 1457 seconds
+selectCodeEditor("rx_majority_wrapper.v", 503, 337); // cl (w, cp)
+selectCodeEditor("rx_majority_wrapper.v", 431, 372); // cl (w, cp)
+selectCodeEditor("rx_majority_wrapper.v", 424, 377); // cl (w, cp)
+// HMemoryUtils.trashcanNow. Engine heap size: 7,468 MB. GUI used memory: 119 MB. Current time: 4/4/19, 4:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 4:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 5:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 5:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 6:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 6:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 7:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 7:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 8:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 8:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 9:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 9:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 10:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 10:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 11:03:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/4/19, 11:33:04 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 12:03:04 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 12:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 1:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 1:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 2:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 2:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 3:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 3:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 4:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 4:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 5:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 5:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 6:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 6:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 7:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 7:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 8:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 8:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 9:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 9:33:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 10:03:05 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 10:33:06 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 11:03:06 AM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 11:33:06 AM JST
+// Elapsed time: 72148 seconds
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "IP Catalog", 4); // k (j, cp)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "tb_detect_errors.v", 3); // k (j, cp)
+selectTab("PlanAheadTabBaseWorkspace_JideTabbedPane", (HResource) null, "Project Summary", 0); // k (j, cp)
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 12:03:06 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 12:33:06 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 1:03:06 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 1:33:06 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 2:03:06 PM JST
+// HMemoryUtils.trashcanNow. Engine heap size: 7,467 MB. GUI used memory: 119 MB. Current time: 4/5/19, 2:33:06 PM JST

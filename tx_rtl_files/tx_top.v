@@ -160,6 +160,8 @@ wire [15:0] segment_num;
 wire [7:0] aux,txid;
 wire start_sending;
 wire [7:0] redundancy;
+wire [15:0] segment_num_max;
+wire hdmimode;
 send_control send_control_i (
 	.clk125MHz(clk125MHz),
 	.RST(rstb),
@@ -171,8 +173,10 @@ send_control send_control_i (
 	// output
 	.segment_num_inter(segment_num), // segment number
 	.txid_inter(txid), // id
+	.segment_num_max(segment_num_max),
 	.aux_inter(aux), // auxiliary number
 	.start_sending(start_sending),
+	.hdmimode(hdmimode),
 	.redundancy(redundancy)
 );
 
@@ -245,6 +249,8 @@ tx_memory_control tx_memory_control_i (
 	.txid(txid),
 	.segment_num(segment_num), // segment_num,  8bits
 	.redundancy(redundancy),
+	.segment_num_max(segment_num_max),
+	.hdmimode(hdmimode),
 	.ena(ena),
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),

@@ -9,7 +9,7 @@ wire [15:0] segment_num;
 wire  [23:0] bramaddr24b,vramaddr;
 wire [1:0] vramaddr_c;
 wire [11:0] byte_data_counter;
-
+wire hdmimode;
 wire [23:0] startaddr;
 
 wire [7:0] doutb;
@@ -19,7 +19,7 @@ wire start_frame,oneframe_done;
 send_control send_control_i (
 	.clk125MHz(clk),
 	.RST(rst),
-	.switches(8'b01010000),
+	.switches(8'b01011111),
 	.busy(busy),
 	.start_frame(start_frame),
 	.oneframe_done(oneframe_done),
@@ -28,6 +28,7 @@ send_control send_control_i (
 	.txid_inter(txid),
 	.aux_inter(aux),
 	.start_sending(start_sending),
+	.hdmimode(hdmimode),
 	.redundancy(redundancy)
 );
 
@@ -54,6 +55,7 @@ tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 	.rst(rst),
 	.clk125MHz(clk),
 	.txid(txid),
+	.hdmimode(hdmimode),
 	.segment_num(segment_num),
 	.redundancy(redundancy),
 	.ena(ena),
@@ -79,7 +81,7 @@ initial begin
 	rst = 0;
 
 
-#(cycle*70000);
+#(cycle*700000);
 $finish;
 end
 
