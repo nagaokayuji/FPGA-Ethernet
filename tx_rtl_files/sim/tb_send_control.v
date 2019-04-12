@@ -14,8 +14,9 @@ reg start_frame, oneframe_done;
 send_control uut(
 	.clk125MHz(clk),
 	.RST(rst),
-	.switches(8'b01010000),
 //	.switches(8'b01010000),
+//	.switches(8'b01011111),
+	.switches(8'b01010000),
 	.busy(busy),
 	.start_frame(start_frame),
 	.oneframe_done(oneframe_done),
