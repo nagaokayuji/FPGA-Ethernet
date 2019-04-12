@@ -219,7 +219,7 @@ wire [31:0] countp,okp;
 wire finished,started,valid;
 wire [2:0] state_d_e;
 wire [31:0] ngp,lostnum;
-detect_errors2 detect_errors_2 (
+detect_errors detect_errors_1 (
 	.rst(RST),
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),

@@ -50,6 +50,14 @@ byte_data byte_data_i(
 	.data_enable()
 );
 
+VGA_Sync_Pulses vga(
+	.i_Clk(pclk),
+	.o_HSync(HSync),
+	.o_VSync(VSync),
+	.o_Col_Count(),
+	.o_Row_Count()
+);
+
 tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 	.pclk(),
 	.rst(rst),
@@ -59,9 +67,9 @@ tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 	.segment_num(segment_num),
 	.redundancy(redundancy),
 	.ena(ena),
-	.rgb_r(),
-	.rgb_b(),
-	.rgb_g(),
+	.rgb_r(8'haa),
+	.rgb_b(8'hbb),
+	.rgb_g(8'hcc),
 	.byte_data_counter(byte_data_counter),
 	.bramaddr24b(bramaddr24b),
 	.data_user(data_user),
@@ -71,11 +79,14 @@ tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 	.doutb(doutb)
 );
 
+
+
 localparam cycle = 16;
 initial begin
 	$dumpfile("tb_tx_memory_control.vcd");
 	$dumpvars(0,tb_tx_memory_control);
 	clk = 0;
+	ena = 0;
 	rst = 1;
 	#cycle;
 	rst = 0;
@@ -85,6 +96,9 @@ initial begin
 $finish;
 end
 
+always begin
+	#12 pclk = !pclk;
+end
 always begin
 	#8 clk = !clk;
 end

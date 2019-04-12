@@ -74,11 +74,13 @@ set_property CONFIG_MODE SPIx4 [current_design]
 
 
 
+
+
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
 set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
 set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
-set_property C_DATA_DEPTH 8192 [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 32768 [get_debug_cores u_ila_0]
 set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
 set_property C_INPUT_PIPE_STAGES 1 [get_debug_cores u_ila_0]
 set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
@@ -98,20 +100,20 @@ set_property port_width 16 [get_debug_ports u_ila_0/probe2]
 connect_debug_port u_ila_0/probe2 [get_nets [list {send_control_i/segment_num_inter[0]} {send_control_i/segment_num_inter[1]} {send_control_i/segment_num_inter[2]} {send_control_i/segment_num_inter[3]} {send_control_i/segment_num_inter[4]} {send_control_i/segment_num_inter[5]} {send_control_i/segment_num_inter[6]} {send_control_i/segment_num_inter[7]} {send_control_i/segment_num_inter[8]} {send_control_i/segment_num_inter[9]} {send_control_i/segment_num_inter[10]} {send_control_i/segment_num_inter[11]} {send_control_i/segment_num_inter[12]} {send_control_i/segment_num_inter[13]} {send_control_i/segment_num_inter[14]} {send_control_i/segment_num_inter[15]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
-set_property port_width 8 [get_debug_ports u_ila_0/probe3]
-connect_debug_port u_ila_0/probe3 [get_nets [list {send_control_i/aux_inter[0]} {send_control_i/aux_inter[1]} {send_control_i/aux_inter[2]} {send_control_i/aux_inter[3]} {send_control_i/aux_inter[4]} {send_control_i/aux_inter[5]} {send_control_i/aux_inter[6]} {send_control_i/aux_inter[7]}]]
+set_property port_width 2 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list {send_control_i/hdmistate[0]} {send_control_i/hdmistate[1]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe4]
-set_property port_width 4 [get_debug_ports u_ila_0/probe4]
-connect_debug_port u_ila_0/probe4 [get_nets [list {send_control_i/state[0]} {send_control_i/state[1]} {send_control_i/state[2]} {send_control_i/state[3]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe4]
+connect_debug_port u_ila_0/probe4 [get_nets [list {send_control_i/txid_inter[0]} {send_control_i/txid_inter[1]} {send_control_i/txid_inter[2]} {send_control_i/txid_inter[3]} {send_control_i/txid_inter[4]} {send_control_i/txid_inter[5]} {send_control_i/txid_inter[6]} {send_control_i/txid_inter[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
-set_property port_width 2 [get_debug_ports u_ila_0/probe5]
-connect_debug_port u_ila_0/probe5 [get_nets [list {send_control_i/hdmistate[0]} {send_control_i/hdmistate[1]}]]
+set_property port_width 8 [get_debug_ports u_ila_0/probe5]
+connect_debug_port u_ila_0/probe5 [get_nets [list {send_control_i/aux_inter[0]} {send_control_i/aux_inter[1]} {send_control_i/aux_inter[2]} {send_control_i/aux_inter[3]} {send_control_i/aux_inter[4]} {send_control_i/aux_inter[5]} {send_control_i/aux_inter[6]} {send_control_i/aux_inter[7]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe6]
-set_property port_width 8 [get_debug_ports u_ila_0/probe6]
-connect_debug_port u_ila_0/probe6 [get_nets [list {send_control_i/txid_inter[0]} {send_control_i/txid_inter[1]} {send_control_i/txid_inter[2]} {send_control_i/txid_inter[3]} {send_control_i/txid_inter[4]} {send_control_i/txid_inter[5]} {send_control_i/txid_inter[6]} {send_control_i/txid_inter[7]}]]
+set_property port_width 4 [get_debug_ports u_ila_0/probe6]
+connect_debug_port u_ila_0/probe6 [get_nets [list {send_control_i/state[0]} {send_control_i/state[1]} {send_control_i/state[2]} {send_control_i/state[3]}]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
 set_property port_width 24 [get_debug_ports u_ila_0/probe7]
@@ -119,47 +121,55 @@ connect_debug_port u_ila_0/probe7 [get_nets [list {tx_memory_control_i/vram_cont
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe8]
 set_property port_width 1 [get_debug_ports u_ila_0/probe8]
-connect_debug_port u_ila_0/probe8 [get_nets [list data/busy]]
+connect_debug_port u_ila_0/probe8 [get_nets [list tx_memory_control_i/addr_overed]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe9]
 set_property port_width 1 [get_debug_ports u_ila_0/probe9]
-connect_debug_port u_ila_0/probe9 [get_nets [list data/data_valid]]
+connect_debug_port u_ila_0/probe9 [get_nets [list tx_memory_control_i/addr_overed_before]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe10]
 set_property port_width 1 [get_debug_ports u_ila_0/probe10]
-connect_debug_port u_ila_0/probe10 [get_nets [list tx_memory_control_i/vram_control_i/ena]]
+connect_debug_port u_ila_0/probe10 [get_nets [list data/busy]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe11]
 set_property port_width 1 [get_debug_ports u_ila_0/probe11]
-connect_debug_port u_ila_0/probe11 [get_nets [list hdmi_top_i/rgb720to320/enout]]
+connect_debug_port u_ila_0/probe11 [get_nets [list data/data_valid]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe12]
 set_property port_width 1 [get_debug_ports u_ila_0/probe12]
-connect_debug_port u_ila_0/probe12 [get_nets [list hdmi_top_i/rgb720to320/i_Hsync]]
+connect_debug_port u_ila_0/probe12 [get_nets [list tx_memory_control_i/vram_control_i/ena]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe13]
 set_property port_width 1 [get_debug_ports u_ila_0/probe13]
-connect_debug_port u_ila_0/probe13 [get_nets [list hdmi_top_i/rgb720to320/i_Vsync]]
+connect_debug_port u_ila_0/probe13 [get_nets [list hdmi_top_i/rgb720to320/enout]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe14]
 set_property port_width 1 [get_debug_ports u_ila_0/probe14]
-connect_debug_port u_ila_0/probe14 [get_nets [list send_control_i/oneframe_done]]
+connect_debug_port u_ila_0/probe14 [get_nets [list hdmi_top_i/rgb720to320/i_Hsync]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe15]
 set_property port_width 1 [get_debug_ports u_ila_0/probe15]
-connect_debug_port u_ila_0/probe15 [get_nets [list hdmi_top_i/rgb720to320/start_frame]]
+connect_debug_port u_ila_0/probe15 [get_nets [list hdmi_top_i/rgb720to320/i_Vsync]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
 set_property port_width 1 [get_debug_ports u_ila_0/probe16]
-connect_debug_port u_ila_0/probe16 [get_nets [list send_control_i/start_sending]]
+connect_debug_port u_ila_0/probe16 [get_nets [list send_control_i/oneframe_done]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
 set_property port_width 1 [get_debug_ports u_ila_0/probe17]
-connect_debug_port u_ila_0/probe17 [get_nets [list send_control_i/timer_done]]
+connect_debug_port u_ila_0/probe17 [get_nets [list hdmi_top_i/rgb720to320/start_frame]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
 set_property port_width 1 [get_debug_ports u_ila_0/probe18]
-connect_debug_port u_ila_0/probe18 [get_nets [list hdmi_top_i/rgb720to320/vde]]
+connect_debug_port u_ila_0/probe18 [get_nets [list send_control_i/start_sending]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe19]
+set_property port_width 1 [get_debug_ports u_ila_0/probe19]
+connect_debug_port u_ila_0/probe19 [get_nets [list send_control_i/timer_done]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe20]
+set_property port_width 1 [get_debug_ports u_ila_0/probe20]
+connect_debug_port u_ila_0/probe20 [get_nets [list hdmi_top_i/rgb720to320/vde]]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

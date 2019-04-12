@@ -40,7 +40,6 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
  use count_for_bram LIKE same address for any txid.
  switch automatically @ out of byte_data.
  '''
-
  added: byte_data_counter
  THUS, it is possible to decide {segment_number,id,aux,counter} -> {doutb}
  function is ok. we have to do is : make addrb
@@ -80,7 +79,6 @@ localparam id_not1 = 2;
 reg [7:0] id_prev;
 
 wire [2:0] next_vramaddr_c = (vramaddr_c == 2) ? 0: vramaddr_c + 1;
-wire txbusy = (byte_data_counter != 0) ? 1'b1 : 1'b0;
 
 reg [2:0] vramaddr_d3; // three times use// 0,1,2,0,1,2,...
 wire [23:0] next_vramaddr = (vramaddr_d3 == 2) ? 
@@ -88,7 +86,7 @@ wire [23:0] next_vramaddr = (vramaddr_d3 == 2) ?
 wire [2:0] next_vramaddr_d3 = (vramaddr_d3 == 2) ?
 		0: (vramaddr_d3 + 1);
 
-reg addr_overed, addr_overed_before;
+(* mark_debug = "true" *) reg addr_overed, addr_overed_before;
 reg resetplease;
 
 always @(posedge clk125MHz) begin
@@ -125,12 +123,18 @@ always @(posedge clk125MHz) begin
 				id1: begin
 					if (txid != 1) state = id_not1;
 
-					if (hdmimode && (redundancy != 1) && (vramaddr >= max_vramaddr - 1 )) begin
+					if (hdmimode /*&& (redundancy != 1)*/ && (vramaddr >= max_vramaddr - 1 )) begin
 						addr_overed <= 1'b1;
 					end
-					else if (hdmimode && (redundancy == 1 && vramaddr >= max_vramaddr - 1)) state = state_default;
-					else begin
-						// make vramaddr_c & vramaddr
+					/*else */
+					/*
+					if (hdmimode && (redundancy == 1 && vramaddr >= max_vramaddr - 1)) begin
+						state = state_default;
+					end
+					*/
+
+			//		else begin
+						// make vramaddr_c & vramadd
 						if (data_user_neg && !addr_overed) begin
 							vramaddr_c = 0;
 							vramaddr <= vramaddr + 1;
@@ -160,7 +164,7 @@ always @(posedge clk125MHz) begin
 							count_for_bram_en <= 0;
 							count_for_bram <= 0;
 						end
-					end
+			//		end
 				end
 				id_not1: begin
 					vramaddr_c <= 0;
@@ -184,7 +188,6 @@ end
 
 //wire [11:0] count_for_bram = (count_for_bram_en) ? (byte_data_counter - (start_pixel)) : 0;
 
-
 // data_user : from byte_data, active high when data enable
 reg [1:0] data_user_reg = 2'b0;
 
@@ -192,7 +195,6 @@ reg [1:0] data_user_reg = 2'b0;
 always @(posedge clk125MHz) begin
 	// shift
 	data_user_reg <= {data_user_reg[0] ,data_user};
-
 /*
 	// negedge AND id==max
 	if (data_user_neg && ( txid == redundancy)) begin

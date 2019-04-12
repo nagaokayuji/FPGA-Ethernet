@@ -1,7 +1,5 @@
 /*
 control output signals for byte_data
-
-
 */
 module send_control(
 	input wire clk125MHz,
@@ -35,7 +33,6 @@ max_count_gen max_count_gen_i (
 parameter segment_num_init = 0;
 
 reg [27:0] count=0, counter_samepacket = 0;
-
 reg in_sending = 0;
 
 // PSEUDOCODE
@@ -226,7 +223,8 @@ always @(posedge clk125MHz) begin
 					txid_inter <= 1'b1;
 					segment_num <= segment_num_init;
 				end else begin
-					if (segment_num >= segment_num_max - 1) begin if (txid == redundancy) begin
+					if (segment_num >= segment_num_max - 1) begin 
+						if (txid == redundancy) begin
 							state <= state_id_1;
 							aux <= aux + 1'b1;
 							segment_num <= segment_num_init;
