@@ -16,19 +16,23 @@ wire [7:0] doutb;
 wire [7:0] aux;
 wire start_frame,oneframe_done;
 
+wire framemode;
+wire maxdetect;
 send_control send_control_i (
 	.clk125MHz(clk),
 	.RST(rst),
-	.switches(8'b01011111),
+	.switches(8'b11011111),
 	.busy(busy),
 	.start_frame(start_frame),
 	.oneframe_done(oneframe_done),
+	.maxdetect(maxdetect),
 
 	.segment_num_inter(segment_num),
 	.txid_inter(txid),
 	.aux_inter(aux),
 	.start_sending(start_sending),
 	.hdmimode(hdmimode),
+	.framemode(framemode),
 	.redundancy(redundancy)
 );
 
@@ -49,7 +53,7 @@ byte_data byte_data_i(
 	.data_valid(),
 	.data_enable()
 );
-
+reg pclk;
 VGA_Sync_Pulses vga(
 	.i_Clk(pclk),
 	.o_HSync(HSync),
@@ -64,6 +68,7 @@ tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 	.clk125MHz(clk),
 	.txid(txid),
 	.hdmimode(hdmimode),
+//	.framemode(framemode),
 	.segment_num(segment_num),
 	.redundancy(redundancy),
 	.ena(ena),
@@ -76,6 +81,7 @@ tx_memory_control #(.SEGMENT_NUMBER_MAX(5))uut(
 
 	.startaddr(startaddr),
 	.oneframe_done(oneframe_done),
+	.maxdetect(maxdetect),
 	.doutb(doutb)
 );
 

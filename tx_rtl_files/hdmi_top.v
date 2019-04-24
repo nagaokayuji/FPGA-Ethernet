@@ -1,5 +1,6 @@
 module hdmi_top(
 	input wire clk100MHz,
+	input wire clk125MHz,
 	input wire rstb,
 	input wire hdmi_rx_clk_n,hdmi_rx_clk_p,
 	input wire [2:0] hdmi_rx_n,
@@ -72,8 +73,8 @@ dvi2rgb_0 dvi2rgb (
 
 
 rgb2bram rgb720to320 (//rgb2bram
-	.i_Clk(pclk), //25.2MHz
-	.i_Clk3x(pclk),
+	.clk125MHz(clk125MHz), 
+	.pclk(pclk),
 	.i_Hsync(hsync),
 	.i_Vsync(vsync),
 	.data24b(pdata),

@@ -10,8 +10,8 @@ module rgb2bram #(
  parameter ACTIVE_ROWS = 180)//480) 
 
 (
-	input            i_Clk, //25.2MHz
-	input i_Clk3x,
+	input            clk125MHz, //25.2MHz
+	input pclk,
 	input wire i_Hsync,
 	input wire i_Vsync,
 	input wire [23:0] data24b,
@@ -25,7 +25,7 @@ module rgb2bram #(
 	output reg [9:0] o_Row_Count = 0,
 	output reg [31:0] bramaddr24b = 0,
 	output reg [7:0] rgb_r,rgb_g,rgb_b,
-	(* mark_debug = "true" *) output reg start_frame
+	(* mark_debug = "true" *) output wire start_frame
  );  
  
  wire i_HSync = !i_Hsync;
@@ -33,10 +33,25 @@ module rgb2bram #(
 // -> active low 
 
 reg [1:0] vsync_fall;
+reg start_frame_pck;
+reg start_frame_reg;
+reg start_frame_reg2;
+reg [4:0] vsync_fall_count = 0;
+localparam vsync_fall_count_max = 2;
+wire [4:0] vsync_fall_count_next = (vsync_fall_count < vsync_fall_count_max ? vsync_fall_count + 1'b1 : 0);
 
-always @(posedge i_Clk) begin
+always @(posedge clk125MHz) begin
+	start_frame_reg <= start_frame_pck;
+	start_frame_reg2 <= start_frame_reg;
+end
+assign start_frame = start_frame_reg2;
+
+always @(posedge pclk) begin
 	vsync_fall <= {vsync_fall[0],i_VSync};
-	start_frame <= (vsync_fall == 2'b10);
+	if (vsync_fall == 2'b10) begin
+		vsync_fall_count <= vsync_fall_count_next;
+	end
+	start_frame_pck <= ( vsync_fall == 2'b10 && (vsync_fall_count == vsync_fall_count_max));
  end
 reg [2:0] count_three = 0;
  wire three = (count_three == 2'b11);//=====================modified
@@ -50,7 +65,7 @@ reg [23:0] data_sampling = 0;
  reg [1:0] count_cols = 0;
  reg inaaaa = 0;
  reg [20:0] bramaddr24b_ini = 0;
- always @(posedge i_Clk3x/* or negedge i_HSync or negedge i_VSync*/) // 25.2MHz
+ always @(posedge pclk/* or negedge i_HSync or negedge i_VSync*/) // 25.2MHz
  begin
  //half <= !half;
  //bramaddr8b <= (o_Col_Count + o_Row_Count * ACTIVE_COLS)*3 + (count_three);

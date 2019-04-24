@@ -4,7 +4,7 @@ module tb_detect_errors;
 parameter CYCLE = 16;
 parameter whereis_aux = 0;
 parameter packetsize = 33;
-parameter segment_number_max = 16'd50;
+parameter segment_number_max = 16'd5;
 
 
 reg rx_en=0,clk=0, rst = 0;
@@ -15,7 +15,7 @@ wire valid;
 wire [2:0] state;
 reg [15:0] segment_number;
 
-detect_errors2 #(.whereis_aux(whereis_aux)) detect_errors_i(
+detect_errors2 #(.whereis_aux(whereis_aux)) uut(
 	.clk(clk),
 	.rst(rst),
 	.seg(segment_number),
@@ -59,9 +59,10 @@ endtask
 integer i;
 integer j;
 integer k;
+integer a;
 initial begin
 	$dumpfile("tb_detect_errors.vcd");
-	$dumpvars(0,tb_detect_errors);
+	$dumpvars(0,uut);
 
 	clk = 0;
 	rst = 0;
@@ -72,14 +73,14 @@ initial begin
 	#CYCLE;
 	rst = 0;
 	#(CYCLE * 3);
+	a = 0;
 	#(CYCLE * 30);
-	#(CYCLE * 16'hffff);
-	for (k=0;k<10;k=k+1) begin
+	for (k=0;k<4;k=k+1) begin
 	for (i=0; i<=255; i=i+1) begin
 		for (j=0;j<segment_number_max;j=j+1) begin
 			segment_number = j;
-			if ((k != 2 || k != 5) && j != 2)
-			onepacket(i);
+			onepacket(a);
+			a = a + 1;
 			#(CYCLE*10);
 		end
 		#(CYCLE*3);
@@ -87,27 +88,6 @@ initial begin
 	#(CYCLE*9);
 	end
 	
-	
-
-	for (i=0; i<=255; i=i+1) begin
-		for (j=0;j<segment_number_max;j=j+1) begin
-			segment_number = j;
-		
-			if (!((i==3&&j>=39) || i==4 || (i==5&&j<13)))
-			onepacket(i);
-			#(CYCLE*10);
-		end
-		#(CYCLE*3);
-	end
-	
-	onepacket(2);
-	#(CYCLE*10);
-	onepacket(1);
-	
-	
-
-	#(CYCLE*100);
-
 
 	#(CYCLE*40);
 	$finish;

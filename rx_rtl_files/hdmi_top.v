@@ -129,9 +129,16 @@ output wire [2:0] hdmi_tx_p
     
     wire [23:0] rgb24bit;
     wire hd,vd,den;
+		reg RST_pck;
+		reg RST__pck;
+		always @(posedge pck) begin
+			RST__pck <= RST_pck;
+			RST_pck <= RST;
+		end
+
     bram2rgb bram2rgb_i (
         .clk(pck),
-        .xrst(~RST),
+        .xrst(!RST__pck),
         .en(1'b1),
         .in_from_ram(from_ram),
         .ram_addr(ram_addr),

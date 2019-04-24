@@ -10,10 +10,10 @@ echo "iverilog -s $topmodulename $topmodulename.v ../*.v"
 
 iverilog -s $topmodulename $topmodulename.v ../*.v
 ret=$?
-echo "return: $ret"
+printf "return:\e[36m$ret \e[m\n"
 if [ $ret -eq 0 ]; then
-	echo "run: ./a.out"
-	./a.out
+	printf "run: ./a.out\n"
+	time ./a.out
 	echo "............"
 	echo "........done."
 	exit 0

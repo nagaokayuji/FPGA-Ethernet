@@ -1,11 +1,11 @@
 module rx_top(
 	input wire clk100MHz,
-	input wire[7:0] switches,
+	input wire[7:0] switches_raw,
 	output wire [7:0] leds,
-	input wire rstb,
-	input wire btnl,
-	input wire btnu,
-	input wire resetn,
+	//input wire rstb,
+	input wire btnl_raw,
+	input wire btnu_raw,
+	input wire resetn_raw,
 
 	// uart
 	input wire uart_rxd,
@@ -38,13 +38,13 @@ module rx_top(
 	.O(eth_rxck_buf)
 	);
 parameter whereisid = 16'd25;
-wire RST = !resetn;
-
-wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
-wire [7:0] segment_number_max = (switches[7:6] == 2'b00)? 1 : (switches[7:6] == 2'b01)? 50 : (switches[7:6] == 2'b10) ? 100: 150;
+wire RST_raw = !resetn_raw;
 
 
-
+wire [31:0] countp,okp;
+wire finished,started,valid;
+wire [2:0] state_d_e;
+wire [31:0] ngp,lostnum;
 
 
 reg [26:0] max_count = 27'b0;
@@ -65,6 +65,38 @@ wire clk125MHz;
 wire clk125MHz90;// for the TX clock
 wire clk25MHz;
 // wire clkfb;
+
+
+wire [7:0] switches_vio;
+wire btnl_vio,btnu_vio,RST_vio;
+
+vio_0 vio (
+.clk(clk125MHz),
+.probe_in0(okp),
+.probe_in1(countp),
+.probe_out0(switches_vio),
+.probe_out1(btnl_vio),
+.probe_out2(btnu_vio),
+.probe_out3(RST_vio)
+);
+
+reg [7:0] switches_vio_reg;
+reg btnl_vio_reg, btnu_vio_reg, RST_vio_reg;
+always @(posedge clk125MHz) begin
+    switches_vio_reg <= switches_vio;
+    btnl_vio_reg <= btnl_vio;
+    btnu_vio_reg <= btnu_vio;
+    RST_vio_reg <= RST_vio;
+end
+
+wire [7:0] switches = switches_raw ^ switches_vio_reg;
+wire btnl = btnl_raw ^ btnl_vio_reg;
+wire btnu = btnu_raw ^ btnu_vio_reg;
+wire RST = RST_raw ^ RST_vio_reg;
+
+wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
+wire [7:0] segment_number_max = (switches[7:6] == 2'b00)? 1 : (switches[7:6] == 2'b01)? 50 : (switches[7:6] == 2'b10) ? 100: 150;
+
 
 always @(posedge clk125MHz) begin
 	if (de_count == 7'b0)
@@ -109,7 +141,7 @@ wire rx_error;
 rgmii_rx i_rgmii_rx(
     .rst(RST),
     .clk125MHz(clk125MHz),
-	.rx_clk(eth_rxck_buf),
+	.rx_clk(eth_rxck),//deleted: _buf
 	
 	//.switches5(switches[5]),
 	.rx_ctl(eth_rxctl),
@@ -174,7 +206,7 @@ reg [7:0] data_out;
 wire [15:0] seg_out;
 rx_majority_wrapper i_rx_majority_wrapper (
 	.clk125MHz(clk125MHz),
-	.reset(rstb),
+	.reset(RST),
 	.rx_data(rawdata),
 	.rx_enable(raw_en),
 	.tmp(tmp),
@@ -215,11 +247,8 @@ always @(posedge clk125MHz) begin
 	en_out_reg <= en_out;
 end
 
-wire [31:0] countp,okp;
-wire finished,started,valid;
-wire [2:0] state_d_e;
-wire [31:0] ngp,lostnum;
-detect_errors detect_errors_1 (
+
+detect_errors2 detect_errors_2 (
 	.rst(RST),
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),
@@ -241,7 +270,7 @@ detect_errors detect_errors_1 (
 
 hdmi_top hdmi_top_i (
 	.clk(clk100MHz_buffered),
-	.RST(rstb),
+	.RST(RST),
 	.dclk(clk125MHz),
 	.clk125MHz(clk125MHz),
 	.data_in(data_out_reg),
@@ -252,9 +281,9 @@ hdmi_top hdmi_top_i (
 	.hdmi_tx_p(hdmi_tx_p)
 );
 
-design_2_wrapper (
+design_2_wrapper design2(
 .Clk(clk100MHz),
-.resetn(resetn),
+.resetn(!RST),
 .uart_rtl_0_rxd(uart_rxd),
 .uart_rtl_0_txd(uart_txd),
 .gpio_rtl_0_tri_i(ngp),

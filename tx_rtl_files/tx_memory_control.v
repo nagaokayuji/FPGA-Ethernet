@@ -3,7 +3,7 @@ ensure data correctly
 outputs after 3 clocks
 */
 
-module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
+module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 125)
 (
 	input wire pclk, 	// pixel clock
 	input wire rst,
@@ -30,6 +30,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)
 	// output
 	output reg [23:0] startaddr = 0,
 	output wire oneframe_done,
+	output wire maxdetect,
 	//output reg [7:0] doutb_reg
 	output wire [7:0] doutb
 );
@@ -50,7 +51,8 @@ localparam start_with_latency = 46 - 3 ;
 localparam start_pixel = 46;
 localparam payload = 1440 - 3;
 localparam max_vramaddr = (320*180);
-
+//localparam max_vramaddr = 3000;//(320*180); <- for simulation
+assign maxdetect = (txid == 1) && (vramaddr >= max_vramaddr - 1);
 /*
 function [12:0] make_addrb_not_one;
 	input [15:0] segment_num;
@@ -64,11 +66,10 @@ function [12:0] make_addrb_not_one;
 endfunction
 */
 
-assign oneframe_done = (redundancy == 1) ? 
-	(vramaddr >= max_vramaddr - 1) : 
-	( addr_overed && ( txid >= redundancy) && (segment_num == segment_num_max - 1));
 
-wire data_user_neg = (data_user_reg == 2'b10);
+reg [1:0] data_user_reg = 2'b0;
+
+
 reg [3:0] state = 0;
 reg count_for_bram_en;
 reg [11:0] count_for_bram;
@@ -88,7 +89,11 @@ wire [2:0] next_vramaddr_d3 = (vramaddr_d3 == 2) ?
 
 (* mark_debug = "true" *) reg addr_overed, addr_overed_before;
 reg resetplease;
+assign oneframe_done = (redundancy == 1) ? 
+	(vramaddr >= max_vramaddr - 1) : 
+	( addr_overed && ( txid >= redundancy) && (segment_num == segment_num_max - 1));
 
+wire data_user_neg = (data_user_reg == 2'b10);
 always @(posedge clk125MHz) begin
 	if (rst) begin
 		addr_overed = 0;
@@ -140,7 +145,7 @@ always @(posedge clk125MHz) begin
 							vramaddr <= vramaddr + 1;
 						end
 
-						if (byte_data_counter == start_with_latency - 2) begin
+						if (byte_data_counter == start_with_latency - 6) begin
 							startaddr <= vramaddr;
 							startaddr_ram[segment_num] = vramaddr;
 						end
@@ -169,7 +174,7 @@ always @(posedge clk125MHz) begin
 				id_not1: begin
 					vramaddr_c <= 0;
 					vramaddr_d3 <= 0;
-					if (byte_data_counter == start_with_latency - 2) begin
+					if (byte_data_counter == start_with_latency - 6) begin
 						startaddr <= startaddr_ram[segment_num];
 					end
 					if (txid == 1) begin
@@ -189,7 +194,6 @@ end
 //wire [11:0] count_for_bram = (count_for_bram_en) ? (byte_data_counter - (start_pixel)) : 0;
 
 // data_user : from byte_data, active high when data enable
-reg [1:0] data_user_reg = 2'b0;
 
 // ID == 1 -=-=> startaddr -- lastaddr;
 always @(posedge clk125MHz) begin

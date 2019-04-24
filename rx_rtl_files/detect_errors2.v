@@ -9,8 +9,8 @@ module detect_errors2 #(parameter whereis_aux = 0)(
 	(* mark_debug = "true" *) input wire [7:0] rx_data,
 	(* mark_debug = "true" *) output reg [31:0] count,
 	(* mark_debug = "true" *) output reg [31:0] ok,
-	(* mark_debug = "true" *) output reg [31:0] ng,
-	(* mark_debug = "true" *) output reg [31:0] lostnum,
+	output reg [31:0] ng,
+	 output reg [31:0] lostnum,
 	(* mark_debug = "true" *) output reg valid,
 	(* mark_debug = "true" *) output reg [2:0] state
 );
@@ -19,9 +19,7 @@ localparam maxcount = 500000;
 localparam maxaux = 8'b11111111;
 //localparam maxaux = 8'd5;
 reg [15:0] count_edge;
-(* mark_debug = "true" *) reg [7:0] aux = maxaux;
-(* mark_debug = "true" *) reg [7:0] aux_prev;
-(* mark_debug = "true" *) reg [7:0] samecount;
+
 reg [15:0] seg_prev,seg_tmp;
 
 wire aux_on = (whereis_aux == count_edge && rx_en);// && valid;
@@ -30,56 +28,85 @@ wire aux_on_1 = (whereis_aux + 5 == count_edge);// && valid;
 wire aux_on_2 = (whereis_aux + 6 == count_edge);
 wire aux_on_3 = (whereis_aux + 7 == count_edge);
 
-reg count_on;
-localparam state_init = 0;
-localparam state_started = 1;
-localparam state_running = 2;
-localparam state_initram = 3;
-localparam state_count_off = 4;
-localparam state_count_on = 5;
-localparam state_ref = 6;
-localparam state_finished = 7;
 
+
+
+reg count_on;
 //reg [0:0] mem [65535:0];　
-reg mem [65535:0];
-reg [15:0] memaddr_reg;
-reg mem_late;
-wire [15:0] memaddr = {aux,seg[7:0]};
-always @(posedge clk) begin
-    memaddr_reg <= memaddr;
-end
-integer i;
 reg [7:0] aux_tmp;
 reg [15:0] addr;
+reg [7:0] aux_new,aux_old;
+reg endflag;
+
+localparam state_wait = 0;
+wire [7:0] aux_new_pros = (aux_old < 8'hff) ? aux_old + 1'b1 : 0;
+wire [7:0] aux_oldp1 = aux_old + 1'b1;
+
+
+
 always @(posedge clk) begin
 	if (rst) begin
 		count_edge <= 16'b0;
+		endflag <= 0;
 		count <= 0;
 		ok <= 0;
 		lostnum = 0;
 		valid <= 1'b0;
-		aux <= 0;
-		aux_prev <= 0;
+
 		ng <= 0;
 		addr <= 0;
+		aux_new <= 0;
+		aux_old <= 0;
  
 		count_on = 0;
 		seg_prev = 0;
-		state = state_initram;
+		state = 0;
 	end
 	else begin //!rst
-	
-	//------- counting edge.------
 		if (rx_en) begin
 			count_edge <= count_edge + 1'b1;
 			if (aux_on) begin
-				aux_tmp <= rx_data;
-				//aux_prev <= aux;
-			end 
+				aux_old <= aux_new;
+				aux_new <= rx_data;
+			end
 		end
 		else begin
 			count_edge <= 0;
 		end
+
+		case (state)
+			0:
+				begin
+					if (aux_on_1 && (aux_new == 0)) begin
+						state <= 1;
+						count <= 1;
+						ok <= 1;
+						ng <= 0;
+					end
+				end
+			1:
+				begin
+					if (aux_on_1) begin
+						count <= count + 1;
+						if (aux_new_pros == aux_new) begin
+							ok <= ok + 1;
+						end
+						else begin
+							ng <= ng + 1;
+						end
+					end
+					if (aux_on_2 && count >= maxcount) begin
+						state <= 2;
+					end
+				end
+			2:
+				begin
+				end
+		endcase
+	end
+end
+
+/*
 	//~~-~-~-~-~-~-~-~-~-~-~-~-~--
 		case (state)
 		    state_initram: begin
@@ -158,5 +185,5 @@ always @(posedge clk) begin
 		endcase
 	end
 end
-
+*/
 endmodule
