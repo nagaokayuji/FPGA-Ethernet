@@ -4,11 +4,11 @@ control output signals for byte_data
 module send_control(
 	input wire clk125MHz,
 	input wire RST,
-	input wire [7:0] switches, // [7:6] : fragment, [5:4]: redundancy, [3:0]: speed
+	input wire [7:0] switches, 
 	input wire busy,
 	(* mark_debug = "true" *)	input wire start_frame,
 	(* mark_debug = "true" *)	input wire oneframe_done,
-	(* mark_debug = "true" *)	input wire maxdetect, //  id==1 && vramaddr >= max-1
+	(* mark_debug = "true" *)	input wire maxdetect, 
 
 	// output
 	(* mark_debug = "true" *)	output reg [15:0] segment_num_inter = 0,
@@ -18,27 +18,16 @@ module send_control(
 	output reg [15:0] segment_num_max,
 	output wire hdmimode,
 	(* mark_debug = "true" *) output wire framemode,
-	output wire [7:0] redundancy // switches[5:4]
+	output wire [7:0] redundancy 
 );
 
 reg [7:0] aux = 0;
 reg [15:0] segment_num = 0;
 reg [7:0] txid = 1;
-//wire [15:0] segment_num_max; // switches[7:6]
-wire [27:0] max_count; // calculated by switches[3:0]
+wire [27:0] max_count;
 assign hdmimode = (switches[3:0] == 4'b0000);
 assign framemode = (switches[7:6] == 2'b11);
 
-/*
-	if framemode:  // changes segment_num_max dynamically <-- s1mple
-		maxdetect ( ===> (id==1 && vramaddr >= max - 1) )
-
-		
-		let it register & (framemode ? A : B)
-
-		---- substitute segment_num_max 
-
-*/
 
 wire [15:0] segment_num_max_normal;
 max_count_gen max_count_gen_i (
@@ -52,7 +41,7 @@ parameter segment_num_init = 0;
 reg [27:0] count=0, counter_samepacket = 0;
 reg in_sending = 0;
 
-// PSEUDOCODE
+// like this:
 /*
 while (true) {
 	for (id in 1..n) {
@@ -84,7 +73,6 @@ localparam state_wait_for_frame = 5;
 
 (* mark_debug = "true" *) wire timer_done = (count == max_count);//hdmimode ? () : (count == max_count) ;
 
-// if (hdmi_mode && hdmistate == ???)
 (* mark_debug = "true" *)reg [1:0] hdmistate = 0;
 localparam hdmi_wait = 0;
 localparam hdmi_sending = 1;
@@ -94,7 +82,7 @@ wire [7:0] txid_next = (txid <= redundancy) ? txid + 1 : 1 ;
 wire [15:0] segment_num_next = (segment_num < segment_num_max) ? segment_num + 1 : segment_num_init;
 reg oneframe_done_detected;
 (* mark_debug = "true" *) reg maxdetected = 0;
-reg [15:0] segment_num_framemode; // new==============
+reg [15:0] segment_num_framemode;
 reg [7:0] aux_base = 0, aux_base_inter = 0;
 
 assign aux_inter = aux_base_inter + segment_num_inter;
@@ -131,13 +119,11 @@ always @(posedge clk125MHz) begin
 		else
 		if (!busy && (!hdmimode || (hdmimode && hdmistate != hdmi_sent))) begin
 			count <= count + 1'b1;
-			//counter_samepacket <= counter_samepacket + 1'b1;
 		end else begin
 			count <= 0;
-			//counter_samepacket <= 0;
 		end
 
-		if (txid_inter == 1 && maxdetect && !maxdetected) begin // from tx_memory_control
+		if (txid_inter == 1 && maxdetect && !maxdetected) begin 
 			segment_num_max <= segment_num_inter + 1;
 			maxdetected <= 1'b1;
 		end
@@ -163,7 +149,6 @@ always @(posedge clk125MHz) begin
 			end
 
 			state_id_1: begin
-			//	if (framemode) segment_num_max <= 150;
 				if (hdmimode) begin
 					if (start_frame) begin
 						hdmistate <= hdmi_sending;
@@ -201,7 +186,7 @@ always @(posedge clk125MHz) begin
 						end
 					end
 				end 
-				else begin  //============= NOT timer_done
+				else begin 
 					txid <= txid;
 					aux <= aux;
 					segment_num <= segment_num;
@@ -237,7 +222,7 @@ always @(posedge clk125MHz) begin
 						segment_num <= segment_num_next;
 					end
 				end
-			end // end off state_id_1_sent
+			end
 
 			state_id_not_1: begin
 				if (timer_done) begin
@@ -246,7 +231,6 @@ always @(posedge clk125MHz) begin
 						segment_num_inter <= segment_num;
 						txid_inter <= txid;
 						start_sending <= 1'b1;
-						//aux_inter <= aux;
 						aux_base_inter <= aux_base;
 						state <= state_id_not_1_sent;
 					end
@@ -300,50 +284,4 @@ always @(posedge clk125MHz) begin
 		endcase
 	end
 end
-
-/*
-
-always @(posedge clk125MHz) begin
-if (in_sending) begin // send frame for redundancy times
-	   txid <= send_times;
-	if (send_times == redundancy) begin
-
-		in_sending <= 1'b0; // end
-		start_sending <= 1'b0;
-		send_times <= 3'b0;
-		counter_samepacket <= 17'b0;
-	end
-	else if (counter_samepacket >= max_count) begin
-	   if (!busy) begin
-			start_sending <= 1'b1; // STARTSENDING
-			send_times <= send_times + 1'b1; // sending process
-			counter_samepacket <= 17'b0;
-	   end
-	end
-	else begin
-        counter_samepacket <= counter_samepacket + 1'b1;
-        start_sending <= 1'b0;
-	end
-end // end of if (in_sending)
-
-else if (!busy) begin
-	if (count == max_count) begin
-		count <= 27'b0;
-		send_times <= 1'b0;
-		counter_samepacket <= 11'b0;
-		//my_data <= my_data + 1'b1;
-	
-		in_sending <= 1'b1;
-	end else begin
-		count <= count + 1'b1; // kokonihaitteru
-		start_sending <= 1'b0; 
-		in_sending <= 1'b0;
-	end
-end
-end
-*/
-
-
-
-
 endmodule

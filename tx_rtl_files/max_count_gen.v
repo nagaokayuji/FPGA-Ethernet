@@ -5,9 +5,7 @@ module max_count_gen (
 	output wire [7:0] redundancy
 );
 
-
 reg [16:0] max_counter_samepacket = 17'd50;
-// define speed & how fast
 always @(switches) begin
 	if (switches[3:0] != 4'b0000) begin
 		case (switches[3:0])
@@ -32,14 +30,7 @@ always @(switches) begin
 	else begin
 		max_count <= 27'd30;
 	end
-	/*
-	    case (switches[7:6])
-        2'b00: max_counter_samepacket = 17'd30;
-        2'b01: max_counter_samepacket = 17'd1249;   // 100000 pps
-        2'b10: max_counter_samepacket = 17'd12499;  // 10000pps
-        2'b11: max_counter_samepacket = 17'd124999; // 1000pps
-     endcase
-		*/
+
 end
 
 assign segment_num_max = (switches[7:6] == 2'b00) ? 1:

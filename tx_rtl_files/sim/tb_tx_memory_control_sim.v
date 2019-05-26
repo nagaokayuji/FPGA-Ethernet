@@ -1,1 +1,0 @@
-iverilog tb_tx_memory_control.v ../vram_control.v ../true_dpram_sclk.v ../tx_memory_control.v ../send_control.v ../byte_data.v ../max_count_gen.v -s tb_tx_memory_control

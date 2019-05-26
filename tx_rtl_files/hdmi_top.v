@@ -70,7 +70,7 @@ dvi2rgb_0 dvi2rgb (
 	.pRst(rstb)
 );    
 //===================================================================
-
+wire o_vsync, o_hsync;
 
 rgb2bram rgb720to320 (//rgb2bram
 	.clk125MHz(clk125MHz), 
@@ -79,8 +79,8 @@ rgb2bram rgb720to320 (//rgb2bram
 	.i_Vsync(vsync),
 	.data24b(pdata),
 	.vde(vde),
-	.o_HSync(),
-	.o_VSync(),
+	.o_HSync(o_hsync),
+	.o_VSync(o_vsync),
 	.enout(ena),
 	.bramaddr8b(), // not used
 	.data8b(),

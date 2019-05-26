@@ -1,6 +1,7 @@
 module rgmii_rx (
     input wire rst,
     input wire clk125MHz,
+    input wire clk200MHz,
 	input wire rx_clk,
 	input wire rx_ctl,
 	input wire [3:0] rx_data,
@@ -31,18 +32,148 @@ data <= raw_data;
 */
 	/* IDDR (is it ok?)
 	*/
+	
+	
+IDELAYCTRL
+idelayctrl_inst
+(
+    .REFCLK(clk200MHz),
+    .RST(rst),
+    .RDY()
+);
+
+
+localparam dvalue = 13;
+wire [3:0] rx_data_delay;
+wire rx_ctl_delay;
+IDELAYE2 #(
+    .IDELAY_TYPE("FIXED"),
+    .IDELAY_VALUE(dvalue)
+)
+phy_rxd_idelay_0
+(
+    .IDATAIN(rx_data[0]),
+    .DATAOUT(rx_data_delay[0]),
+    .DATAIN(1'b0),
+    .C(1'b0),
+    .CE(1'b0),
+    .INC(1'b0),
+    .CINVCTRL(1'b0),
+    .CNTVALUEIN(5'd0),
+    .CNTVALUEOUT(),
+    .LD(1'b0),
+    .LDPIPEEN(1'b0),
+    .REGRST(1'b0)
+);
+
+IDELAYE2 #(
+    .IDELAY_TYPE("FIXED"),
+    .IDELAY_VALUE(dvalue)
+)
+phy_rxd_idelay_1
+(
+    .IDATAIN(rx_data[1]),
+    .DATAOUT(rx_data_delay[1]),
+    .DATAIN(1'b0),
+    .C(1'b0),
+    .CE(1'b0),
+    .INC(1'b0),
+    .CINVCTRL(1'b0),
+    .CNTVALUEIN(5'd0),
+    .CNTVALUEOUT(),
+    .LD(1'b0),
+    .LDPIPEEN(1'b0),
+    .REGRST(1'b0)
+);
+
+IDELAYE2 #(
+    .IDELAY_TYPE("FIXED"),
+    .IDELAY_VALUE(dvalue)
+)
+phy_rxd_idelay_2
+(
+    .IDATAIN(rx_data[2]),
+    .DATAOUT(rx_data_delay[2]),
+    .DATAIN(1'b0),
+    .C(1'b0),
+    .CE(1'b0),
+    .INC(1'b0),
+    .CINVCTRL(1'b0),
+    .CNTVALUEIN(5'd0),
+    .CNTVALUEOUT(),
+    .LD(1'b0),
+    .LDPIPEEN(1'b0),
+    .REGRST(1'b0)
+);
+
+IDELAYE2 #(
+    .IDELAY_TYPE("FIXED"),
+    .IDELAY_VALUE(dvalue)
+)
+phy_rxd_idelay_3
+(
+    .IDATAIN(rx_data[3]),
+    .DATAOUT(rx_data_delay[3]),
+    .DATAIN(1'b0),
+    .C(1'b0),
+    .CE(1'b0),
+    .INC(1'b0),
+    .CINVCTRL(1'b0),
+    .CNTVALUEIN(5'd0),
+    .CNTVALUEOUT(),
+    .LD(1'b0),
+    .LDPIPEEN(1'b0),
+    .REGRST(1'b0)
+);
+
+IDELAYE2 #(
+    .IDELAY_TYPE("FIXED"),
+    .IDELAY_VALUE(dvalue)
+)
+phy_rx_ctl_idelay
+(
+    .IDATAIN(rx_ctl),
+    .DATAOUT(rx_ctl_delay),
+    .DATAIN(1'b0),
+    .C(1'b0),
+    .CE(1'b0),
+    .INC(1'b0),
+    .CINVCTRL(1'b0),
+    .CNTVALUEIN(5'd0),
+    .CNTVALUEOUT(),
+    .LD(1'b0),
+    .LDPIPEEN(1'b0),
+    .REGRST(1'b0)
+);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	IDDR #(
 		.DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
 		.INIT_Q1(1'b0),
 		.INIT_Q2(1'b0),
-		.SRTYPE("SYNC")
+		.SRTYPE("ASYNC")
 		) ddr_rx_ctl (
 		.Q1(raw_ctl[0]),
 		.Q2(raw_ctl[1]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_ctl),
+		.D(rx_ctl_delay),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -51,13 +182,13 @@ data <= raw_data;
 		.DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
 		.INIT_Q1(1'b0),
 		.INIT_Q2(1'b0),
-		.SRTYPE("SYNC")
+		.SRTYPE("ASYNC")
 		) ddr_rxd0 (
 		.Q1(raw_data[0]),
 		.Q2(raw_data[4]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data[0]),
+		.D(rx_data_delay[0]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -66,13 +197,13 @@ data <= raw_data;
 		.DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
 		.INIT_Q1(1'b0),
 		.INIT_Q2(1'b0),
-		.SRTYPE("SYNC")
+		.SRTYPE("ASYNC")
 		) ddr_rxd1 (
 		.Q1(raw_data[1]),
 		.Q2(raw_data[5]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data[1]),
+		.D(rx_data_delay[1]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -80,13 +211,13 @@ data <= raw_data;
 		.DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
 		.INIT_Q1(1'b0),
 		.INIT_Q2(1'b0),
-		.SRTYPE("SYNC")
+		.SRTYPE("ASYNC")
 		) ddr_rxd2 (
 		.Q1(raw_data[2]),
 		.Q2(raw_data[6]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data[2]),
+		.D(rx_data_delay[2]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -94,13 +225,13 @@ data <= raw_data;
 		.DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
 		.INIT_Q1(1'b0),
 		.INIT_Q2(1'b0),
-		.SRTYPE("SYNC")
+		.SRTYPE("ASYNC")
 		) ddr_rxd3 (
 		.Q1(raw_data[3]),
 		.Q2(raw_data[7]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data[3]),
+		.D(rx_data_delay[3]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -110,13 +241,12 @@ data <= raw_data;
 //=========================
 
 
-wire wr_en,rd_en,full,empty, prog_empty, prog_full;
-wire en_fifo_out;
+(* mark_debug = "true" *) wire wr_en,rd_en,full,empty, prog_empty, prog_full, en_fifo_out, matte;
 
 wire [7:0] data_fifo_out;
 
 
- wire matte = !en_fifo_out && prog_empty;
+ assign matte = !en_fifo_out && prog_empty;
 
 
 reg [1:0] matte_rise_detect;

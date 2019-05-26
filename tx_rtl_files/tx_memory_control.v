@@ -3,7 +3,7 @@ ensure data correctly
 outputs after 3 clocks
 */
 
-module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 125)
+module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 1)//125
 (
 	input wire pclk, 	// pixel clock
 	input wire rst,
@@ -17,21 +17,18 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 125)
 	input wire [7:0] rgb_g, // from hdmi_top
 	input wire [7:0] rgb_b, // from hdmi_top
 	input wire [23:0] bramaddr24b,
-	//input wire [23:0] vramaddr,
+
 	input wire [11:0] byte_data_counter,
-	//input wire [2:0] vramaddr_c, // from byte_data
-	//input wire [12:0] count_for_bram,
-	//input wire [12:0] count_for_bram_b,
-	//input wire count_for_bram_en,
-	input wire data_user, // use for make startaddr. 43~
+
+	input wire data_user, 
 	input wire hdmimode,
-	//input wire [23:0] lastaddr,
+	
 
 	// output
 	output reg [23:0] startaddr = 0,
 	output wire oneframe_done,
 	output wire maxdetect,
-	//output reg [7:0] doutb_reg
+
 	output wire [7:0] doutb
 );
 
@@ -41,9 +38,6 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 125)
  use count_for_bram LIKE same address for any txid.
  switch automatically @ out of byte_data.
  '''
- added: byte_data_counter
- THUS, it is possible to decide {segment_number,id,aux,counter} -> {doutb}
- function is ok. we have to do is : make addrb
 */
 reg [2:0] vramaddr_c;
 (* mark_debug = "true" *) reg [23:0] vramaddr;
@@ -51,20 +45,8 @@ localparam start_with_latency = 46 - 3 ;
 localparam start_pixel = 46;
 localparam payload = 1440 - 3;
 localparam max_vramaddr = (320*180);
-//localparam max_vramaddr = 3000;//(320*180); <- for simulation
 assign maxdetect = (txid == 1) && (vramaddr >= max_vramaddr - 1);
-/*
-function [12:0] make_addrb_not_one;
-	input [15:0] segment_num;
-	input [7:0] id;
-	input [7:0] aux;
-	input [11:0] counter;
 
-	if (counter >= start_with_latency) begin
-		make_addrb_not_one = counter - start_with_latency;
-	end
-endfunction
-*/
 
 
 reg [1:0] data_user_reg = 2'b0;
@@ -104,18 +86,7 @@ always @(posedge clk125MHz) begin
 		resetplease = 0;
 	end
 	else begin
-		/*
-		if (data_user_neg) begin
-			addr_overed_before <= addr_overed;
-			addr_overed <= 1'b0;
-		end
-		*/
-	/*
-		if (vramaddr >= max_vramaddr) begin
-			vramaddr <= 0;
-		end
-		else begin
-	*/
+
 			case (state)
 				state_default: begin
 					if (txid != 1) state = id_not1;
@@ -131,15 +102,8 @@ always @(posedge clk125MHz) begin
 					if (hdmimode /*&& (redundancy != 1)*/ && (vramaddr >= max_vramaddr - 1 )) begin
 						addr_overed <= 1'b1;
 					end
-					/*else */
-					/*
-					if (hdmimode && (redundancy == 1 && vramaddr >= max_vramaddr - 1)) begin
-						state = state_default;
-					end
-					*/
 
-			//		else begin
-						// make vramaddr_c & vramadd
+
 						if (data_user_neg && !addr_overed) begin
 							vramaddr_c = 0;
 							vramaddr <= vramaddr + 1;
@@ -191,20 +155,10 @@ always @(posedge clk125MHz) begin
 	end
 end
 
-//wire [11:0] count_for_bram = (count_for_bram_en) ? (byte_data_counter - (start_pixel)) : 0;
-
-// data_user : from byte_data, active high when data enable
-
-// ID == 1 -=-=> startaddr -- lastaddr;
 always @(posedge clk125MHz) begin
 	// shift
 	data_user_reg <= {data_user_reg[0] ,data_user};
-/*
-	// negedge AND id==max
-	if (data_user_neg && ( txid == redundancy)) begin
-		startaddr <= lastaddr;
-	end
-*/
+
 end
 
 
@@ -228,9 +182,6 @@ vram_control vram_control_i(
 );
 
 
-// txid >= 2 
-// send and save data
-// count_for_bram_en: have to be reconsidered
 wire wea_bram1080 = (txid == 1) && count_for_bram_en;
 reg [7:0] doutb_first_reg;
 reg [7:0] doutb_first__reg,doutb_first___reg;
@@ -248,9 +199,7 @@ assign doutb = (txid==1) ?
 
 integer m;
 always @(posedge clk125MHz) begin
-/*
-	wea,addra,dina: 1 clock delay
-*/
+
 	for (m = 0; m < SEGMENT_NUMBER_MAX; m = m + 1) begin
 		doutb_not_one_reg[m] <= doutb_not_one[m];
 		wea_bram_not_one_reg[m] <= wea_bram_not_one[m];
@@ -271,7 +220,6 @@ generate
 			.addra(count_for_bram_reg),
 			.dina(doutb_first___reg),
 			.clkb(clk125MHz),
-			//.addrb(count_for_bram_b),
 			.addrb(addrb_not_one),
 			.doutb(doutb_not_one[i])
 		);

@@ -2,7 +2,7 @@
 module vram_control (
 	input wire pclk,
 	input wire clk125MHz,
-(* mark_debug = "true" *)	input wire ena,// en signal for VRAMs A port
+(* mark_debug = "true" *)	input wire ena,
 (* mark_debug = "true" *)	input wire [23:0] bramaddr24b,
 	input wire [23:0] vramaddr,
 	input wire [2:0] vramaddr_c,
@@ -13,10 +13,7 @@ input wire [7:0] din_rgb_b,
 output wire [7:0] doutb_first,
 output wire [23:0] doutb_rgb
 );
-/*
-outlook: addr <-> data 1:1.
 
-*/
 
 
 wire [7:0] doutb_r;
@@ -28,14 +25,6 @@ wire [7:0] rgb_g = din_rgb_g;
 wire [7:0] rgb_b = din_rgb_b;
 assign doutb_rgb = {doutb_r,doutb_g, doutb_b};
 
-/*
-	vramaddr = (addr_b / 3);
-	color = vramaddr % 3;
-*/
-
-
-
-// vramaddr_c : selector. r,g,b.
 assign doutb_first = vramaddr_c == 0? 
 			doutb_r: vramaddr_c==1? 
 				doutb_g:vramaddr_c==2?
@@ -47,7 +36,7 @@ vram vram_r(
 	.wea(ena),
 	.addra(bramaddr24b),
 	.addrb(vramaddr),
-	.dina(rgb_r),//in:5bits
+	.dina(rgb_r),
 	.douta(),
 	.dinb(8'b0),
 	.web(1'b0),
@@ -60,11 +49,11 @@ vram vram_g(
 	.wea(ena),
 	.addra(bramaddr24b),
 	.addrb(vramaddr),
-	.dina(rgb_g),//in:5bits
+	.dina(rgb_g),
 	.douta(),
 	.dinb(8'b0),
 	.web(1'b0),
-	.doutb(doutb_g)//5bits
+	.doutb(doutb_g)
 );
 
 vram vram_b(
@@ -73,11 +62,11 @@ vram vram_b(
 	.wea(ena),
 	.addra(bramaddr24b),
 	.addrb(vramaddr),
-	.dina(rgb_b),//in:5bits
+	.dina(rgb_b),
 	.douta(),
 	.dinb(8'b0),
 	.web(1'b0),
-	.doutb(doutb_b)//5bits
+	.doutb(doutb_b)
 );
 
 endmodule

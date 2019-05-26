@@ -28,7 +28,6 @@ module tx_top(
 	);
 
 wire rstb = !rstn;
-//wire [2:0] redundancy = {switches[5],switches[4],1'b1}; //3bit, takes values of 1,3,5,7
 wire start_frame;
 wire oneframe_done;
 reg [1:0] speed = 2'b11;

@@ -1,10 +1,4 @@
-`timescale 1ns / 1ps
 
-/*
-asynchronous. i_hsync,i_vsync -> like reset signals
-always @(opsedge i_clk or negedge i_hsync or negedge i_vsync) // ----important?
-
-*/
 module rgb2bram #(
  parameter ACTIVE_COLS = 320,//640, 
  parameter ACTIVE_ROWS = 180)//480) 
@@ -65,11 +59,9 @@ reg [23:0] data_sampling = 0;
  reg [1:0] count_cols = 0;
  reg inaaaa = 0;
  reg [20:0] bramaddr24b_ini = 0;
- always @(posedge pclk/* or negedge i_HSync or negedge i_VSync*/) // 25.2MHz
+ always @(posedge pclk) // 25.2MHz
  begin
- //half <= !half;
- //bramaddr8b <= (o_Col_Count + o_Row_Count * ACTIVE_COLS)*3 + (count_three);
- //if (half) begin
+
  
  if ((!i_HSync) || (!i_VSync) || (!vde)) begin // blank
   inaaaa = 1;
@@ -102,9 +94,7 @@ else if (!i_HSync && !fallen_h && !vde) begin
     else if (count_hsync == 3) begin o_Row_Count <= o_Row_Count + 1;
     bramaddr24b_ini <= bramaddr24b_ini + ACTIVE_COLS;//420
     bramaddr24b <= bramaddr24b_ini;
-        //bramaddr24b <= bramaddr24b + 1;
         end // next line.
-    //end
     count_three <= 0;
  end
 
@@ -121,11 +111,7 @@ if (count_three == 0) data_sampling <= data24b;
  if (three) begin
  
     count_three <= 0;
- /*   if (count_cols == 2) begin
-        count_cols <= 0;
-    end
-    else begin count_cols <= count_cols + 1;end
- */
+
  end
  else begin count_three <= count_three + 1'b1;end
  
@@ -141,29 +127,14 @@ if (count_three == 0) data_sampling <= data24b;
     rgb_g <= data_sampling[15:8];
     rgb_b <= data_sampling[7:0];
    end
-    
-  /*
-   if (o_Row_Count == ACTIVE_ROWS -1)
-       o_Row_Count <= o_Row_Count;
-   */
-   
-   
-   
+ 
  end else enout <= 0;// end if(three)
- 
- 
-// //========= create data==========\
-// if (count_three == 1) data8b <= data_sampling[7:0];
-// if (count_three == 2) data8b <= data_sampling[15:8];
-// if (count_three == 0) data8b <= data_sampling[23:16];
- 
- 
+
  end  
  end  
 end
 end
-//assign bramaddr24b = (o_Col_Count + o_Row_Count * ACTIVE_COLS);
- //assign bramaddr8b = (o_Col_Count + o_Row_Count * ACTIVE_COLS)*3 + (count_three);
+
  assign o_HSync = o_Col_Count < ACTIVE_COLS ? 1'b1 : 1'b0;
  assign o_VSync = o_Row_Count < ACTIVE_ROWS ? 1'b1 : 1'b0;
  
