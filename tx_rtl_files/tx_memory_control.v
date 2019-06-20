@@ -16,7 +16,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 1)//125
 	input wire [7:0] rgb_r, // from hdmi_top
 	input wire [7:0] rgb_g, // from hdmi_top
 	input wire [7:0] rgb_b, // from hdmi_top
-	input wire [23:0] bramaddr24b,
+	input wire [15:0] bramaddr24b,
 
 	input wire [11:0] byte_data_counter,
 
@@ -25,7 +25,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 1)//125
 	
 
 	// output
-	output reg [23:0] startaddr = 0,
+	output reg [15:0] startaddr = 0,
 	output wire oneframe_done,
 	output wire maxdetect,
 
@@ -40,7 +40,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 1)//125
  '''
 */
 reg [2:0] vramaddr_c;
-(* mark_debug = "true" *) reg [23:0] vramaddr;
+(* mark_debug = "true" *) reg [15:0] vramaddr;
 localparam start_with_latency = 46 - 3 ;
 localparam start_pixel = 46;
 localparam payload = 1440 - 3;
@@ -55,7 +55,7 @@ reg [1:0] data_user_reg = 2'b0;
 reg [3:0] state = 0;
 reg count_for_bram_en;
 reg [11:0] count_for_bram;
-reg [23:0] startaddr_ram [SEGMENT_NUMBER_MAX - 1: 0];
+reg [15:0] startaddr_ram [SEGMENT_NUMBER_MAX - 1: 0];
 localparam state_default = 0;
 localparam id1 = 1;
 localparam id_not1 = 2;
@@ -64,7 +64,7 @@ reg [7:0] id_prev;
 wire [2:0] next_vramaddr_c = (vramaddr_c == 2) ? 0: vramaddr_c + 1;
 
 reg [2:0] vramaddr_d3; // three times use// 0,1,2,0,1,2,...
-wire [23:0] next_vramaddr = (vramaddr_d3 == 2) ? 
+wire [15:0] next_vramaddr = (vramaddr_d3 == 2) ? 
 					((vramaddr < max_vramaddr - 1'b1) ? vramaddr + 1: 0): vramaddr;
 wire [2:0] next_vramaddr_d3 = (vramaddr_d3 == 2) ?
 		0: (vramaddr_d3 + 1);

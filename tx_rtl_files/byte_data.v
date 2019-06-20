@@ -2,11 +2,12 @@
 	input wire clk,
 	input wire start,
 	input wire advance,
-	input wire [7:0] aux, // auxiliary number
+	input wire [15:0] aux, // auxiliary number
 	input wire [15:0] segment_num,
 	input wire [7:0] index_clone,
+	input wire [7:0] qos,
 	input wire [7:0] vramdata,
-	input wire [23:0] startaddr, // coordinate
+	input wire [15:0] startaddr, // coordinate
 
 	(* mark_debug = "true" *) output reg busy = 1'b0,
 	(* mark_debug = "true" *) output reg [7:0] data = 8'b0,
@@ -15,7 +16,6 @@
 	output reg data_user = 1'b0,
 	(* mark_debug = "true" *) output reg data_valid = 1'b0,
 	output reg data_enable = 1'b0
-
 	);
 //parameter VGA_ -> 420*240
 parameter xmax = 320;
@@ -39,11 +39,13 @@ reg [15:0] eth_type = 16'h0800;
 // ip header
 reg [3:0] ip_version = 4'h4;
 reg [3:0] ip_header_len = 4'h5;
-reg [7:0] ip_dscp_ecn = 8'h00;
+
+//reg [7:0] ip_dscp_ecn = 8'h00;// 00 - 02 :
+wire [7:0] ip_dscp_ecn = qos;
 reg [15:0] ip_identification = 16'h0000;
 reg [15:0] ip_length = ip_total_bytes;
-reg [15:0] ip_flags_and_frag = 16'h0000;
-reg [7:0] ip_ttl = 8'h10;
+reg [15:0] ip_flags_and_frag = 16'h4000;//断片化禁止
+reg [7:0] ip_ttl = 8'd2;
 reg [7:0] ip_protocol = 8'h11;
 wire [15:0] ip_checksum;// = 16'h0000; // calculated later on
 reg [31:0] ip_src_addr = 32'hc0a80140; // 192.168.1.64
@@ -173,7 +175,7 @@ always @(posedge clk) begin
 		12'h23: data <= segment_num[15:8]; // UDP SOURCE [15:8]
 		12'h24: data <= segment_num[7:0]; // UDP SOURCE [7:0]
 		12'h25: data <= index_clone; // UDP DST [15:8]
-		12'h26: data <= aux; // UDP DST[7:0]
+		12'h26: data <= aux[15:8]; // UDP DST[7:0]
 
 
 		// UDP length (header + data) 24 octets
@@ -184,13 +186,14 @@ always @(posedge clk) begin
 		12'h2a: data <= udp_checksum[7:0];//00
 
 		12'h2b: begin
-						data <= startaddr[23:16];
+						//data <= startaddr[23:16];
+						data <= aux[7:0];
 						end
 		12'h2c: data <= startaddr[15:8];
 		12'h2d:data <= startaddr[7:0];
 		// 0x2e == 46: begin pixcel data
 		12'h2e:begin
-						data_user <= 1'b1;
+		data_user <= 1'b1;
 		data <= vramdata; // here.
 		end
 

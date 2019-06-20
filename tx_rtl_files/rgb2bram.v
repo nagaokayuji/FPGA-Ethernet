@@ -4,22 +4,18 @@ module rgb2bram #(
  parameter ACTIVE_ROWS = 180)//480) 
 
 (
-	input            clk125MHz, //25.2MHz
-	input pclk,
-	input wire i_Hsync,
-	input wire i_Vsync,
-	input wire [23:0] data24b,
-	input wire vde,
-	output           o_HSync,
-	output           o_VSync,
-	output reg enout,
-	output reg  [21:0] bramaddr8b,
-	output reg [7:0] data8b,
-	output reg [9:0] o_Col_Count = 0, 
-	output reg [9:0] o_Row_Count = 0,
-	output reg [31:0] bramaddr24b = 0,
-	output reg [7:0] rgb_r,rgb_g,rgb_b,
-	(* mark_debug = "true" *) output wire start_frame
+    input            clk125MHz, //25.2MHz
+    (* mark_debug = "true" *)	input pclk,
+    (* mark_debug = "true" *)	input wire i_Hsync,
+    (* mark_debug = "true" *)	input wire i_Vsync,
+    (* mark_debug = "true" *) input wire [23:0] data24b,
+    (* mark_debug = "true" *)	input wire vde,
+    output           o_HSync,
+    output           o_VSync,
+    (* mark_debug = "true" *)	output reg enout,
+    (* mark_debug = "true" *) output reg [15:0] bramaddr24b = 0,
+    (* mark_debug = "true" *) output reg [7:0] rgb_r,rgb_g,rgb_b,
+    (* mark_debug = "true" *) output wire start_frame
  );  
  
  wire i_HSync = !i_Hsync;
@@ -34,6 +30,9 @@ reg [4:0] vsync_fall_count = 0;
 localparam vsync_fall_count_max = 2;
 wire [4:0] vsync_fall_count_next = (vsync_fall_count < vsync_fall_count_max ? vsync_fall_count + 1'b1 : 0);
 
+reg [9:0] o_Row_Count = 0;
+reg [9:0] o_Col_Count = 0;
+
 always @(posedge clk125MHz) begin
 	start_frame_reg <= start_frame_pck;
 	start_frame_reg2 <= start_frame_reg;
@@ -47,18 +46,18 @@ always @(posedge pclk) begin
 	end
 	start_frame_pck <= ( vsync_fall == 2'b10 && (vsync_fall_count == vsync_fall_count_max));
  end
-reg [2:0] count_three = 0;
- wire three = (count_three == 2'b11);//=====================modified
+(* mark_debug = "true" *)reg [2:0] count_three = 0;
+ (* mark_debug = "true" *)wire three = (count_three == 2'b11);//=====================modified
 reg [23:0] data_sampling = 0;
  reg fallen_h = 0;
  reg fallen_v = 0;
  reg vclk = 0;
  reg half = 0;
- reg [1:0] count_hsync = 0;
- reg [1:0] count_vsync = 0;
+ (* mark_debug = "true" *)reg [1:0] count_hsync = 0;
+ (* mark_debug = "true" *)reg [1:0] count_vsync = 0;
  reg [1:0] count_cols = 0;
  reg inaaaa = 0;
- reg [20:0] bramaddr24b_ini = 0;
+ reg [15:0] bramaddr24b_ini = 0;
  always @(posedge pclk) // 25.2MHz
  begin
 

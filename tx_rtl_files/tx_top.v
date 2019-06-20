@@ -1,13 +1,22 @@
+`define difclk;
+
 module tx_top(
+
+`ifdef difclk
+    input wire sysclk_n,
+    input wire sysclk_p,
+`else
 	input wire clk100MHz,
+`endif
 	input wire[7:0] switches,
 	input wire rstn, // active low
+	input wire btnu,
 	output wire [7:0] leds,
 
 	//ethernet
 	input wire eth_int_b, //interrupt
 	input wire eth_pme_b, //power management event
-	output reg eth_rst_b = 0, // reset phy
+	output reg eth_rst_b, // reset phy
 	output reg eth_mdc = 1'b0,
 	inout wire eth_mdio,
 	input wire eth_rxck,
@@ -27,6 +36,7 @@ module tx_top(
 	output wire hdmi_rx_hpa
 	);
 
+
 wire rstb = !rstn;
 wire start_frame;
 wire oneframe_done;
@@ -36,7 +46,7 @@ wire CLK100MHz_buffered;
 reg [6:0] de_count = 7'b0;
 reg [24:0] reset_counter = 25'b0;
 reg [5:0] debug = 6'b0;
-reg phy_ready = 1'b0;
+wire phy_ready;
 reg user_data = 1'b0;
 
 //clocking
@@ -45,18 +55,24 @@ wire clk125MHz;
 wire clk125MHz90;// for the TX clock
 wire clk25MHz;
 
-wire [7:0] vio_out0;
-wire vio_out1;
+wire [7:0] switches_vio;
+wire RST_vio,btnu_vio;
+wire [7:0] qos;
+
 vio_0 vio (
   .clk(clk125MHz),
-  .probe_out0(vio_out0),// switches
-  .probe_out1(vio_out1) // rst
+  .probe_out0(switches_vio),// switches
+  .probe_out1(RST_vio), // rst
+  .probe_out2(btnu_vio),
+  .probe_out3(qos)
 );
 
-wire [7:0] sw_with_vio = switches ^ vio_out0;
-wire rst_with_vio = rstb ^ vio_out1;
-
+wire [7:0] sw_with_vio = switches ^ switches_vio;
+wire rst_with_vio = rstb ^ RST_vio;
+wire btnu_with_vio = btnu ^ btnu_vio;
 assign leds[4] = rst_with_vio;
+
+
 
 always @(posedge clk125MHz) begin
 	if (de_count == 7'b0)
@@ -100,19 +116,24 @@ ethernet_tx ethernet_tx_i (
 
 wire [7:0] index_clone;
 wire busy;
-wire [23:0] startaddr;
-wire [23:0] lastaddr;
+wire [15:0] startaddr;
+wire [15:0] lastaddr;
 
 /*
 // Control reseting the PHY
 */
 // control reset
 always @(posedge clk125MHz) begin
-	if (reset_counter[24] == 1'b0)
-		reset_counter <= reset_counter + 1'b1;
-	eth_rst_b <= reset_counter[24] || reset_counter[23] && !(rst_with_vio); // 1: resset completed
-	phy_ready <= reset_counter[24] && !(rst_with_vio);
+    if (rst_with_vio) reset_counter <= 0;
+    else begin
+	   if (reset_counter[24] == 1'b0)
+	   	   reset_counter <= reset_counter + 1'b1;
+	   else reset_counter <= reset_counter;
+	end
+	eth_rst_b <= ( reset_counter[24] || reset_counter[23] )  ; // 1: reset completed. active low
 end
+assign phy_ready = !eth_rst_b;
+
 
 wire[7:0] rx_fully_framed;
 wire rx_fully_framed_valid;
@@ -151,10 +172,18 @@ always @(posedge clk125MHz) begin
 		speed <= 2'b01;
 end
 wire clk100MHz_buffered;
+`ifdef difclk
+make_single_clock make_single_clock_i(
+.clk_in1_p(sysclk_p),
+.clk_in1_n(sysclk_n),
+.clk_out1(clk100MHz_buffered)
+);
+`else
 BUFG bufg_100(
 	.I(clk100MHz),
 	.O(clk100MHz_buffered)
 );
+`endif
 // clock
 clocking clocking_i(
 	.clk_in1(clk100MHz_buffered),
@@ -168,7 +197,8 @@ clocking clocking_i(
 // STATE CONTROL
 //=====================
 wire [15:0] segment_num;
-wire [7:0] aux,txid;
+wire [7:0] txid;
+wire [15:0] aux;
 wire start_sending;
 wire [7:0] redundancy;
 wire [15:0] segment_num_max;
@@ -176,6 +206,7 @@ wire hdmimode, framemode, maxdetect;
 send_control send_control_i (
 	.clk125MHz(clk125MHz),
 	.RST(rst_with_vio),
+	.irst(btnu_with_vio),
 	.switches(sw_with_vio),
 	.busy(busy),
 	.start_frame(start_frame),
@@ -223,7 +254,8 @@ hdmi_top hdmi_top_i (
 	.rgb_r(rgb_r),
 	.rgb_g(rgb_g),
 	.rgb_b(rgb_b),
-	.start_frame(start_frame)
+	.start_frame(start_frame),
+	.pclklocked(leds[5])
 );
 
 
@@ -243,6 +275,7 @@ byte_data data(
 	.advance(adv_data),
 	.startaddr(startaddr),
 	.vramdata(doutb),
+	.qos(qos),
 	.busy(busy),
 	.data(raw_data),
 	//.mydata(my_data),

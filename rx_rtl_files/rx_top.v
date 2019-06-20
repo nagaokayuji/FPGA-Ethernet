@@ -1,11 +1,23 @@
+`define use_ddr3
+
+//`define nexys
+
 module rx_top(
+`ifdef nexys
 	input wire clk100MHz,
-	input wire[7:0] switches_raw,
+`else
+    input wire sysclk_n,
+    input wire sysclk_p,
+`endif
+	input wire[7:0] switches,
 	output wire [7:0] leds,
 	//input wire rstb,
-	input wire btnl_raw,
-	input wire btnu_raw,
-	input wire resetn_raw,
+	input wire btnl,
+	input wire btnu,
+	input wire rstn,
+	input wire btnr,
+	input wire btnd,
+	input wire btnc,
 
 	// uart
 	input wire uart_rxd,
@@ -29,35 +41,43 @@ module rx_top(
 
 	output wire hdmi_tx_clk_n,hdmi_tx_clk_p,
 	output wire [2:0] hdmi_tx_n,
-	output wire [2:0] hdmi_tx_p,
+	output wire [2:0] hdmi_tx_p
 	
-	// DDR3 Physical Interface Signals
- //Inouts
- inout [15:0] ddr3_dq,
- inout [1:0]  ddr3_dqs_n,
- inout [1:0]  ddr3_dqs_p,
- // Outputs
- output [14:0] ddr3_addr,
- output [2:0]  ddr3_ba,
- output ddr3_ras_n,
- output ddr3_cas_n,
- output ddr3_we_n,
- output ddr3_reset_n,
- output [0:0] ddr3_ck_p,
- output [0:0] ddr3_ck_n,
- output [0:0] ddr3_cke,
- //output [0:0] ddr3_cs_n,
- output [1:0] ddr3_dm,
- output [0:0] ddr3_odt
- 
+`ifdef use_ddr3
+    //memmory signals
+    ,output  [14:0] ddr3_addr,
+    output  [2:0] ddr3_ba,
+    output  ddr3_cas_n,
+    output  ddr3_ck_n,
+    output  ddr3_ck_p,
+    output  ddr3_cke,
+    output  ddr3_ras_n,
+    output  ddr3_reset_n,
+    output  ddr3_we_n,
+    inout   [31:0] ddr3_dq,
+    inout   [3:0] ddr3_dqs_n,
+    inout   [3:0] ddr3_dqs_p,
+    output  ddr3_cs_n,
+    output  [3:0] ddr3_dm,
+    output  ddr3_odt
+ `else
+ `endif
 	
 	);
-	
-	wire eth_rxck_buf,eth_rxck_buf_d;
+	parameter SIMULATION = "TRUE";
+		wire eth_rxck_buf,eth_rxck_buf_d;
+		/*
 	BUFG ethclk(
 	.I(eth_rxck),
 	.O(eth_rxck_buf)
 	);
+	*/
+	make_rx_clk make_rx_clk_i (
+	   .eth_rx_clk(eth_rxck_buf),
+	   .locked(leds[7]),
+	   .eth_rx_in(eth_rxck)
+	   );
+    assign leds[6:0] = 0;
 	/*
 	IDELAYE2 #(.IDELAY_TYPE("FIXED"), .IDELAY_VALUE(5))rxcdelay (
 	.idatain(eth_rxck_buf),
@@ -65,7 +85,7 @@ module rx_top(
 	);
 	*/
 parameter whereisid = 16'd25;
-wire RST_raw = !resetn_raw;
+wire RST_raw = !rstn;
 
 
 wire [31:0] countp,okp;
@@ -83,7 +103,7 @@ reg [6:0] de_count = 7'b0;
 reg start_sending = 1'b0;
 reg [24:0] reset_counter = 25'b0;
 reg [5:0] debug = 6'b0;
-reg phy_ready = 1'b0;
+wire phy_ready;
 reg user_data = 1'b0;
 
 //clocking
@@ -96,33 +116,35 @@ wire clk25MHz;
 
 wire [7:0] switches_vio;
 wire btnl_vio,btnu_vio,RST_vio;
+reg [31:0] speed_bps;
+
+
+
+
 
 vio_0 vio (
 .clk(clk125MHz),
-.probe_in0(okp),
-.probe_in1(countp),
+.probe_in0(countp),
+.probe_in1(okp),
+.probe_in2(ngp),
+.probe_in3(lostnum),
+.probe_in4(speed_bps),
 .probe_out0(switches_vio),
 .probe_out1(btnl_vio),
 .probe_out2(btnu_vio),
 .probe_out3(RST_vio)
 );
 
-reg [7:0] switches_vio_reg;
-reg btnl_vio_reg, btnu_vio_reg, RST_vio_reg;
-always @(posedge clk125MHz) begin
-    switches_vio_reg <= switches_vio;
-    btnl_vio_reg <= btnl_vio;
-    btnu_vio_reg <= btnu_vio;
-    RST_vio_reg <= RST_vio;
-end
 
-wire [7:0] switches = switches_raw ^ switches_vio_reg;
-wire btnl = btnl_raw ^ btnl_vio_reg;
-wire btnu = btnu_raw ^ btnu_vio_reg;
-wire RST = RST_raw ^ RST_vio_reg;
 
-wire [7:0] redundancy = (switches[5:4]==2'b10)? 5 : (switches[5:4]==2'b01) ? 3 : (switches[5:4]==2'b00)? 1 : 111;
-wire [7:0] segment_number_max = (switches[7:6] == 2'b00)? 1 : (switches[7:6] == 2'b01)? 50 : (switches[7:6] == 2'b10) ? 100: 150;
+wire [7:0] switches_with_vio = switches ^ switches_vio;
+wire btnl_with_vio = btnl ^ btnl_vio;
+wire btnu_with_vio = btnu ^ btnu_vio;
+
+wire RST = RST_raw ^ RST_vio;
+
+wire [7:0] redundancy = (switches_with_vio[5:4]==2'b10)? 5 : (switches_with_vio[5:4]==2'b01) ? 3 : (switches_with_vio[5:4]==2'b00)? 1 : 111;
+wire [7:0] segment_number_max = (switches_with_vio[7:6] == 2'b00)? 1 : (switches_with_vio[7:6] == 2'b01)? 50 : (switches_with_vio[7:6] == 2'b10) ? 100: 150;
 
 
 always @(posedge clk125MHz) begin
@@ -149,11 +171,16 @@ end
 */
 // control reset
 always @(posedge clk125MHz) begin
-	if (reset_counter[24] == 1'b0)
-		reset_counter <= reset_counter + 1'b1;
-	eth_rst_b <= reset_counter[24] || reset_counter[23];
-	phy_ready <= reset_counter[24];
+    if (RST_vio) reset_counter <= 0;
+    else begin
+	   if (reset_counter[24] == 1'b0)
+	   	   reset_counter <= reset_counter + 1'b1;
+	   else reset_counter <= reset_counter;
+	end
+	eth_rst_b <= ( reset_counter[24] || reset_counter[23] ) ; // 1: reset completed. active low
 end
+assign phy_ready = !eth_rst_b;
+
 
 
 wire link_10mb;
@@ -183,7 +210,34 @@ rgmii_rx i_rgmii_rx(
 	.data_enable_f(rx_enable_f),
 	.data_error(rx_error)
 	);
-	
+
+
+(* mark_debug = "true" *) reg [26:0] cnt_en = 0;
+reg [26:0] time_counter = 0;
+(* mark_debug = "true" *) wire one_sec = (time_counter == 27'd124999999);
+//wire [26:0] next_time_counter = one_sec ? (time_counter + 1'b1) : 0;
+always @(posedge clk125MHz) begin
+    //time_counter <= next_time_counter;
+    if (RST) begin
+        cnt_en = 0;
+        time_counter = 0;
+    end
+    else begin
+    
+    if (one_sec) begin
+        speed_bps <= (cnt_en);
+        cnt_en <= 0;
+        time_counter <= 0;
+    end
+    else begin
+        if (rx_enable_f) begin
+         cnt_en <= cnt_en + 1'b1;
+        end
+        
+        time_counter <= time_counter + 1'b1;
+    end
+    end
+end
 /*
 reg [7:0] eth_rxd_ff1, eth_rxd_ff2, eth_rxd_ff3;
 reg eth_en_ff1, eth_en_ff2, eth_en_ff3;
@@ -253,18 +307,29 @@ parameter max_for_led = 27'd71072000;
 
 
 wire clk100MHz_buffered;
+`ifdef nexys
 BUFG bufg_100(
 .I(clk100MHz),
 .O(clk100MHz_buffered)
 );
+`else
+make_single_clock make_single_clock_i(
+    .clk_in1_p(sysclk_p),
+    .clk_in1_n(sysclk_n),
+    .clk_out1(clk100MHz_buffered)
+    );
+`endif
 // clock
 wire clk10MHz;
 wire clk400MHz;
+//`ifdef use_ddr3
 mig_clocking mig_clk(
 .clk_in1(clk100MHz_buffered),
-.clk_out1(clk400MHz),
-.clk_out2(clk200MHz)
+.clk400MHz(clk400MHz),
+.clk200MHz(clk200MHz)
 );
+//`else
+//`endif
 
 clocking clocking_i(
 	.clk_in1(clk100MHz_buffered),
@@ -276,6 +341,8 @@ clocking clocking_i(
 //	.clk_out6(clk400MHz)
 	);
 
+/*
+`ifdef use_ddr3
  wire calib_done;
 
  (* mark_debug = "true" *) wire  [28:0] app_addr;
@@ -351,6 +418,59 @@ wire ui_clk_sync_rst;
    .sys_rst      (!RST)
    );
 
+`else
+`endif
+*/
+`ifdef use_ddr3
+    wire            ui_clk;
+    wire [255:0]    rd_data;
+    wire [255:0]    wr_data;
+    wire            rd_busy;
+    wire            wr_busy;
+    wire            rd_data_valid;
+    wire [24:0]      rd_addr;
+    wire [24:0]      wr_addr;
+    wire             rd_en;
+    wire             wr_en;
+    
+    
+    ddr_ram_controller_mig _ddr_ram_control_mig(
+        // user interface signals
+        .ui_clk         (ui_clk),
+        //.ui_clk_sync_rst,
+        .wr_addr        (wr_addr),
+        .wr_data        (wr_data),
+        .rd_addr        (rd_addr),
+        .rd_data        (rd_data),
+        .wr_en          (wr_en),
+        .rd_en          (rd_en),
+        .wr_busy        (wr_busy),
+        .rd_busy        (rd_busy),
+        .rd_data_valid  (rd_data_valid),
+        // phy signals
+        //.clk_p          (sysclk_p),
+        //.clk_n          (sysclk_n),\
+        .clk            (clk200MHz),
+        .rst            (!RST),// active low de OK
+        .ddr3_addr      (ddr3_addr),  // output [14:0]        ddr3_addr
+        .ddr3_ba        (ddr3_ba),  // output [2:0]        ddr3_ba
+        .ddr3_cas_n     (ddr3_cas_n),  // output            ddr3_cas_n
+        .ddr3_ck_n      (ddr3_ck_n),  // output [0:0]        ddr3_ck_n
+        .ddr3_ck_p      (ddr3_ck_p),  // output [0:0]        ddr3_ck_p
+        .ddr3_cke       (ddr3_cke),  // output [0:0]        ddr3_cke
+        .ddr3_ras_n     (ddr3_ras_n),  // output            ddr3_ras_n
+        .ddr3_reset_n   (ddr3_reset_n),  // output            ddr3_reset_n
+        .ddr3_we_n      (ddr3_we_n),  // output            ddr3_we_n
+        .ddr3_dq        (ddr3_dq),  // inout [31:0]        ddr3_dq
+        .ddr3_dqs_n     (ddr3_dqs_n),  // inout [3:0]        ddr3_dqs_n
+        .ddr3_dqs_p     (ddr3_dqs_p),  // inout [3:0]        ddr3_dqs_p
+        .ddr3_cs_n      (ddr3_cs_n),  // output [0:0]        ddr3_cs_n
+        .ddr3_dm        (ddr3_dm),  // output [3:0]        ddr3_dm
+        .ddr3_odt       (ddr3_odt)  // output [0:0]        ddr3_odt
+    );
+
+`else
+`endif
 
 reg [7:0] data_out_reg;
 reg en_out_reg;
@@ -362,7 +482,7 @@ end
 
 
 detect_errors2 detect_errors_2 (
-	.rst(RST),
+	.rst(RST ^ btnu_with_vio),
 	.rx_en(en_out_reg),
 	.rx_data(data_out_reg),
 	.clk(clk125MHz),
@@ -394,8 +514,9 @@ hdmi_top hdmi_top_i (
 	.hdmi_tx_p(hdmi_tx_p)
 );
 
+/*
 design_2_wrapper design2(
-.Clk(clk100MHz),
+.Clk(clk100MHz_buffered),
 .resetn(!RST),
 .uart_rtl_0_rxd(uart_rxd),
 .uart_rtl_0_txd(uart_txd),
@@ -403,7 +524,7 @@ design_2_wrapper design2(
 .gpio_rtl_1_tri_i(countp),
 .interrupt(btnu)
 );
-
-assign leds = switches;
+*/
+//assign leds = switches;
 
 endmodule

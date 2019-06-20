@@ -3,17 +3,17 @@ module rgmii_rx (
     input wire clk125MHz,
     input wire clk200MHz,
 	input wire rx_clk,
-	input wire rx_ctl,
-	input wire [3:0] rx_data,
+(* mark_debug = "true" *)	input wire rx_ctl,
+(* mark_debug = "true" *)	input wire [3:0] rx_data,
 	output reg link_10mb,
 	output reg link_100mb,
 	output reg link_1000mb,
 	output reg link_full_duplex,
-	output wire [7:0] raw_data_f,
-	output wire data_enable_f,
-	output wire data_error
+(* mark_debug = "true" *)	output wire [7:0] raw_data_f,
+(* mark_debug = "true" *)	output wire data_enable_f,
+(* mark_debug = "true" *)	output wire data_error
 	);
- wire [7:0] raw_data;
+wire [7:0] raw_data;
 wire data_enable;
 
 
@@ -34,6 +34,7 @@ data <= raw_data;
 	*/
 	
 	
+	/*
 IDELAYCTRL
 idelayctrl_inst
 (
@@ -159,7 +160,7 @@ phy_rx_ctl_idelay
 	
 	
 	
-	
+	*/
 	
 	
 
@@ -173,7 +174,7 @@ phy_rx_ctl_idelay
 		.Q2(raw_ctl[1]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_ctl_delay),
+		.D(rx_ctl),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -188,7 +189,7 @@ phy_rx_ctl_idelay
 		.Q2(raw_data[4]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data_delay[0]),
+		.D(rx_data[0]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -203,7 +204,7 @@ phy_rx_ctl_idelay
 		.Q2(raw_data[5]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data_delay[1]),
+		.D(rx_data[1]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -217,7 +218,7 @@ phy_rx_ctl_idelay
 		.Q2(raw_data[6]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data_delay[2]),
+		.D(rx_data[2]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -231,7 +232,7 @@ phy_rx_ctl_idelay
 		.Q2(raw_data[7]),
 		.C(rx_clk),
 		.CE(1'b1),
-		.D(rx_data_delay[3]),
+		.D(rx_data[3]),
 		.R(1'b0),
 		.S(1'b0)
 		);
@@ -246,7 +247,7 @@ phy_rx_ctl_idelay
 wire [7:0] data_fifo_out;
 
 
- assign matte = !en_fifo_out && prog_empty;
+(* mark_debug = "true" *) assign matte = !en_fifo_out && prog_empty;
 
 
 reg [1:0] matte_rise_detect;

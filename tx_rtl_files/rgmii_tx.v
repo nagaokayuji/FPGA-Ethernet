@@ -13,9 +13,9 @@ module rgmii_tx (
     input wire data_enable,
     input wire data_error,
     
-    output wire eth_txck,
-    output wire eth_txctl,
-    output wire [3:0] eth_txd
+  output wire eth_txck,
+  output wire eth_txctl,
+  output wire [3:0] eth_txd
     );
     
     reg [6:0] enable_count = 7'b0000000;

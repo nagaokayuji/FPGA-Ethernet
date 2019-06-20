@@ -6,6 +6,7 @@ module send_control(
 	input wire RST,
 	input wire [7:0] switches, 
 	input wire busy,
+	input wire irst,
 	(* mark_debug = "true" *)	input wire start_frame,
 	(* mark_debug = "true" *)	input wire oneframe_done,
 	(* mark_debug = "true" *)	input wire maxdetect, 
@@ -13,7 +14,7 @@ module send_control(
 	// output
 	(* mark_debug = "true" *)	output reg [15:0] segment_num_inter = 0,
 	(* mark_debug = "true" *)	output reg [7:0] txid_inter = 1,
-	(* mark_debug = "true" *)	output wire [7:0] aux_inter,
+	(* mark_debug = "true" *)	output wire [15:0] aux_inter,
 	(* mark_debug = "true" *)	output reg start_sending = 0,
 	output reg [15:0] segment_num_max,
 	output wire hdmimode,
@@ -21,7 +22,7 @@ module send_control(
 	output wire [7:0] redundancy 
 );
 
-reg [7:0] aux = 0;
+reg [15:0] aux = 0;
 reg [15:0] segment_num = 0;
 reg [7:0] txid = 1;
 wire [27:0] max_count;
@@ -83,12 +84,12 @@ wire [15:0] segment_num_next = (segment_num < segment_num_max) ? segment_num + 1
 reg oneframe_done_detected;
 (* mark_debug = "true" *) reg maxdetected = 0;
 reg [15:0] segment_num_framemode;
-reg [7:0] aux_base = 0, aux_base_inter = 0;
+reg [15:0] aux_base = 0, aux_base_inter = 0;
 
 assign aux_inter = aux_base_inter + segment_num_inter;
 
 always @(posedge clk125MHz) begin
-	if (RST) begin
+	if (RST || irst) begin
 		hdmistate = 0;
 		maxdetected = 0;
 		segment_num_framemode = 0;

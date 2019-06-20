@@ -4,26 +4,26 @@ module detect_errors2 #(parameter whereis_aux = 0)(
 	input wire clk,
 	input wire rst,
 	input wire [15:0] segment_number_max,
-	(* mark_debug = "true" *) input wire [15:0] seg,
+	input wire [15:0] seg,
 	(* mark_debug = "true" *) input wire rx_en,
 	(* mark_debug = "true" *) input wire [7:0] rx_data,
 	(* mark_debug = "true" *) output reg [31:0] count,
 	(* mark_debug = "true" *) output reg [31:0] ok,
-	output reg [31:0] ng,
-	 output reg [31:0] lostnum,
-	(* mark_debug = "true" *) output reg valid,
-	(* mark_debug = "true" *) output reg [2:0] state
+	(* mark_debug = "true" *) output reg [31:0] ng,
+	(* mark_debug = "true" *) output reg [31:0] lostnum,
+	output reg valid,
+	output reg [2:0] state
 );
 
 localparam maxcount = 500000;
-localparam maxaux = 8'b11111111;
+localparam maxaux = 16'hffff;
 //localparam maxaux = 8'd5;
 reg [15:0] count_edge;
 
 reg [15:0] seg_prev,seg_tmp;
 
 wire aux_on = (whereis_aux == count_edge && rx_en);// && valid;
-wire aux_on_delay = (whereis_aux + 3 == count_edge);
+//wire aux_on_delay = (whereis_aux + 3 == count_edge);
 wire aux_on_1 = (whereis_aux + 5 == count_edge);// && valid;
 wire aux_on_2 = (whereis_aux + 6 == count_edge);
 wire aux_on_3 = (whereis_aux + 7 == count_edge);
@@ -33,17 +33,17 @@ wire aux_on_3 = (whereis_aux + 7 == count_edge);
 
 reg count_on;
 //reg [0:0] mem [65535:0];　
-reg [7:0] aux_tmp;
+reg [15:0] aux_tmp;
 reg [15:0] addr;
-reg [7:0] aux_new,aux_old;
+(* mark_debug = "true" *) reg [15:0] aux_new,aux_old;
 reg endflag;
 
 localparam state_wait = 0;
-wire [7:0] aux_new_pros = (aux_old < 8'hff) ? aux_old + 1'b1 : 0;
-wire [7:0] aux_oldp1 = aux_old + 1'b1;
+wire [15:0] aux_new_pros = (aux_old < 16'hffff) ? aux_old + 1'b1 : 0;
+wire [15:0] aux_oldp1 = aux_old + 1'b1;
 
 
-
+(* mark_debug = "true" *) reg error_detected;
 always @(posedge clk) begin
 	if (rst) begin
 		count_edge <= 16'b0;
@@ -61,13 +61,17 @@ always @(posedge clk) begin
 		count_on = 0;
 		seg_prev = 0;
 		state = 0;
+		error_detected = 0;
 	end
 	else begin //!rst
 		if (rx_en) begin
 			count_edge <= count_edge + 1'b1;
 			if (aux_on) begin
 				aux_old <= aux_new;
-				aux_new <= rx_data;
+				aux_new[15:8] <= rx_data;
+			end
+			else if (aux_on_1) begin
+			 aux_new[7:0] <= rx_data;
 			end
 		end
 		else begin
@@ -77,25 +81,31 @@ always @(posedge clk) begin
 		case (state)
 			0:
 				begin
-					if (aux_on_1 && (aux_new == 0)) begin
+					if (aux_on_2 && (aux_new == 0)) begin
 						state <= 1;
 						count <= 1;
 						ok <= 1;
 						ng <= 0;
+					
 					end
 				end
 			1:
 				begin
-					if (aux_on_1) begin
+					if (aux_on_2) begin
+					   
 						count <= count + 1;
 						if (aux_new_pros == aux_new) begin
 							ok <= ok + 1;
+							error_detected = 0;
 						end
 						else begin
+						    error_detected = 1;
 							ng <= ng + 1;
+							lostnum <= lostnum + ((aux_new[11:0] > aux_old[11:0]) ?
+							 (aux_new - aux_old) : (aux_old - aux_new));
 						end
 					end
-					if (aux_on_2 && count >= maxcount) begin
+					if (aux_on_3 && count >= maxcount) begin
 						state <= 2;
 					end
 				end

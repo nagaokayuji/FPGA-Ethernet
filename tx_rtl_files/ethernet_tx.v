@@ -30,10 +30,10 @@ add_crc32 i_add_crc32(
 	.data_enable_out(with_crc_enable)
 	);
 
-wire [7:0] fully_framed;
-wire fully_framed_valid;
-wire fully_framed_enable;
-wire fully_framed_err;
+(* mark_debug = "true" *) wire [7:0] fully_framed;
+(* mark_debug = "true" *) wire fully_framed_valid;
+(* mark_debug = "true" *) wire fully_framed_enable;
+(* mark_debug = "true" *) wire fully_framed_err;
 add_preamble i_add_preamble(
 	.clk(clk125MHz),
 	.data_in(with_crc),
