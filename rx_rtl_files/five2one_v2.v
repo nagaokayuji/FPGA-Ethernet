@@ -128,10 +128,6 @@ begin
 		12'bxxx_xx1_xxx_x1x: check = 1; // 3
 		12'bxxx_x1x_xxx_x1x: check = 1; // 4
 		12'bxx1_xxx_xxx_1xx: check = 1; // 6
-		
-		
-
-
 		default: check = 0;
 	endcase
 end

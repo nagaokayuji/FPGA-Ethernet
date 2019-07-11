@@ -260,7 +260,7 @@ hdmi_top hdmi_top_i (
 
 
 wire [7:0] doutb,dina,doutb_first;
-wire [19:0] addrb,addra;
+//wire [19:0] addrb,addra;
   
 //wire [7:0] out_from_vram =doutb;
 wire [12:0] count_for_bram;

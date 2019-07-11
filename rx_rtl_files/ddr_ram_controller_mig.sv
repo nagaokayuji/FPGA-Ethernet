@@ -1,23 +1,12 @@
 `timescale 1ns / 1ps
+`define DATA_WIDTH 256
+`define ADDR_WIDTH 25
+`define DDR_DQ_WIDTH 32
+`define DDR_DQS_WIDTH 4
+`define DDR_MASK_WIDTH 16
 
-module ddr_ram_controller_mig #(
-	parameter BOARD = "",
-	localparam DATA_WIDTH = (BOARD == "NEXYS_VIDEO")	? 128 :
-							(BOARD == "GENESYS_2")		? 256 :
-							(BOARD == "NEXYS_DDR")		? 128 : 0,
-	localparam ADDR_WIDTH = (BOARD == "NEXYS_VIDEO")	? 26:
-							(BOARD == "GENESYS_2")		? 25 :
-							(BOARD == "NEXYS_DDR")		? 26 : 0,
-    localparam DDR_DQ_WIDTH =   (BOARD == "NEXYS_VIDEO")	? 16:
-                                (BOARD == "GENESYS_2")		? 32:
-                                (BOARD == "NEXYS_DDR")		? 16 : 0,
-    localparam DDR_DQS_WIDTH =  (BOARD == "NEXYS_VIDEO")	? 2:
-                                (BOARD == "GENESYS_2")		? 4:
-                                (BOARD == "NEXYS_DDR")		? 2 : 0,
-    localparam DDR_MASK_WIDTH = (BOARD == "NEXYS_VIDEO")	? 16:
-                                (BOARD == "GENESYS_2")		? 32:
-                                (BOARD == "NEXYS_DDR")		? 16 : 0
-	)(
+module ddr_ram_controller_mig 
+	(
 	// User interface ports
     output						ui_clk,
     output						ui_clk_sync_rst,
@@ -74,8 +63,6 @@ module ddr_ram_controller_mig #(
     wire [DDR_MASK_WIDTH-1:0]   app_wdf_mask;
     wire                        init_calib_complete;
 
-    generate
-    if (BOARD=="GENESYS_2") begin
         mig_7series_0 _mig (
             // Memory interface ports
             .ddr3_addr                      (ddr3_addr),
@@ -121,52 +108,6 @@ module ddr_ram_controller_mig #(
             .sys_clk_i                       (clk),
             .sys_rst                         (rst)
         );
-    end else if (BOARD=="NEXYS_DDR" || BOARD=="NEXYS_VIDEO") begin
-        mig_7series_0 _mig (
-            // Memory interface ports
-            .ddr3_addr                      (ddr3_addr),
-            .ddr3_ba                        (ddr3_ba),
-            .ddr3_cas_n                     (ddr3_cas_n),
-            .ddr3_ck_n                      (ddr3_ck_n),
-            .ddr3_ck_p                      (ddr3_ck_p),
-            .ddr3_cke                       (ddr3_cke),
-            .ddr3_ras_n                     (ddr3_ras_n),
-            .ddr3_reset_n                   (ddr3_reset_n),
-            .ddr3_we_n                      (ddr3_we_n),
-            .ddr3_dq                        (ddr3_dq),
-            .ddr3_dqs_n                     (ddr3_dqs_n),
-            .ddr3_dqs_p                     (ddr3_dqs_p),
-            .ddr3_dm                        (ddr3_dm),
-            .ddr3_odt                       (ddr3_odt),
-            // Application interface ports
-            .app_addr                       (app_addr),
-            .app_cmd                        (app_cmd),
-            .app_en                         (app_en),
-            .app_wdf_data                   (app_wdf_data),
-            .app_wdf_end                    (app_wdf_end),
-            .app_wdf_wren                   (app_wdf_wren),
-            .app_rd_data                    (app_rd_data),
-            .app_rd_data_end                (app_rd_data_end),
-            .app_rd_data_valid              (app_rd_data_valid),
-            .app_rdy                        (app_rdy),
-            .app_wdf_rdy                    (app_wdf_rdy),
-            .app_sr_req                     (app_sr_req),
-            .app_ref_req                    (app_ref_req),
-            .app_zq_req                     (app_zq_req),
-            .app_sr_active                  (app_sr_active),
-            .app_ref_ack                    (app_ref_ack),
-            .app_zq_ack                     (app_zq_ack),
-            .ui_clk                         (ui_clk),
-            .ui_clk_sync_rst                (ui_clk_sync_rst),
-            .app_wdf_mask                   (app_wdf_mask),
-            .init_calib_complete            (init_calib_complete),
-            // System Clock Ports
-            .sys_clk_i                      (clk),
-            .clk_ref_i                      (clk_ref),
-            .sys_rst                        (rst)
-        );
-    end else $error("Invalid Board Option");
-    endgenerate
 
     localparam CMD_WRITE = 3'b000;
     localparam CMD_READ  = 3'b001;
@@ -191,7 +132,7 @@ module ddr_ram_controller_mig #(
         READ
     } state = CALIBRATION, state_next;
 
-    always_comb begin
+    always @* begin
         state_next = CALIBRATION;
         rd_queued_next = 1'b0;
         wr_queued_next = 1'b0;
@@ -307,7 +248,7 @@ module ddr_ram_controller_mig #(
         endcase
     end
 
-    always_ff @(posedge ui_clk) begin
+    always @(posedge ui_clk) begin
         if (ui_clk_sync_rst) begin
             state       <= CALIBRATION;
             rd_addr_int <= 'd0;

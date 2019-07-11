@@ -6,9 +6,10 @@ if [ $# -ne 1 ]; then
 fi
 
 topmodulename=$1
-echo "iverilog -s $topmodulename $topmodulename.v ../*.v"
+echo "iverilog -g2012 -s $topmodulename $topmodulename.* ../*.sv ../*.v"
 
-iverilog -s $topmodulename $topmodulename.v ../*.v
+iverilog -g2012 -s $topmodulename $topmodulename.* ../*.sv ../*.v
+
 ret=$?
 printf "return:\e[36m$ret \e[m\n"
 if [ $ret -eq 0 ]; then

@@ -1,7 +1,7 @@
 module rgmii_rx (
     input wire rst,
     input wire clk125MHz,
-    input wire clk200MHz,
+    //input wire clk200MHz,
 	input wire rx_clk,
 (* mark_debug = "true" *)	input wire rx_ctl,
 (* mark_debug = "true" *)	input wire [3:0] rx_data,

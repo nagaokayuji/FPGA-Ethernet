@@ -6,7 +6,7 @@
 	input wire [15:0] segment_num,
 	input wire [7:0] index_clone,
 	input wire [7:0] qos,
-	input wire [7:0] vramdata,
+	(* mark_debug = "true" *) input wire [7:0] vramdata,
 	input wire [15:0] startaddr, // coordinate
 
 	(* mark_debug = "true" *) output reg busy = 1'b0,

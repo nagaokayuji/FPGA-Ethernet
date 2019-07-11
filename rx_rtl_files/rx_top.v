@@ -64,7 +64,7 @@ module rx_top(
  `endif
 	
 	);
-	parameter SIMULATION = "TRUE";
+	parameter SIMULATION = "FALSE";
 		wire eth_rxck_buf,eth_rxck_buf_d;
 		/*
 	BUFG ethclk(
@@ -112,6 +112,8 @@ wire clk125MHz;
 wire clk125MHz90;// for the TX clock
 wire clk25MHz;
 // wire clkfb;
+wire clk200MHz;
+wire clk400MHz;
 
 
 wire [7:0] switches_vio;
@@ -191,13 +193,12 @@ wire [7:0] raw_data_f;
 wire rx_valid;
 wire rx_enable_f;
 wire rx_error;
-wire clk200MHz;
 // no meanings
 rgmii_rx i_rgmii_rx(
     .rst(RST),
     .clk125MHz(clk125MHz),
 	.rx_clk(eth_rxck_buf),//deleted: _buf
-	.clk200MHz(clk200MHz),
+	//.clk200MHz(clk200MHz),
 	
 	//.switches5(switches[5]),
 	.rx_ctl(eth_rxctl),
@@ -316,21 +317,33 @@ BUFG bufg_100(
 make_single_clock make_single_clock_i(
     .clk_in1_p(sysclk_p),
     .clk_in1_n(sysclk_n),
-    .clk_out1(clk100MHz_buffered)
+    .clk_out1(clk100MHz_buffered),
+    .clk200MHz(clk200MHz),
+    .clk400MHz(clk400MHz)
+   // .clk_out2(clk200MHz)
     );
 `endif
 // clock
 wire clk10MHz;
-wire clk400MHz;
+//wire clk400MHz;
 //`ifdef use_ddr3
+/*
 mig_clocking mig_clk(
-.clk_in1(clk100MHz_buffered),
-.clk400MHz(clk400MHz),
+.clk_in1_p(sysclk_p),
+.clk_in1_n(sysclk_n),
 .clk200MHz(clk200MHz)
 );
+*/
+
 //`else
 //`endif
 
+/*
+mig_clocking mig_clocking_i (
+    .clk_in1_p(sysclk_p),
+    .clk_in1_n(sysclk_n),
+    .clk200MHz(clk200MHz));
+*/
 clocking clocking_i(
 	.clk_in1(clk100MHz_buffered),
 	.clk_out1(clk125MHz),
@@ -450,7 +463,8 @@ wire ui_clk_sync_rst;
         // phy signals
         //.clk_p          (sysclk_p),
         //.clk_n          (sysclk_n),\
-        .clk            (clk200MHz),
+        .clk            (clk400MHz),
+        .clk_ref         (clk200MHz),
         .rst            (!RST),// active low de OK
         .ddr3_addr      (ddr3_addr),  // output [14:0]        ddr3_addr
         .ddr3_ba        (ddr3_ba),  // output [2:0]        ddr3_ba

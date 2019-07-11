@@ -3,15 +3,15 @@ module vram_control (
 input wire pclk,
 input wire clk125MHz,
 (* mark_debug = "true" *) input wire ena,
-(* mark_debug = "true" *) input wire [15:0] bramaddr24b,
-input wire [15:0] vramaddr,
-input wire [2:0] vramaddr_c,
+input wire [15:0] bramaddr24b,
+(* mark_debug = "true" *) input wire [15:0] vramaddr,
+(* mark_debug = "true" *) input wire [2:0] vramaddr_c,
 input wire [7:0] din_rgb_r,
 input wire [7:0] din_rgb_g,
 input wire [7:0] din_rgb_b,
 
-output wire [7:0] doutb_first,
-output wire [23:0] doutb_rgb
+(* mark_debug = "true" *) output wire [7:0] doutb_first,
+(* mark_debug = "true" *) output wire [23:0] doutb_rgb
 );
 
 

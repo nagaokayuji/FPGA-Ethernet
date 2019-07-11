@@ -25,7 +25,7 @@ module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 1)//125
 	
 
 	// output
-	output reg [15:0] startaddr = 0,
+(* mark_debug = "true" *)	output reg [15:0] startaddr = 0,
 	output wire oneframe_done,
 	output wire maxdetect,
 

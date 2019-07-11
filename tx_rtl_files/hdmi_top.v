@@ -39,16 +39,18 @@ IOBUF hdmi_in_ddc_sda_iobuf
 	.O(hdmi_in_ddc_sda_i),
 	.T(hdmi_in_ddc_sda_t));
 
+(* mark_debug = "true" *) wire clk_for_hdmi_locked;
 clk_for_hdmi clk_for_hdmi_i(
 	.clk_in1(clk100MHz),
-	.clk_out1(refclk)
+	.clk_out1(refclk), // 200MHz
+	.locked(clk_for_hdmi_locked)
 );
 
 (* mark_debug = "true" *) wire [23:0] pdata;
 (* mark_debug = "true" *) wire vde,hsync,vsync;
 wire pclk5x;
 //wire pclklocked;
-dvi2rgb_this dvi2rgb_i (
+dvi2rgb_s dvi2rgb_i (
 	.TMDS_Clk_p(hdmi_rx_clk_p),
 	.TMDS_Clk_n(hdmi_rx_clk_n),
 	.TMDS_Data_p(hdmi_rx_p),
@@ -67,7 +69,7 @@ dvi2rgb_this dvi2rgb_i (
 	.vid_pHSync(hsync),
 	.vid_pVSync(vsync),
 	.PixelClk(pclk),
-	//  .SerialClk(pclk5x),
+	//.SerialClk(pclk5x),
 	.aPixelClkLckd(pclklocked),
 	.pRst(rstb)
 );    
