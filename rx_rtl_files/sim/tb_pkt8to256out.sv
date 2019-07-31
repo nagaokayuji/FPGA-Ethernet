@@ -89,7 +89,6 @@ initial begin
 
     l = 0; 
     for (j = 1; j <= 6; j=j+1) begin
-    
         for (k = 0; k < 10; k=k+1) begin
             packetsize = packetsize + k;
             l = l+1;
@@ -100,7 +99,5 @@ initial begin
 
     $finish;
 end
-
-
 
 endmodule

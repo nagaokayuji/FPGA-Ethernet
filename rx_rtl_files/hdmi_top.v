@@ -67,7 +67,7 @@ output wire [2:0] hdmi_tx_p
     
     
    wire [23:0] from_ram;
-   wire [19:0] ram_addr;
+   wire [15:0] ram_addr;
    wire [23:0] bram_douta;
    //reg [23:0] bramout_fordebug;
 //   assign data_r = rgbcount == 0 ? data_rgb:0;

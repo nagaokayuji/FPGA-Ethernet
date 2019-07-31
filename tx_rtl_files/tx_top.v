@@ -26,6 +26,11 @@ module tx_top(
 	output wire eth_txctl,
 	output wire [3:0] eth_txd,
 	
+	// HDMI out
+//		output wire hdmi_tx_clk_n,hdmi_tx_clk_p,
+//	output wire [2:0] hdmi_tx_n,
+//	output wire [2:0] hdmi_tx_p,
+	
 	// HDMI in
 	input wire hdmi_rx_clk_n,hdmi_rx_clk_p,
 	input wire [2:0] hdmi_rx_n,
@@ -256,6 +261,12 @@ hdmi_top hdmi_top_i (
 	.rgb_b(rgb_b),
 	.start_frame(start_frame),
 	.pclklocked(leds[5])
+	
+//	// HDMI TX
+//    .hdmi_tx_clk_n(hdmi_tx_clk_n),
+//	.hdmi_tx_clk_p(hdmi_tx_clk_p),
+//	.hdmi_tx_n(hdmi_tx_n),
+//	.hdmi_tx_p(hdmi_tx_p)
 );
 
 

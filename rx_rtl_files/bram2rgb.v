@@ -6,7 +6,7 @@ module bram2rgb(
 //input wire pclk,
 input wire clk,xrst,en,
 input wire [23:0] in_from_ram,
-output  reg [19:0] ram_addr=0,
+output  reg [15:0] ram_addr=0,
 output  reg vd_2s,hd_2s,
 output  reg [23:0] rgb24bit=0,
 output   reg den_2s=0
@@ -42,7 +42,7 @@ reg [1:0] den_shift;
   reg  [15:0] hcnt, vcnt;
   reg  [ 7:0] shift;
 
-reg [17:0] ram_addr_ini = 0;
+reg [15:0] ram_addr_ini = 0;
 //  wire xrst = !RST;
 //wire ram_addrw = (vcnt - 35) * hdata + hcnt - 145; // ok.
 

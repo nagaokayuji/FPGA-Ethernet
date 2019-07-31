@@ -11,11 +11,18 @@ module hdmi_top(
 	output wire pclk,
 	output wire hdmi_rx_hpa,
 	output wire hdmi_rx_txen,
-	output wire ena,
-	output wire [15:0] bramaddr24b,
-	output wire [7:0] rgb_r,rgb_g,rgb_b,
+	(* mark_debug = "true" *) output wire ena,
+	(* mark_debug = "true" *) output wire [15:0] bramaddr24b,
+	(* mark_debug = "true" *) output wire [7:0] rgb_r,rgb_g,rgb_b,
 	output wire start_frame,
 	output wire pclklocked
+	
+	
+//	// tx
+//	output wire hdmi_tx_clk_n,hdmi_tx_clk_p,
+//output wire [2:0] hdmi_tx_n,
+//output wire [2:0] hdmi_tx_p
+
 );
 
 assign hdmi_rx_hpa = 1'b1;
@@ -69,12 +76,31 @@ dvi2rgb_s dvi2rgb_i (
 	.vid_pHSync(hsync),
 	.vid_pVSync(vsync),
 	.PixelClk(pclk),
-	//.SerialClk(pclk5x),
+	.SerialClk(pclk5x),
 	.aPixelClkLckd(pclklocked),
 	.pRst(rstb)
 );    
+
+//==================================================================\
+
+//    rgb2dvi_0 rgb2dvi (
+//    .TMDS_Clk_p(hdmi_tx_clk_p),
+//    .TMDS_Clk_n(hdmi_tx_clk_n),
+//    .TMDS_Data_p(hdmi_tx_p),
+//    .TMDS_Data_n(hdmi_tx_n),
+//    .aRst(rstb),
+//    .vid_pData(pdata), // modified
+//    .vid_pVDE(vde),
+//    .vid_pHSync(hsync),
+//    .vid_pVSync(vsync),
+//    .PixelClk(pclk),
+//    	.SerialClk(pclk5x)
+
+//    );
+    
+
 //===================================================================
-wire o_vsync, o_hsync;
+//wire o_vsync, o_hsync;
 
 rgb2bram rgb720to320 (//rgb2bram
 	.clk125MHz(clk125MHz), 
@@ -83,8 +109,8 @@ rgb2bram rgb720to320 (//rgb2bram
 	.i_Vsync(vsync),
 	.data24b(pdata),
 	.vde(vde),
-	.o_HSync(o_hsync),
-	.o_VSync(o_vsync),
+//	.o_HSync(o_hsync),
+//	.o_VSync(o_vsync),
 	.enout(ena),
 	.bramaddr24b(bramaddr24b),
 	.rgb_r(rgb_r),

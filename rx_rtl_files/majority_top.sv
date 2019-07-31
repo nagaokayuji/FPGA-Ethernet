@@ -2,18 +2,17 @@
 
 
 module majority_top #(parameter whereis_segment_num = 34, whereis_id = 36) (
-    input wire RST,
-    input wire [7:0] rx_data, // rx data
-    input wire rx_en, // rx enable
-    input wire dclk, // 125.25 MHz clock
-
+    input  wire RST,
+    input  wire [7:0] rx_data, // rx data
+    input  wire rx_en, // rx enable
+    input  wire dclk, // 125.25 MHz clock
 
     // MIG signals
-    input wire ui_clk, // 200 MHz clock used for MIG
-    input wire wr_busy,
-    input wire rd_busy,
-    input wire [255:0] rd_data,
-    input wire rd_data_valid,
+    input  wire ui_clk, // 200 MHz clock used for MIG
+    input  wire wr_busy,
+    input  wire rd_busy,
+    input  wire [255:0] rd_data,
+    input  wire rd_data_valid,
     output wire wr_en,
     output wire rd_en,
     output wire [255:0] wr_data,
@@ -21,7 +20,6 @@ module majority_top #(parameter whereis_segment_num = 34, whereis_id = 36) (
     output wire [24:0] rd_addr
     //
 );
-
 
 // convert to 256bit signals
 wire [255:0] rx256b;
@@ -52,9 +50,6 @@ assign wr_addr[24] = 1'b0;
 assign rd_addr[24] = 1'b0;
 assign wr_addr[23:8] = segnum256b;
 assign rd_addr[23:8] = segnum256b;
-
-
-
 
 
 

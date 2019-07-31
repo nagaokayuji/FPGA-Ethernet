@@ -119,6 +119,7 @@ assign  wr_en =
 
 reg     wr_sentinel = 0;
 
+// emtnl
 wire [255:0] shift_reg_shiftc =  
         shift_reg_rxd << ((256-8) - ((shift_count<<3)));
 reg     wr_shiftc = 0;
