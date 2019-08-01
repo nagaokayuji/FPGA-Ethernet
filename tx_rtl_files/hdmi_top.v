@@ -76,7 +76,7 @@ dvi2rgb_s dvi2rgb_i (
 	.vid_pHSync(hsync),
 	.vid_pVSync(vsync),
 	.PixelClk(pclk),
-	.SerialClk(pclk5x),
+	//.SerialClk(pclk5x),
 	.aPixelClkLckd(pclklocked),
 	.pRst(rstb)
 );    

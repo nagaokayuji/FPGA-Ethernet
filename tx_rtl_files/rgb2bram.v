@@ -18,12 +18,48 @@ module rgb2bram #(
     (* mark_debug = "true" *) output wire start_frame
  );  
 
-(* mark_debug = "true" *) reg [9:0] o_Row_Count = 0;
-(* mark_debug = "true" *) reg [9:0] o_Col_Count = 0;
+(* mark_debug = "true" *) reg [9:0] o_Row_Count = 'd0;
+(* mark_debug = "true" *) reg [9:0] o_Col_Count = 'd0;
 
 (* mark_debug = "true" *) wire i_HSync = !i_Hsync;
 (* mark_debug = "true" *) wire i_VSync = !i_Vsync; // =============active reverse=========
 // -> active low 
+
+(* mark_debug  = "true" *) wire [15:0] mitai_address;
+assign mitai_address = bramaddr24b;
+
+(* mark_debug = "true" *) reg [11:0] hsync_count = 'd0;
+(* mark_debug = "true" *) reg [13:0] row_count = 'd0;
+
+wire hsync = i_Hsync;
+wire vsync = i_Vsync;
+reg [1:0] vsync_sr = 0;
+reg [1:0] hsync_sr = 0;
+wire hsyncf = (hsync_sr==2'b10);
+wire vsyncf = (vsync_sr==2'b10);
+always @(posedge pclk) begin
+    vsync_sr <= {vsync_sr[0],vsync};
+    hsync_sr <= {hsync_sr[0],hsync};
+    if (!vsync) begin
+        hsync_count <= 0;
+        row_count <= 0;
+    end
+    else begin
+        if (hsyncf) begin
+            hsync_count <= hsync_count + 1'b1;
+        end
+        else begin
+            if (!hsync) begin
+                row_count <= 0;
+            end
+            else begin
+            row_count <= row_count + 1'b1;
+            end
+        end
+        
+    end
+
+end
 
 reg [1:0] vsync_fall;
 reg start_frame_pck;
