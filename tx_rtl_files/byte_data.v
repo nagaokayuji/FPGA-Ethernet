@@ -18,6 +18,7 @@
 	output reg data_enable = 1'b0
 	);
 //parameter VGA_ -> 420*240
+// 640*320??
 parameter xmax = 320;
 parameter ymax = 180;
 

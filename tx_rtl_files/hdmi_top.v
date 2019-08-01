@@ -104,6 +104,7 @@ dvi2rgb_s dvi2rgb_i (
 
 rgb2bram rgb720to320 (//rgb2bram
 	.clk125MHz(clk125MHz), 
+	.rst(rstb),
 	.pclk(pclk),
 	.i_Hsync(hsync),
 	.i_Vsync(vsync),

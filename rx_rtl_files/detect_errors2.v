@@ -45,75 +45,80 @@ wire [15:0] aux_oldp1 = aux_old + 1'b1;
 
 (* mark_debug = "true" *) reg error_detected;
 always @(posedge clk) begin
-	if (rst) begin
-		count_edge <= 16'b0;
-		endflag <= 0;
-		count <= 0;
-		ok <= 0;
-		lostnum = 0;
-		valid <= 1'b0;
+    if (rst) begin
+        count_edge <= 16'b0;
+        endflag <= 0;
+        count <= 0;
+        ok <= 0;
+        lostnum = 0;
+        valid <= 1'b0;
 
-		ng <= 0;
-		addr <= 0;
-		aux_new <= 0;
-		aux_old <= 0;
- 
-		count_on = 0;
-		seg_prev = 0;
-		state = 0;
-		error_detected = 0;
-	end
-	else begin //!rst
-		if (rx_en) begin
-			count_edge <= count_edge + 1'b1;
-			if (aux_on) begin
-				aux_old <= aux_new;
-				aux_new[15:8] <= rx_data;
-			end
-			else if (aux_on_1) begin
-			 aux_new[7:0] <= rx_data;
-			end
-		end
-		else begin
-			count_edge <= 0;
-		end
+        ng <= 0;
+        addr <= 0;
+        aux_new <= 0;
+        aux_old <= 0;
 
-		case (state)
-			0:
-				begin
-					if (aux_on_2 && (aux_new == 0)) begin
-						state <= 1;
-						count <= 1;
-						ok <= 1;
-						ng <= 0;
-					
-					end
-				end
-			1:
-				begin
-					if (aux_on_2) begin
-					   
-						count <= count + 1;
-						if (aux_new_pros == aux_new) begin
-							ok <= ok + 1;
-							error_detected = 0;
-						end
-						else begin
-						    error_detected = 1;
-							ng <= ng + 1;
-							lostnum <= lostnum + ((aux_new[11:0] > aux_old[11:0]) ?
-							 (aux_new - aux_old) : (aux_old - aux_new));
-						end
-					end
-					if (aux_on_3 && count >= maxcount) begin
-						state <= 2;
-					end
-				end
-			2:
-				begin
-				end
-		endcase
-	end
+        count_on = 0;
+        seg_prev = 0;
+        state = 0;
+        error_detected = 0;
+    end
+    else begin //!rst
+        if (rx_en) begin
+            count_edge <= count_edge + 1'b1;
+            if (aux_on) begin
+                aux_old <= aux_new;
+                aux_new[15:8] <= rx_data;
+            end
+            else if (aux_on_1) begin
+            aux_new[7:0] <= rx_data;
+            end
+        end
+        else begin
+            count_edge <= 0;
+        end
+
+        case (state)
+            0:
+                begin
+                    if (aux_on_2 && (aux_new == 0)) begin
+                        state <= 1;
+                        count <= 1;
+                        ok <= 1;
+                        ng <= 0;
+                    
+                    end
+                end
+            1:
+                begin
+                    if (aux_on_2) begin
+                        count <= count + 1'b1;
+                        if (aux_new_pros == aux_new) begin
+                            ok <= ok + 1'b1;
+                            error_detected = 0;
+                        end
+                        else begin
+                        if (error_detected) begin
+                            error_detected <= 'd0;
+                            ok <= ok + 1'b1;
+                        end
+                        else begin
+                            error_detected = 1'b1;
+                            ng <= ng + 1'b1;
+                            lostnum <= lostnum + (/*(aux_new[11:0] > aux_old[11:0])*/ ( (aux_old-aux_new)>(aux_new - aux_old) ) ?
+                            (aux_new - aux_old) : (aux_old - aux_new)); // ????????
+                        end
+                    end
+                end
+                if (aux_on_3 && count >= maxcount) begin
+                    state <= 2;
+                end
+            end
+            2:
+                begin
+                end
+        endcase
+    end
 end
 
 /*
