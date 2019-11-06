@@ -90,7 +90,7 @@ wire RST_raw = !rstn;
 
 wire [31:0] countp,okp;
 wire finished,started,valid;
-wire [2:0] state_d_e;
+(* mark_debug = "true" *) wire [2:0] state_d_e;
 wire [31:0] ngp,lostnum;
 
 
@@ -146,7 +146,7 @@ wire btnu_with_vio = btnu ^ btnu_vio;
 wire RST = RST_raw ^ RST_vio;
 
 wire [7:0] redundancy = (switches_with_vio[5:4]==2'b10)? 5 : (switches_with_vio[5:4]==2'b01) ? 3 : (switches_with_vio[5:4]==2'b00)? 1 : 111;
-wire [7:0] segment_number_max = (switches_with_vio[7:6] == 2'b00)? 1 : (switches_with_vio[7:6] == 2'b01)? 50 : (switches_with_vio[7:6] == 2'b10) ? 100: 150;
+wire [7:0] segment_number_max = (switches_with_vio[7:6] == 2'b00)? 1 : (switches_with_vio[7:6] == 2'b01)? 3 : (switches_with_vio[7:6] == 2'b10) ? 100: 150;
 
 
 always @(posedge clk125MHz) begin

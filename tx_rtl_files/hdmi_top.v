@@ -1,6 +1,7 @@
 module hdmi_top(
 	input wire clk100MHz,
 	input wire clk125MHz,
+	input wire clk200MHz,
 	input wire rstb,
 	input wire hdmi_rx_clk_n,hdmi_rx_clk_p,
 	input wire [2:0] hdmi_rx_n,
@@ -10,7 +11,7 @@ module hdmi_top(
 
 	output wire pclk,
 	output wire hdmi_rx_hpa,
-	output wire hdmi_rx_txen,
+	//output wire hdmi_rx_txen,
 	(* mark_debug = "true" *) output wire ena,
 	(* mark_debug = "true" *) output wire [15:0] bramaddr24b,
 	(* mark_debug = "true" *) output wire [7:0] rgb_r,rgb_g,rgb_b,
@@ -26,7 +27,7 @@ module hdmi_top(
 );
 
 assign hdmi_rx_hpa = 1'b1;
-assign hdmi_rx_txen = 1'b1;
+//assign hdmi_rx_txen = 1'b1;
 wire refclk;
 wire hdmi_in_ddc_scl_i;
 wire hdmi_in_ddc_scl_o;
@@ -57,7 +58,7 @@ clk_for_hdmi clk_for_hdmi_i(
 (* mark_debug = "true" *) wire vde,hsync,vsync;
 wire pclk5x;
 //wire pclklocked;
-dvi2rgb_s dvi2rgb_i (
+dvi2rgb_0 dvi2rgb_this (
 	.TMDS_Clk_p(hdmi_rx_clk_p),
 	.TMDS_Clk_n(hdmi_rx_clk_n),
 	.TMDS_Data_p(hdmi_rx_p),
@@ -68,7 +69,7 @@ dvi2rgb_s dvi2rgb_i (
 	.SCL_I(hdmi_in_ddc_scl_i),
 	.SCL_O(hdmi_in_ddc_scl_o),
 	.SCL_T(hdmi_in_ddc_scl_t),
-	.RefClk(refclk),
+	.RefClk(clk200MHz),
 	.aRst(rstb),
 	// output
 	.vid_pData(pdata),
@@ -78,23 +79,32 @@ dvi2rgb_s dvi2rgb_i (
 	.PixelClk(pclk),
 	//.SerialClk(pclk5x),
 	.aPixelClkLckd(pclklocked),
-	.pRst(rstb)
+	.pRst(1'b0)
 );    
+
 
 //==================================================================\
 
+//reg [23:0] pdata_s;
+//reg vsync_s,hsync_s,vde_s;
+//always @(posedge pclk) begin
+//    pdata_s <= pdata;
+//    vsync_s <= vsync;
+//    hsync_s <= hsync;
+//    vde_s <= vde;
+//end
 //    rgb2dvi_0 rgb2dvi (
 //    .TMDS_Clk_p(hdmi_tx_clk_p),
 //    .TMDS_Clk_n(hdmi_tx_clk_n),
 //    .TMDS_Data_p(hdmi_tx_p),
 //    .TMDS_Data_n(hdmi_tx_n),
 //    .aRst(rstb),
-//    .vid_pData(pdata), // modified
-//    .vid_pVDE(vde),
-//    .vid_pHSync(hsync),
-//    .vid_pVSync(vsync),
-//    .PixelClk(pclk),
-//    	.SerialClk(pclk5x)
+//    .vid_pData(pdata_s), // modified
+//    .vid_pVDE(vde_s),
+//    .vid_pHSync(hsync_s),
+//    .vid_pVSync(vsync_s),
+//    .PixelClk(pclk)
+//    //.SerialClk(pclk5x)
 
 //    );
     

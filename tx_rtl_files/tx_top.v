@@ -26,7 +26,7 @@ module tx_top(
 	output wire eth_txctl,
 	output wire [3:0] eth_txd,
 	
-	// HDMI out
+	 //HDMI out
 //		output wire hdmi_tx_clk_n,hdmi_tx_clk_p,
 //	output wire [2:0] hdmi_tx_n,
 //	output wire [2:0] hdmi_tx_p,
@@ -37,7 +37,7 @@ module tx_top(
 	input wire [2:0] hdmi_rx_p,
 	inout wire hdmi_rx_scl,
 	inout wire hdmi_rx_sda,
-	output wire hdmi_rx_txen,
+	//output wire hdmi_rx_txen,
 	output wire hdmi_rx_hpa
 	);
 
@@ -177,11 +177,13 @@ always @(posedge clk125MHz) begin
 		speed <= 2'b01;
 end
 wire clk100MHz_buffered;
+wire clk200MHz;
 `ifdef difclk
 make_single_clock make_single_clock_i(
 .clk_in1_p(sysclk_p),
 .clk_in1_n(sysclk_n),
-.clk_out1(clk100MHz_buffered)
+.clk100MHz(clk100MHz_buffered),
+.clk200MHz(clk200MHz)
 );
 `else
 BUFG bufg_100(
@@ -242,6 +244,7 @@ hdmi_top hdmi_top_i (
 	// clk,rst
 	.clk100MHz(clk100MHz_buffered),
 	.clk125MHz(clk125MHz),
+	.clk200MHz(clk200MHz),
 	.rstb(rst_with_vio), // active HIGH
 	// hdmi
 	.hdmi_rx_clk_n(hdmi_rx_clk_n),
@@ -253,7 +256,7 @@ hdmi_top hdmi_top_i (
 // output
     .pclk(pclk),
 	.hdmi_rx_hpa(hdmi_rx_hpa),
-	.hdmi_rx_txen(hdmi_rx_txen),
+	//.hdmi_rx_txen(hdmi_rx_txen),
 	.ena(ena),
 	.bramaddr24b(bramaddr24b),
 	.rgb_r(rgb_r),
@@ -262,7 +265,7 @@ hdmi_top hdmi_top_i (
 	.start_frame(start_frame),
 	.pclklocked(leds[5])
 	
-//	// HDMI TX
+	// HDMI TX
 //    .hdmi_tx_clk_n(hdmi_tx_clk_n),
 //	.hdmi_tx_clk_p(hdmi_tx_clk_p),
 //	.hdmi_tx_n(hdmi_tx_n),

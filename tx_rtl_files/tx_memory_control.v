@@ -3,7 +3,7 @@ ensure data correctly
 outputs after 3 clocks
 */
 
-module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 100)//125
+module tx_memory_control #(parameter SEGMENT_NUMBER_MAX = 150)//125
 (
 	input wire pclk, 	// pixel clock
 	input wire rst,

@@ -37,7 +37,7 @@ output wire [2:0] hdmi_tx_p
     wire [18:0] addr24b;
     wire enout2bram;
     
-       wire [15:0] addr2vram;
+   wire [15:0] addr2vram;
     wire [7:0] data_r,data_g,data_b,dout_r,dout_g,dout_b;
     wire wea_r,wea_g,wea_b;
     wire [7:0] data_rgb;

@@ -1,10 +1,10 @@
 //note: only works under seg <= 255.
 
-module detect_errors2 #(parameter whereis_aux = 0)(
+module detect_errors2 #(parameter whereis_aux = 0, maxaux = 16'h0fff, maxaux_bits = 'd12)(
 	input wire clk,
-	input wire rst,
-	input wire [15:0] segment_number_max,
-	input wire [15:0] seg,
+	(* mark_debug = "true" *) input wire rst,
+	(* mark_debug = "true" *) input wire [15:0] segment_number_max,
+	(* mark_debug = "true" *) input wire [15:0] seg,
 	(* mark_debug = "true" *) input wire rx_en,
 	(* mark_debug = "true" *) input wire [7:0] rx_data,
 	(* mark_debug = "true" *) output reg [31:0] count,
@@ -12,11 +12,11 @@ module detect_errors2 #(parameter whereis_aux = 0)(
 	(* mark_debug = "true" *) output reg [31:0] ng,
 	(* mark_debug = "true" *) output reg [31:0] lostnum,
 	output reg valid,
-	output reg [2:0] state
+	(* mark_debug = "true" *) output reg [2:0] state='d0
 );
 
 localparam maxcount = 500000;
-localparam maxaux = 16'hffff;
+//localparam maxaux = 16'hffff;
 //localparam maxaux = 8'd5;
 reg [15:0] count_edge;
 
@@ -43,7 +43,25 @@ wire [15:0] aux_new_pros = (aux_old < 16'hffff) ? aux_old + 1'b1 : 0;
 wire [15:0] aux_oldp1 = aux_old + 1'b1;
 
 
-(* mark_debug = "true" *) reg error_detected;
+wire [15:0] ok_sub,ng_sub,lostnum_sub,count_sub;
+(* mark_debug = "true" *) reg cal_rst = 1'b0;
+wire done;
+loss_calculator #(.maxaux(maxaux),.maxaux_bits(maxaux_bits)) loss_calculator_this (
+    .clk(clk),
+    .rst(rst || cal_rst),
+    .segment_number_max(segment_number_max),
+    .segment_number(seg),
+    .valid_in(aux_on_2),
+    .aux(aux_new[maxaux_bits: 0]),
+    .ok(ok_sub),
+    .ng(ng_sub),
+    .lostnum(lostnum_sub),
+    .count(count_sub),
+    .done(done)
+);
+
+
+//(* mark_debug = "true" *) reg error_detected;
 always @(posedge clk) begin
     if (rst) begin
         count_edge <= 16'b0;
@@ -61,7 +79,7 @@ always @(posedge clk) begin
         count_on = 0;
         seg_prev = 0;
         state = 0;
-        error_detected = 0;
+//        error_detected = 0;
     end
     else begin //!rst
         if (rx_en) begin
@@ -79,47 +97,93 @@ always @(posedge clk) begin
         end
 
         case (state)
-            0:
-                begin
-                    if (aux_on_2 && (aux_new == 0)) begin
-                        state <= 1;
-                        count <= 1;
-                        ok <= 1;
-                        ng <= 0;
-                    
-                    end
+            0: 
+            begin
+                if (count > maxcount) begin
+                    state <= 'd3;
+                    cal_rst <= 1'b0;
                 end
-            1:
-                begin
-                    if (aux_on_2) begin
-                        count <= count + 1'b1;
-                        if (aux_new_pros == aux_new) begin
-                            ok <= ok + 1'b1;
-                            error_detected = 0;
-                        end
-                        else begin
-                        if (error_detected) begin
-                            error_detected <= 'd0;
-                            ok <= ok + 1'b1;
-                        end
-                        else begin
-                            error_detected = 1'b1;
-                            ng <= ng + 1'b1;
-                            lostnum <= lostnum + (/*(aux_new[11:0] > aux_old[11:0])*/ ( (aux_old-aux_new)>(aux_new - aux_old) ) ?
-                            (aux_new - aux_old) : (aux_old - aux_new)); // ????????
-                        end
-                    end
-                end
-                if (aux_on_3 && count >= maxcount) begin
-                    state <= 2;
-                end
+                else if (done) begin
+                   ok <= ok + ok_sub;
+                   ng <= ng + ng_sub;
+                   count <= count + count_sub;
+                   lostnum <= lostnum + lostnum_sub;
+                   cal_rst <= 1'b1;
+                   state <= 'd2;
+               end 
+               else begin
+                   cal_rst <= 1'b0;
+
+               end
             end
             2:
-                begin
+            begin
+                if (count>maxcount) begin
+                    state<='d3;
+                    cal_rst = 1'b0;
+                end
+                else begin
+                    cal_rst = 1'b0;
+                    state <= 'd0;
+                end
+                
+            end
+            3: //END
+            begin
+            cal_rst = 1'b0;
+                
+            end
+            default: begin
+                state<='d0;
+                cal_rst = 1'b0;
                 end
         endcase
     end
 end
+
+
+//         case (state)
+//             0:
+//                 begin
+//                     if (aux_on_2 && (aux_new == 0)) begin
+//                         state <= 1;
+//                         count <= 1;
+//                         ok <= 1;
+//                         ng <= 0;
+                    
+//                     end
+//                 end
+//             1:
+//                 begin
+//                     if (aux_on_2) begin
+//                         count <= count + 1'b1;
+//                         if (aux_new_pros == aux_new) begin
+//                             ok <= ok + 1'b1;
+//                             error_detected = 0;
+//                         end
+//                         else begin
+//                         if (error_detected) begin
+//                             error_detected <= 'd0;
+//                             ok <= ok + 1'b1;
+//                         end
+//                         else begin
+//                             error_detected = 1'b1;
+//                             ng <= ng + 1'b1;
+//                             lostnum <= lostnum + (/*(aux_new[11:0] > aux_old[11:0])*/ ( (aux_old-aux_new)>(aux_new - aux_old) ) ?
+//                             (aux_new - aux_old) : (aux_old - aux_new)); // ????????
+//                         end
+//                     end
+//                 end
+//                 if (aux_on_3 && count >= maxcount) begin
+//                     state <= 2;
+//                 end
+//             end
+//             2:
+//                 begin
+//                 end
+//         endcase
+//     end
+// end
 
 /*
 	//~~-~-~-~-~-~-~-~-~-~-~-~-~--
